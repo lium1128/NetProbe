@@ -1,5 +1,9 @@
 # NetProbe
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)]()
+
 多引擎域名探测平台，集成 Subfinder、Nmap、Masscan、RustScan、Httpx、DNSx 六大扫描引擎，自动检测可用引擎并按优先级调度。支持子域名发现、端口扫描、服务版本检测、Web 技术指纹识别、敏感路径探测、SSL 证书分析、Banner 抓取、JS 文件分析，提供 Web 界面和命令行两种使用方式。跨平台支持 Windows、macOS、Linux。
 
 ## 功能特性
@@ -440,3 +444,75 @@ export GONOSUMCHECK="*"
 - 使用本工具即视为你已阅读、理解并同意以上全部内容
 
 **如果你不确定自己的使用行为是否合法，请不要使用本工具。**
+
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 后端 | Python 3.10+, Flask |
+| 前端 | 原生 HTML/CSS/JavaScript |
+| DNS | dnspython |
+| 端口扫描 | python-nmap |
+| HTTP | requests |
+| 数据格式 | JSON (指纹规则、敏感路径规则) |
+
+## 致谢
+
+本工具依赖以下优秀的开源项目：
+
+- [Nmap](https://nmap.org/) — 网络发现和安全审计
+- [Subfinder](https://github.com/projectdiscovery/subfinder) — 被动子域名枚举
+- [Masscan](https://github.com/robertdavidgraham/masscan) — 高速端口扫描
+- [RustScan](https://github.com/RustScan/RustScan) — Rust 端口扫描器
+- [Httpx](https://github.com/projectdiscovery/httpx) — 批量 Web 探测
+- [DNSx](https://github.com/projectdiscovery/dnsx) — DNS 工具包
+- [crt.sh](https://crt.sh/) — 证书透明度日志
+- [FOFA](https://fofa.info/) — 网络空间搜索引擎
+- [Hunter](https://hunter.qianxin.com/) — 奇安信鹰图平台
+- [Flask](https://flask.palletsprojects.com/) — Python Web 框架
+- [dnspython](https://github.com/rthalley/dnspython) — DNS 工具包
+
+## 贡献指南
+
+欢迎贡献！可以通过以下方式参与：
+
+1. **提交 Issue** — 报告 Bug、提出功能建议
+2. **提交 Pull Request** — 修复问题或添加新功能
+3. **完善规则** — 添加指纹规则 (`netprobe/data/fingerprints.json`) 或敏感路径规则 (`netprobe/data/sensitive_paths.json`)
+
+### 开发指南
+
+```bash
+# 克隆项目
+git clone https://github.com/lium1128/NetProbe.git
+cd NetProbe
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 运行 Web 服务
+python app.py
+
+# 或使用命令行
+python main.py example.com
+```
+
+## 开源协议
+
+本项目基于 [Apache License 2.0](LICENSE) 开源。
+
+```
+Copyright 2024-2026 lium1128
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
