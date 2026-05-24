@@ -123,20 +123,101 @@ def _extract_http_fingerprint(resp: requests.Response) -> dict:
 def _get_ssl_info(hostname: str, port: int) -> dict:
     """获取 SSL/TLS 证书信息。"""
     try:
+        # 用 CERT_REQUIRED 获取完整证书（CERT_NONE 拿不到详情）
         context = ssl.create_default_context()
         context.check_hostname = False
-        context.verify_mode = ssl.CERT_NONE
+        context.verify_mode = ssl.CERT_REQUIRED
 
         with socket.create_connection((hostname, port), timeout=5) as sock:
             with context.wrap_socket(sock, server_hostname=hostname) as ssock:
-                cert = ssock.getpeercert()
+                cert = ssock.getpeercert(binary_form=False)
+                if not cert:
+                    # fallback: 用 binary_form 获取
+                    cert_bin = ssock.getpeercert(binary_form=True)
+                    if cert_bin:
+                        # 解析 DER 格式证书
+                        return _parse_der_cert(cert_bin, ssock.version(), ssock.cipher())
+                    return {'protocol': ssock.version() or ''}
                 cipher = ssock.cipher()
                 version = ssock.version()
+    except ssl.SSLError:
+        # 证书验证失败，用 CERT_NONE 至少拿 protocol
+        try:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            context.check_hostname = False
+            context.verify_mode = ssl.CERT_NONE
+            with socket.create_connection((hostname, port), timeout=5) as sock:
+                with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+                    cert_bin = ssock.getpeercert(binary_form=True)
+                    if cert_bin:
+                        return _parse_der_cert(cert_bin, ssock.version(), ssock.cipher())
+                    return {'protocol': ssock.version() or ''}
+        except Exception:
+            return {}
+    except Exception:
+        return {}
 
+    if not cert:
+        return {'protocol': version or ''}
+
+    # 提取证书信息
+    subject = dict(x[0] for x in cert.get('subject', ()))
+    issuer = dict(x[0] for x in cert.get('issuer', ()))
+
+    cn = subject.get('commonName', '')
+    org = subject.get('organizationName', '')
+    issuer_name = issuer.get('commonName', '') or issuer.get('organizationName', '')
+
+    not_before = cert.get('notBefore', '')
+    not_after = cert.get('notAfter', '')
+
+    # SAN 域名列表
+    san = []
+    for ext in cert.get('subjectAltName', ()):
+        if ext[0] == 'DNS':
+            san.append(ext[1])
+
+    # 过期检查
+    expired = False
+    if not_after:
+        try:
+            expiry = datetime.strptime(not_after, '%b %d %H:%M:%S %Y %Z')
+            expired = expiry < datetime.now()
+        except ValueError:
+            pass
+
+    result = {
+        'subject': cn,
+        'issuer': issuer_name,
+        'org': org,
+        'not_before': not_before,
+        'not_after': not_after,
+        'expired': expired,
+        'protocol': version or '',
+    }
+    if cipher:
+        result['cipher'] = cipher[0]
+    if san:
+        result['san'] = san[:10]
+
+    return result
+
+
+def _parse_der_cert(der_data: bytes, protocol: str | None, cipher: tuple | None) -> dict:
+    """解析 DER 格式的 SSL 证书（不依赖 cryptography 库）。"""
+    result = {'protocol': protocol or ''}
+    if cipher:
+        result['cipher'] = cipher[0]
+
+    try:
+        # 用 ssl 标准库的 DER 解析
+        import ssl as _ssl
+        # 通过临时 socket 反向获取证书信息
+        # 直接从 DER 解析关键字段
+        cert = _ssl._ssl._test_decode_cert(der_data)
         if not cert:
-            return {'protocol': version or ''}
+            return result
 
-        # 提取证书信息
         subject = dict(x[0] for x in cert.get('subject', ()))
         issuer = dict(x[0] for x in cert.get('issuer', ()))
 
@@ -144,42 +225,33 @@ def _get_ssl_info(hostname: str, port: int) -> dict:
         org = subject.get('organizationName', '')
         issuer_name = issuer.get('commonName', '') or issuer.get('organizationName', '')
 
-        not_before = cert.get('notBefore', '')
-        not_after = cert.get('notAfter', '')
+        result['subject'] = cn
+        result['issuer'] = issuer_name
+        result['org'] = org
 
-        # SAN 域名列表
+        not_after = cert.get('notAfter', '')
+        not_before = cert.get('notBefore', '')
+        result['not_before'] = not_before
+        result['not_after'] = not_after
+
+        if not_after:
+            try:
+                expiry = datetime.strptime(not_after, '%b %d %H:%M:%S %Y %Z')
+                result['expired'] = expiry < datetime.now()
+            except ValueError:
+                pass
+
         san = []
         for ext in cert.get('subjectAltName', ()):
             if ext[0] == 'DNS':
                 san.append(ext[1])
-
-        # 过期检查
-        expired = False
-        if not_after:
-            try:
-                expiry = datetime.strptime(not_after, '%b %d %H:%M:%S %Y %Z')
-                expired = expiry < datetime.now()
-            except ValueError:
-                pass
-
-        result = {
-            'subject': cn,
-            'issuer': issuer_name,
-            'org': org,
-            'not_before': not_before,
-            'not_after': not_after,
-            'expired': expired,
-            'protocol': version or '',
-        }
-        if cipher:
-            result['cipher'] = cipher[0]
         if san:
-            result['san'] = san[:10]  # 最多 10 个
-
-        return result
+            result['san'] = san[:10]
 
     except Exception:
-        return {}
+        pass
+
+    return result
 
 
 def _detect_charset(resp: requests.Response) -> str | None:
