@@ -6,6 +6,9 @@
 
 多引擎域名探测平台，集成 Subfinder、Nmap、Masscan、RustScan、Httpx、DNSx 六大扫描引擎，自动检测可用引擎并按优先级调度。支持子域名发现、端口扫描、服务版本检测、Web 技术指纹识别、敏感路径探测、SSL 证书分析、Banner 抓取、JS 文件分析，提供 Web 界面和命令行两种使用方式。跨平台支持 Windows、macOS、Linux。
 
+![NetProbe Web 界面](readme_resource/scan_1.png)
+![NetProbe Web2 界面](readme_resource/scan_2.png)
+
 ## 功能特性
 
 - **跨平台支持** — 支持 Windows、macOS、Linux，自动适配不同平台的工具安装路径
