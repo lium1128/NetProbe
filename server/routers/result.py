@@ -10,9 +10,21 @@ from fastapi.responses import FileResponse
 from ..db import SessionLocal
 from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding
 from ..services.scan_service import get_task
+from ..services.diff_service import compute_diff
 from netprobe.formatter import save_results
 
 router = APIRouter(tags=["result"])
+
+
+@router.get("/result/diff")
+def diff_results(a: str, b: str):
+    """对比两次扫描结果，返回结构化差异。
+
+    必须注册在 /result/{scan_id} 之前，否则 'diff' 会被当作 scan_id。
+    """
+    if not a or not b:
+        raise HTTPException(400, "query params 'a' and 'b' are required")
+    return compute_diff(a, b)
 
 
 @router.get("/result/{scan_id}")
