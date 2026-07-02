@@ -1,12 +1,13 @@
 """扫描引擎 — 统一的扫描流水线，CLI 和 Web 共用。"""
 
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests as req_lib
 
 from .dns_utils import is_subdomain_of, resolve_a_record, reverse_dns_lookup
-from .scanner import check_nmap_available, run_dns_brute, run_port_scan
+from .scanner import check_nmap_available, run_dns_brute, run_port_scan, resolve_ports
 from .tools.dnsx import run_dnsx
 from .tools.httpx_tool import run_httpx
 from .tools.masscan import run_masscan
@@ -128,10 +129,16 @@ def _normalize_portscan(results) -> dict[str, list[dict]]:
     return normalized
 
 
-def _try_port_engine(name, run_fn, ips, timeout, emit):
+def _try_port_engine(name, run_fn, ips, timeout, emit, ports_list=None, ports_str=None, process_callback=None):
     """尝试运行一个端口扫描引擎，返回 (结果, 是否成功)。"""
+    def _log(msg):
+        emit('progress', text=msg)
+
     try:
-        raw = run_fn(ips, timeout=timeout)
+        if name == 'nmap':
+            raw = run_fn(ips, ports=ports_str, timeout=timeout, on_progress=_log)
+        else:
+            raw = run_fn(ips, ports=ports_list, timeout=timeout, on_progress=_log, process_callback=process_callback)
         results = _normalize_portscan(raw)
         total = sum(len(v) for v in results.values())
         if total > 0:
@@ -139,8 +146,8 @@ def _try_port_engine(name, run_fn, ips, timeout, emit):
             return results, True
         emit('progress', text=f'  [{name}] 未发现开放端口，降级到下一引擎...')
         return {}, False
-    except Exception:
-        emit('progress', text=f'  [{name}] 不可用，降级到下一引擎...')
+    except Exception as e:
+        emit('progress', text=f'  [{name}] 不可用: {e}')
         return {}, False
 
 
@@ -149,27 +156,38 @@ def do_port_scan(hosts: list[dict], options: dict, emit) -> dict[str, list[dict]
     chosen = options.get('portscan_tool', 'auto')
     ips = list({h['ip'] for h in hosts})
     timeout = options.get('timeout', 300)
+    process_cb = options.get('_process_callback')
+
+    def _log(msg):
+        emit('progress', text=msg)
+
+    # 解析端口预设
+    preset = options.get('port_preset', 'common')
+    custom = options.get('custom_ports', '')
+    ports_list, ports_str = resolve_ports(preset, custom)
+    total_ports = len(ports_list)
+    emit('progress', text=f'  端口范围: {preset} ({total_ports} 个端口)')
 
     if chosen == 'nmap':
         if check_nmap_available():
-            return _normalize_portscan(run_port_scan(ips, timeout=timeout))
+            return _normalize_portscan(run_port_scan(ips, ports=ports_str, timeout=timeout, on_progress=_log))
         emit('progress', text='  [nmap] 未安装')
         return {}
     if chosen == 'rustscan':
-        results, _ = _try_port_engine('rustscan', run_rustscan, ips, timeout, emit)
+        results, _ = _try_port_engine('rustscan', run_rustscan, ips, timeout, emit, ports_list=ports_list, process_callback=process_cb)
         return results
     if chosen == 'masscan':
-        results, _ = _try_port_engine('masscan', run_masscan, ips, timeout, emit)
+        results, _ = _try_port_engine('masscan', run_masscan, ips, timeout, emit, ports_list=ports_list, process_callback=process_cb)
         return results
 
     engines = []
     if check_nmap_available():
-        engines.append(('nmap', lambda ips, timeout: run_port_scan(ips, timeout=timeout)))
-    engines.append(('rustscan', run_rustscan))
-    engines.append(('masscan', run_masscan))
+        engines.append(('nmap', lambda ips, timeout, **kw: run_port_scan(ips, ports=ports_str, timeout=timeout, on_progress=kw.get('on_progress'))))
+    engines.append(('rustscan', lambda ips, timeout, **kw: run_rustscan(ips, ports=ports_list, timeout=timeout, process_callback=kw.get('process_callback'), on_progress=kw.get('on_progress'))))
+    engines.append(('masscan', lambda ips, timeout, **kw: run_masscan(ips, ports=ports_list, timeout=timeout, process_callback=kw.get('process_callback'), on_progress=kw.get('on_progress'))))
 
     for engine_name, engine_fn in engines:
-        results, ok = _try_port_engine(engine_name, engine_fn, ips, timeout, emit)
+        results, ok = _try_port_engine(engine_name, engine_fn, ips, timeout, emit, process_callback=process_cb)
         if ok:
             return results
 
@@ -286,44 +304,81 @@ def do_passive_recon(base_domain: str, emit) -> list[dict]:
 
 # ── 单目标 / 多目标扫描 ──────────────────────────────────────
 
+def _is_cancelled(options: dict) -> bool:
+    """检查是否收到取消信号。"""
+    cb = options.get('_cancel_check')
+    return cb() if cb else False
+
+
 def scan_target(target: str, options: dict, emit) -> list[dict]:
     """扫描单个目标，返回主机列表。emit(event, **data) 用于进度回调。"""
+    target_start = time.time()
+
     try:
         target = validate_input(target)
     except ValueError as e:
         emit('progress', text=f'  跳过无效目标 {target}: {e}')
         return []
 
+    skip_dns = options.get('no_dns_brute')
+    skip_web = options.get('no_web')
+
+    # 计算阶段数
+    phases = 2  # DNS解析 + 端口扫描 始终执行
+    if not skip_dns:
+        phases += 2  # 被动收集 + 子域名枚举
+    if not skip_web:
+        phases += 3  # Web探测 + 敏感路径 + JS分析
+    phases += 1  # Banner
+    phase_num = [0]
+    def ph(text):
+        phase_num[0] += 1
+        return f'[{phase_num[0]}/{phases}] {text}'
+
+    # ── DNS 解析 ──
     if is_ip_address(target):
-        emit('progress', text=f'  检测到 IP: {target}，反向 DNS...')
+        emit('progress', text=ph(f'目标识别: IP {target}，反向 DNS 解析...'))
         hostname = reverse_dns_lookup(target)
         if not hostname:
-            emit('progress', text=f'  无法反向解析 IP: {target}，跳过')
+            emit('progress', text=f'  ✗ 无法反向解析 IP: {target}，跳过')
             return []
         base_domain = extract_root_domain(hostname)
         main_ip = target
         main_hostname = hostname
-        emit('progress', text=f'  反向解析: {target} → {hostname} → {base_domain}')
+        emit('progress', text=f'  ✓ 反向解析: {target} → {hostname} → {base_domain}')
     else:
         base_domain = target.lower().rstrip('.')
+        emit('progress', text=ph(f'域名解析: {base_domain} ...'))
         ips = resolve_a_record(base_domain)
         if not ips:
-            emit('progress', text=f'  无法解析域名: {base_domain}，跳过')
+            emit('progress', text=f'  ✗ 无法解析域名: {base_domain}，跳过')
             return []
         main_ip = ips[0]
         main_hostname = base_domain
-        emit('progress', text=f'  主域名解析: {base_domain} → {main_ip}')
+        emit('progress', text=f'  ✓ 解析成功: {base_domain} → {main_ip}')
 
-    # 1. 被动情报收集
+    if _is_cancelled(options):
+        emit('progress', text='  扫描已取消')
+        return []
+
+    # ── 被动情报收集 ──
     passive_results = []
-    if not options.get('no_dns_brute'):
-        emit('progress', text=f'  被动情报收集 ({base_domain})...')
+    if not skip_dns:
+        emit('progress', text=ph(f'被动情报收集 ({base_domain}) ...'))
+        t0 = time.time()
         passive_results = do_passive_recon(base_domain, emit)
+        elapsed = time.time() - t0
+        emit('progress', text=f'  ✓ 被动收集完成: {len(passive_results)} 个子域名 ({elapsed:.1f}s)')
 
-    # 2. 主动子域名枚举
+    if _is_cancelled(options):
+        emit('progress', text='  扫描已取消')
+        return []
+
+    # ── 子域名枚举 ──
     subdomains = []
-    if not options.get('no_dns_brute'):
-        emit('progress', text=f'  子域名枚举 ({base_domain})...')
+    if not skip_dns:
+        emit('progress', text=ph(f'主动子域名枚举 ({base_domain}) ...'))
+        t0 = time.time()
         raw = do_subdomain_enum(base_domain, options, emit)
         raw = [s for s in raw if is_subdomain_of(s['hostname'], base_domain)]
 
@@ -339,7 +394,12 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             subdomains = [s for s in raw if s['hostname'] in valid]
         else:
             subdomains = raw
-        emit('progress', text=f'  子域名枚举完成: {len(subdomains)} 个有效')
+        elapsed = time.time() - t0
+        emit('progress', text=f'  ✓ 子域名枚举完成: {len(subdomains)} 个有效 ({elapsed:.1f}s)')
+
+    if _is_cancelled(options):
+        emit('progress', text='  扫描已取消')
+        return []
 
     # 构建主机列表
     all_hosts = [{'hostname': main_hostname, 'ip': main_ip}]
@@ -351,8 +411,11 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             if ips:
                 all_hosts.append({'hostname': sub['hostname'], 'ip': ips[0]})
 
-    # 3. 端口扫描
-    emit('progress', text=f'  端口扫描 ({len(all_hosts)} 个主机)...')
+    emit('progress', text=f'  → 目标主机: {len(all_hosts)} 台 ({", ".join(h["ip"] for h in all_hosts[:5])}{"..." if len(all_hosts) > 5 else ""})')
+
+    # ── 端口扫描 ──
+    emit('progress', text=ph(f'端口扫描 ({len(all_hosts)} 台主机) ...'))
+    t0 = time.time()
     scan_results = do_port_scan(all_hosts, options, emit)
     for host in all_hosts:
         ip = host['ip']
@@ -363,42 +426,69 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
                 host['os'] = data['os']
         else:
             host['ports'] = []
+    total_open = sum(len(h.get('ports', [])) for h in all_hosts)
+    elapsed = time.time() - t0
+    emit('progress', text=f'  ✓ 端口扫描完成: {total_open} 个开放端口 ({elapsed:.1f}s)')
 
-    # 4. Web 探测
-    if not options.get('no_web'):
+    if _is_cancelled(options):
+        emit('progress', text='  扫描已取消')
+        return all_hosts
+
+    # ── Web 探测 ──
+    if not skip_web:
+        emit('progress', text=ph(f'Web 站点探测 ({len(all_hosts)} 台主机) ...'))
+        t0 = time.time()
         do_web_probe(all_hosts, options, emit)
+        total_web = sum(len(h.get('web_info', [])) for h in all_hosts)
+        elapsed = time.time() - t0
+        emit('progress', text=f'  ✓ Web 探测完成: {total_web} 个站点 ({elapsed:.1f}s)')
     else:
         for host in all_hosts:
             host['web_info'] = []
 
-    # 5. 敏感路径探测
-    if not options.get('no_web'):
-        emit('progress', text='  敏感路径探测...')
+    if _is_cancelled(options):
+        emit('progress', text='  扫描已取消')
+        return all_hosts
+
+    # ── 敏感路径探测 ──
+    if not skip_web:
+        emit('progress', text=ph('敏感路径探测 ...'))
+        t0 = time.time()
         probe_sensitive_for_hosts(all_hosts)
         sensitive_total = sum(len(h.get('sensitive', [])) for h in all_hosts)
+        elapsed = time.time() - t0
         if sensitive_total:
-            emit('progress', text=f'  敏感路径探测完成: {sensitive_total} 条发现')
+            emit('progress', text=f'  ✓ 敏感路径探测完成: {sensitive_total} 条发现 ({elapsed:.1f}s)')
         else:
-            emit('progress', text='  敏感路径探测完成: 无发现')
+            emit('progress', text=f'  ✓ 敏感路径探测完成: 无发现 ({elapsed:.1f}s)')
 
-    # 5.5 JS 文件分析
-    if not options.get('no_web'):
+    # ── JS 文件分析 ──
+    if not skip_web:
         from .js_analyzer import analyze_js_for_hosts
-        emit('progress', text='  JavaScript 文件分析...')
+        emit('progress', text=ph('JavaScript 文件分析 ...'))
+        t0 = time.time()
         analyze_js_for_hosts(all_hosts)
         js_total = sum(len(h.get('js_findings', [])) for h in all_hosts)
         js_secrets = sum(
             len(j.get('secrets', [])) for h in all_hosts for j in h.get('js_findings', [])
         )
+        elapsed = time.time() - t0
         if js_total:
             detail = f'{js_total} 个文件'
             if js_secrets:
                 detail += f', {js_secrets} 条泄露'
-            emit('progress', text=f'  JS 分析完成: {detail}')
+            emit('progress', text=f'  ✓ JS 分析完成: {detail} ({elapsed:.1f}s)')
         else:
-            emit('progress', text='  JS 分析完成: 无发现')
+            emit('progress', text=f'  ✓ JS 分析完成: 无发现 ({elapsed:.1f}s)')
 
-    # 6. Banner 抓取
+    if _is_cancelled(options):
+        emit('progress', text='  扫描已取消')
+        return all_hosts
+
+    # ── Banner 抓取 ──
+    emit('progress', text=ph('Banner 抓取 ...'))
+    t0 = time.time()
+
     def _grab_host_banners(host):
         open_ports = [p['port'] for p in host.get('ports', [])]
         return host, grab_banners_for_host(host['ip'], open_ports)
@@ -410,8 +500,18 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             host['banners'] = banners
 
     banner_total = sum(len(h.get('banners', [])) for h in all_hosts)
+    elapsed = time.time() - t0
     if banner_total:
-        emit('progress', text=f'  Banner 抓取完成: {banner_total} 条')
+        emit('progress', text=f'  ✓ Banner 抓取完成: {banner_total} 条 ({elapsed:.1f}s)')
+    else:
+        emit('progress', text=f'  ✓ Banner 抓取完成: 无结果 ({elapsed:.1f}s)')
+
+    # ── 目标扫描总结 ──
+    total_elapsed = time.time() - target_start
+    total_hosts = len(all_hosts)
+    total_ports = sum(len(h.get('ports', [])) for h in all_hosts)
+    total_web = sum(len(h.get('web_info', [])) for h in all_hosts)
+    emit('progress', text=f'━━━ {target} 扫描完成: {total_hosts} 台主机 · {total_ports} 个端口 · {total_web} 个网站 · 耗时 {total_elapsed:.1f}s ━━━')
 
     return all_hosts
 
@@ -438,9 +538,13 @@ def scan_all_targets(targets: list[str], options: dict, emit) -> list[dict]:
 
     emit('progress', text=f'共 {len(targets)} 个目标: {", ".join(targets)}')
 
+    scan_start = time.time()
     all_hosts = []
     for i, target in enumerate(targets, 1):
-        emit('progress', text=f'━━━ 目标 [{i}/{len(targets)}] {target} ━━━')
+        if _is_cancelled(options):
+            emit('progress', text='扫描已取消')
+            break
+        emit('progress', text=f'\n━━━ 目标 [{i}/{len(targets)}] {target} ━━━')
         hosts = scan_target(target, options, emit)
         if hosts:
             for h in hosts:
@@ -450,5 +554,21 @@ def scan_all_targets(targets: list[str], options: dict, emit) -> list[dict]:
     if not all_hosts:
         emit('error', text='所有目标均未获取到结果')
         return []
+
+    total_elapsed = time.time() - scan_start
+    total_hosts = len(all_hosts)
+    total_ports = sum(len(h.get('ports', [])) for h in all_hosts)
+    total_web = sum(len(h.get('web_info', [])) for h in all_hosts)
+    total_sensitive = sum(len(h.get('sensitive', [])) for h in all_hosts)
+    emit('progress', text=f'\n{"═" * 40}')
+    emit('progress', text=f'扫描全部完成')
+    emit('progress', text=f'  目标: {len(targets)} 个')
+    emit('progress', text=f'  主机: {total_hosts} 台')
+    emit('progress', text=f'  端口: {total_ports} 个')
+    emit('progress', text=f'  网站: {total_web} 个')
+    if total_sensitive:
+        emit('progress', text=f'  敏感路径: {total_sensitive} 条')
+    emit('progress', text=f'  总耗时: {total_elapsed:.1f}s')
+    emit('progress', text=f'{"═" * 40}')
 
     return all_hosts

@@ -1,7 +1,8 @@
 """RustScan — 快速端口发现，自动调用 nmap 做服务检测。"""
 
-import json
+import re
 import subprocess
+import threading
 
 # 先确保 nmap 路径注入（必须在 import nmap 之前）
 from ..scanner import COMMON_PORTS  # noqa: E402 (triggers _ensure_nmap_in_path)
@@ -14,10 +15,12 @@ def run_rustscan(
     ports: list[int] | None = None,
     timeout: int = 300,
     ulimit: int = 5000,
+    on_progress=None,
+    process_callback=None,
 ) -> dict[str, list[dict]]:
     """运行 RustScan 端口扫描 + nmap 服务检测。
 
-    RustScan 快速发现开放端口，然后自动调用 nmap -sV 做版本检测。
+    on_progress(msg) — 可选回调，实时输出进度日志。
     返回格式与 nmap run_port_scan 一致。
     """
     if not targets:
@@ -25,7 +28,10 @@ def run_rustscan(
 
     if ports is None:
         ports = COMMON_PORTS
-    ports_str = ','.join(str(p) for p in ports)
+    if len(ports) == 65535 and ports[0] == 1 and ports[-1] == 65535:
+        ports_str = '1-65535'
+    else:
+        ports_str = ','.join(str(p) for p in ports)
     targets_str = ' '.join(targets)
 
     # 第一步：RustScan 快速发现端口（不调用 nmap，自己解析）
@@ -39,20 +45,72 @@ def run_rustscan(
         '--',  # 不传 nmap 参数
     ]
 
+    open_ports_by_ip: dict[str, list[int]] = {}
     try:
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout + 30,
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
         )
-    except (subprocess.TimeoutExpired, FileNotFoundError) as e:
-        raise RuntimeError(f"rustscan 执行失败: {e}") from e
+        if process_callback:
+            process_callback("start", proc)
 
-    # 解析 RustScan 输出，提取开放端口
-    open_ports_by_ip = _parse_rustscan_output(result.stdout + '\n' + result.stderr)
+        # RustScan 输出到 stderr，逐行读取
+        def _read_stderr():
+            for line in proc.stderr:
+                line = line.strip()
+                match = re.search(r'(\d+\.\d+\.\d+\.\d+):(\d+)', line)
+                if match:
+                    ip = match.group(1)
+                    port = int(match.group(2))
+                    if ip not in open_ports_by_ip:
+                        open_ports_by_ip[ip] = []
+                    open_ports_by_ip[ip].append(port)
+                    if on_progress:
+                        on_progress(f'  [rustscan] 发现: {ip}:{port}')
+
+        # stdout 也读取（有些版本输出到 stdout）
+        def _read_stdout():
+            for line in proc.stdout:
+                line = line.strip()
+                match = re.search(r'(\d+\.\d+\.\d+\.\d+):(\d+)', line)
+                if match:
+                    ip = match.group(1)
+                    port = int(match.group(2))
+                    if ip not in open_ports_by_ip:
+                        open_ports_by_ip[ip] = []
+                    if port not in open_ports_by_ip[ip]:
+                        open_ports_by_ip[ip].append(port)
+                        if on_progress:
+                            on_progress(f'  [rustscan] 发现: {ip}:{port}')
+
+        stderr_thread = threading.Thread(target=_read_stderr, daemon=True)
+        stdout_thread = threading.Thread(target=_read_stdout, daemon=True)
+        stderr_thread.start()
+        stdout_thread.start()
+
+        proc.wait()
+        if process_callback:
+            process_callback("end", proc)
+        stderr_thread.join(timeout=5)
+        stdout_thread.join(timeout=5)
+    except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+        raise RuntimeError(f"rustscan 执行失败: {e}") from e
 
     if not open_ports_by_ip:
         return {}
 
     # 第二步：对发现开放端口的主机用 nmap -sV 做详细检测
+    if on_progress:
+        total_found = sum(len(v) for v in open_ports_by_ip.values())
+        on_progress(f'  [rustscan] 发现 {total_found} 个开放端口，nmap -sV 服务检测...')
+
     nm = nmap_lib.PortScanner()
     all_results = {}
 
@@ -91,27 +149,3 @@ def run_rustscan(
         }
 
     return all_results
-
-
-def _parse_rustscan_output(text: str) -> dict[str, list[int]]:
-    """从 RustScan 输出中提取 IP -> 开放端口映射。
-
-    典型输出:
-    Open 93.184.216.34:80
-    Open 93.184.216.34:443
-    """
-    results = {}
-    for line in text.splitlines():
-        line = line.strip()
-        if not line.startswith('Open'):
-            continue
-        # 格式: "Open IP:PORT" 或 "[+] IP:PORT"
-        import re
-        match = re.search(r'(\d+\.\d+\.\d+\.\d+):(\d+)', line)
-        if match:
-            ip = match.group(1)
-            port = int(match.group(2))
-            if ip not in results:
-                results[ip] = []
-            results[ip].append(port)
-    return results
