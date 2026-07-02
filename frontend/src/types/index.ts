@@ -181,3 +181,83 @@ export interface TaskList {
   items: TaskInfo[]
   total: number
 }
+
+/** 定时任务规则 */
+export interface ScheduleTask {
+  id: number
+  name: string
+  target_raw: string
+  cron_expr: string
+  options: Record<string, any>
+  enabled: boolean
+  last_run_at: string | null
+  next_run_at: string | null
+  created_at: string | null
+}
+
+/** 定时任务列表 */
+export interface ScheduleList {
+  items: ScheduleTask[]
+  total: number
+}
+
+/** 创建/更新定时任务请求 */
+export interface ScheduleRequest {
+  name: string
+  target: string
+  cron_expr: string
+  options: Record<string, any>
+  enabled: boolean
+}
+
+// ── 扫描对比 Diff ──
+
+/** 单维度差异（端口/敏感路径等），added/removed 为原始项 */
+export interface DimensionDiff<T = any> {
+  added: T[]
+  removed: T[]
+}
+
+/** 端口差异（额外含 changed） */
+export interface PortDiff extends DimensionDiff {
+  changed: { key: (number | string)[]; from: Port; to: Port }[]
+}
+
+/** Web 站点差异（额外含 changed，changed 描述字段变化与技术栈增删） */
+export interface WebDiff extends DimensionDiff {
+  changed: { url: string; changes: Record<string, any> }[]
+}
+
+/** 主机维度差异 */
+export interface HostDiff {
+  key: string[]
+  hostname: string
+  ip: string
+  status: 'added' | 'removed' | 'changed'
+  ports: PortDiff
+  web: WebDiff
+  sensitive: DimensionDiff
+  js: DimensionDiff
+  banners: DimensionDiff
+}
+
+/** Diff 汇总统计 */
+export interface DiffSummary {
+  hosts_added: number
+  hosts_removed: number
+  hosts_changed: number
+  ports_added: number
+  ports_removed: number
+  ports_changed: number
+  web_added: number
+  web_removed: number
+  tech_changed: number
+}
+
+/** Diff 完整响应 */
+export interface ScanDiff {
+  scan_a: { scan_id: string; base_domain: string }
+  scan_b: { scan_id: string; base_domain: string }
+  summary: DiffSummary
+  hosts: HostDiff[]
+}

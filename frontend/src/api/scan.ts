@@ -1,5 +1,5 @@
 import api from './index'
-import type { ScanRequest, ScanResponse, ScanResult, HistoryList, AssetSummary, ToolStatus, Settings, TaskInfo, TaskList } from '../types'
+import type { ScanRequest, ScanResponse, ScanResult, HistoryList, AssetSummary, ToolStatus, Settings, TaskInfo, TaskList, ScheduleTask, ScheduleList, ScheduleRequest, ScanDiff } from '../types'
 
 /** 启动扫描 */
 export function startScan(req: ScanRequest): Promise<ScanResponse> {
@@ -69,4 +69,43 @@ export function cancelTask(taskId: string): Promise<{ ok: boolean }> {
 /** 删除任务 */
 export function deleteTask(taskId: string): Promise<{ ok: boolean }> {
   return api.delete(`/tasks/${taskId}`)
+}
+
+// ── 定时扫描任务 ──
+
+/** 获取定时任务列表 */
+export function getSchedules(): Promise<ScheduleList> {
+  return api.get('/schedules')
+}
+
+/** 创建定时任务 */
+export function createSchedule(req: ScheduleRequest): Promise<ScheduleTask> {
+  return api.post('/schedules', req)
+}
+
+/** 更新定时任务 */
+export function updateSchedule(id: number, data: Partial<ScheduleRequest>): Promise<ScheduleTask> {
+  return api.put(`/schedules/${id}`, data)
+}
+
+/** 删除定时任务 */
+export function deleteSchedule(id: number): Promise<{ ok: boolean }> {
+  return api.delete(`/schedules/${id}`)
+}
+
+/** 启用/暂停切换 */
+export function toggleSchedule(id: number, enabled: boolean): Promise<ScheduleTask> {
+  return api.post(`/schedules/${id}/toggle`, { enabled })
+}
+
+/** 立即手动触发一次 */
+export function runScheduleNow(id: number): Promise<{ ok: boolean }> {
+  return api.post(`/schedules/${id}/run`)
+}
+
+// ── 扫描结果对比 ──
+
+/** 对比两次扫描 */
+export function getDiff(scanA: string, scanB: string): Promise<ScanDiff> {
+  return api.get('/result/diff', { params: { a: scanA, b: scanB } })
 }

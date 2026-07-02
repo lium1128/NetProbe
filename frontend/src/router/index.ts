@@ -28,6 +28,18 @@ const router = createRouter({
       meta: { title: 'Scan Result' },
     },
     {
+      path: '/schedules',
+      name: 'schedules',
+      component: () => import('../views/Schedules.vue'),
+      meta: { title: 'Scheduled Scans', icon: 'Timer' },
+    },
+    {
+      path: '/diff',
+      name: 'scan-diff',
+      component: () => import('../views/ScanDiff.vue'),
+      meta: { title: 'Compare Scans', icon: 'DataExchange' },
+    },
+    {
       path: '/assets',
       name: 'assets',
       component: () => import('../views/Assets.vue'),

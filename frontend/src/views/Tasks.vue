@@ -25,6 +25,14 @@
           <el-option :label="t('history.statusRunning')" value="running" />
         </el-select>
         <el-button type="primary" @click="loadData">{{ t('common.search') }}</el-button>
+        <el-button
+          type="warning"
+          :disabled="!canCompare"
+          @click="goCompare"
+        >
+          <el-icon><DataAnalysis /></el-icon>
+          {{ t('diff.compare') }}
+        </el-button>
       </div>
 
       <div v-if="loading && !items.length" class="task-loading">
@@ -33,7 +41,8 @@
         <div class="np-skeleton" style="height: 44px" />
       </div>
       <div class="np-table-wrapper" v-else-if="items.length">
-        <el-table :data="items" style="width: 100%" row-class-name="task-row">
+        <el-table :data="items" style="width: 100%" row-class-name="task-row" @selection-change="onSelectionChange">
+          <el-table-column type="selection" width="42" :selectable="canSelectRow" />
           <el-table-column :label="t('tasks.name')" min-width="140">
             <template #default="{ row }">
               <span class="task-name">{{ row.name || row.base_domain || row.target_raw }}</span>
@@ -201,13 +210,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { startScan, getHistory, cancelTask, deleteHistory } from '../api/scan'
 import type { HistoryItem, ScanRequest } from '../types'
 
 const { t } = useI18n()
+const router = useRouter()
 
 // List
 const items = ref<HistoryItem[]>([])
@@ -218,6 +229,21 @@ const loading = ref(true)
 const query = ref('')
 const statusFilter = ref('')
 let pollTimer: ReturnType<typeof setInterval> | null = null
+
+// 多选对比 Diff
+const selected = ref<HistoryItem[]>([])
+function canSelectRow(row: HistoryItem) {
+  return row.status === 'done'
+}
+function onSelectionChange(rows: HistoryItem[]) {
+  selected.value = rows
+}
+const canCompare = computed(() => selected.value.length === 2)
+function goCompare() {
+  if (!canCompare.value) return
+  const [a, b] = selected.value
+  router.push({ path: '/diff', query: { a: a.scan_id, b: b.scan_id } })
+}
 
 // Form
 const showForm = ref(false)

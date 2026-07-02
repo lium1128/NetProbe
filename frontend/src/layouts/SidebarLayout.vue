@@ -111,6 +111,7 @@ const drawerOpen = ref(false)
 const navItems = [
   { path: '/', icon: 'Odometer', labelKey: 'nav.dashboard' },
   { path: '/tasks', icon: 'List', labelKey: 'nav.tasks' },
+  { path: '/schedules', icon: 'Timer', labelKey: 'nav.schedules' },
   { path: '/assets', icon: 'Grid', labelKey: 'nav.assets' },
   { path: '/settings', icon: 'Setting', labelKey: 'nav.settings' },
 ]
@@ -139,6 +140,10 @@ const breadcrumbs = computed(() => {
   } else if (route.path.startsWith('/scan/')) {
     crumbs.push({ label: t('breadcrumb.dashboard'), path: '/' })
     crumbs.push({ label: t('breadcrumb.liveScan') })
+  } else if (route.path === '/schedules') {
+    crumbs.push({ label: t('breadcrumb.schedules') })
+  } else if (route.path === '/diff') {
+    crumbs.push({ label: t('breadcrumb.diff') })
   } else if (route.path === '/assets') {
     crumbs.push({ label: t('breadcrumb.assets') })
   } else if (route.path === '/settings') {
