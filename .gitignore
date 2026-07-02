@@ -1,31 +1,43 @@
+# ── Python ──
 __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
-dist/
-build/
-.eggs/
 *.egg
 
 venv/
 .venv/
 env/
 
+# ── 扫描输出（保留在 output/ 目录下，不再用全局通配符误伤配置文件）──
 output/
-*.txt
-*.csv
-*.json
-!requirements.txt
 
+# ── 数据库与运行时数据 ──
+data/
+instance/
+
+# ── 前端 ──
+frontend/node_modules/
+frontend/dist/
+frontend/*.local
+
+# ── 日志与临时 ──
+*.log
+output/*.txt
+output/*.csv
+output/*.json
+
+# ── IDE / 编辑器 ──
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 
+# ── 系统 / 环境 ──
 .env
 .DS_Store
 Thumbs.db
 
-*.log
+# ── 工具 ──
 .claude
