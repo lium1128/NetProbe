@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse
 from ..db import SessionLocal
 from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding
 from ..services.scan_service import get_task
-from ..services.diff_service import compute_diff
+from ..services.diff_service import compute_diff, compute_timeline
 from netprobe.formatter import save_results
 
 router = APIRouter(tags=["result"])
@@ -25,6 +25,14 @@ def diff_results(a: str, b: str):
     if not a or not b:
         raise HTTPException(400, "query params 'a' and 'b' are required")
     return compute_diff(a, b)
+
+
+@router.get("/result/timeline")
+def get_timeline(target: str):
+    """资产生命周期时间线：同目标多次扫描的资产变化趋势。"""
+    if not target or not target.strip():
+        raise HTTPException(400, "query param 'target' is required")
+    return compute_timeline(target.strip())
 
 
 @router.get("/result/{scan_id}")
@@ -72,6 +80,9 @@ def get_result(scan_id: str):
                         "headers": json.loads(w.headers_json) if w.headers_json else {},
                         "tech": json.loads(w.tech_json) if w.tech_json else [],
                         "ssl": json.loads(w.ssl_json) if w.ssl_json and w.ssl_json != "null" else None,
+                        "favicon_hash": w.favicon_hash or "",
+                        "cdn": w.cdn_detected or "",
+                        "screenshot": w.screenshot_path or "",
                     }
                     for w in host.web_info_list
                 ],
@@ -104,8 +115,8 @@ def get_result(scan_id: str):
 @router.get("/download/{scan_id}/{fmt}")
 def download_result(scan_id: str, fmt: str):
     """下载报告 (txt/csv/json/pdf)。"""
-    if fmt not in ("txt", "csv", "json", "pdf"):
-        raise HTTPException(400, "fmt must be one of: txt, csv, json, pdf")
+    if fmt not in ("txt", "csv", "json", "pdf", "html"):
+        raise HTTPException(400, "fmt must be one of: txt, csv, json, pdf, html")
 
     # 获取数据
     result = get_result(scan_id)
@@ -127,6 +138,7 @@ def download_result(scan_id: str, fmt: str):
             "csv": "text/csv",
             "json": "application/json",
             "pdf": "application/pdf",
+            "html": "text/html",
         }
         filename = f"netprobe_{scan_id}.{fmt}"
         return FileResponse(filepath, media_type=media_types[fmt], filename=filename)

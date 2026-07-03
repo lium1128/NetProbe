@@ -280,3 +280,61 @@ def list_correlations(corr_type: str | None = None) -> dict:
     # 统计
     total = sum(len(v) for v in result.values())
     return {"groups": result, "total": total}
+
+
+def build_graph() -> dict:
+    """把关联簇转换为 ECharts 力导向图数据结构。
+
+    返回 {nodes:[{id,name,category,value}], links:[{source,target}], categories:[...]}
+    节点类型(category): host / ip / cert / tech / favicon
+    每个 cluster 的 key 作为中心节点，members 作为叶子节点连边。
+    """
+    data = list_correlations()
+    nodes_map: dict[str, dict] = {}  # id -> node
+    links: list[dict] = []
+    categories = [
+        {"name": "host"}, {"name": "ip"}, {"name": "cert"},
+        {"name": "tech"}, {"name": "favicon"},
+    ]
+    cat_index = {"host": 0, "ip": 1, "cert": 2, "tech": 3, "favicon": 4}
+
+    def _add_node(node_id: str, name: str, category: str):
+        if node_id not in nodes_map:
+            nodes_map[node_id] = {
+                "id": node_id, "name": name,
+                "category": cat_index.get(category, 0),
+                "symbolSize": 20,
+            }
+        else:
+            # 节点已存在，增大体积（关联越多越大）
+            nodes_map[node_id]["symbolSize"] = min(nodes_map[node_id]["symbolSize"] + 5, 50)
+
+    def _add_link(source: str, target: str):
+        pair = (source, target)
+        if pair not in {(l["source"], l["target"]) for l in links}:
+            links.append({"source": source, "target": target})
+
+    for corr_type, clusters in data["groups"].items():
+        for cluster in clusters:
+            key = cluster.get("key", "")
+            if not key:
+                continue
+            # 中心节点（关联维度节点）
+            center_id = f"{corr_type}:{key}"
+            center_name = key[:30]
+            _add_node(center_id, center_name, corr_type if corr_type in cat_index else "host")
+
+            # 成员节点（host/ip）
+            for m in cluster.get("members", []):
+                hostname = m.get("hostname", "")
+                ip = m.get("ip", "")
+                member_id = f"host:{hostname}:{ip}"
+                member_name = hostname or ip
+                _add_node(member_id, member_name, "host")
+                _add_link(center_id, member_id)
+
+    return {
+        "nodes": list(nodes_map.values()),
+        "links": links,
+        "categories": categories,
+    }

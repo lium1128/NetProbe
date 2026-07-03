@@ -48,6 +48,8 @@ def ensure_schema():
     _add_column("web_info", "favicon_hash", "VARCHAR(32)", "''")
     # v2.4: web_info cdn_detected
     _add_column("web_info", "cdn_detected", "VARCHAR(64)", "''")
+    # v2.5: web_info screenshot_path
+    _add_column("web_info", "screenshot_path", "VARCHAR(255)", "''")
     # v2.4: hosts risk_score / risk_factors_json
     _add_column("hosts", "risk_score", "INTEGER", "0")
     _add_column("hosts", "risk_factors_json", "TEXT", "'{}'")

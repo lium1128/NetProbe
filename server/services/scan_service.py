@@ -322,6 +322,7 @@ def _write_results_to_db(scan_id: str, hosts: list[dict], base_domain: str):
                     ssl_json=json.dumps(w.get("ssl"), ensure_ascii=False) if w.get("ssl") else "null",
                     favicon_hash=w.get("favicon_hash", ""),
                     cdn_detected=w.get("cdn", ""),
+                    screenshot_path=w.get("screenshot_path", ""),
                 ))
                 total_web += 1
 

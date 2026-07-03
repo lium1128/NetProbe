@@ -109,6 +109,8 @@ def save_results(
         save_to_json(hosts, filepath, base_domain)
     elif fmt == 'pdf':
         save_to_pdf(hosts, filepath, base_domain)
+    elif fmt == 'html':
+        save_to_html(hosts, filepath, base_domain)
     else:
         save_to_txt(hosts, filepath, base_domain)
 
@@ -385,3 +387,10 @@ def save_to_pdf(hosts: list[dict], filepath: str, base_domain: str) -> None:
         page.pdf(path=filepath, format='A4',
                  margin={'top': '15mm', 'bottom': '15mm', 'left': '12mm', 'right': '12mm'})
         browser.close()
+
+
+def save_to_html(hosts: list[dict], filepath: str, base_domain: str) -> None:
+    """导出独立可分享的 HTML 报告（复用 PDF 的 HTML 模板，不转 PDF）。"""
+    html_content = _build_report_html(hosts, base_domain)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(html_content)

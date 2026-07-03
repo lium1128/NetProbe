@@ -23,6 +23,7 @@ from .web_probe import probe_web_for_host
 from .banner_grab import grab_banners_for_host
 from .sensitive_probe import probe_sensitive_for_hosts
 from .risk import compute_risk_score
+from .screenshot import capture_screenshot
 from .tools.crtsh import query_crtsh, query_crtsh_certificates
 from .tools.fofa import query_fofa
 from .tools.hunter import query_hunter
@@ -691,6 +692,23 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         emit('progress', text=f'  ✓ 风险评分完成: {high_risk} 台高危主机 ({elapsed:.1f}s)')
     else:
         emit('progress', text=f'  ✓ 风险评分完成: 无高危主机 ({elapsed:.1f}s)')
+
+    # ── Web 截图（仅深度模式，复用 Playwright）──
+    if options.get('screenshot'):
+        emit('progress', text=ph('Web 站点截图（深度模式）...'))
+        t0 = time.time()
+        shot_count = 0
+        for host in all_hosts:
+            for w in host.get('web_info', []):
+                url = w.get('url', '')
+                if url:
+                    hint = f"{host.get('hostname','')}_{w.get('port','')}"
+                    path = capture_screenshot(url, hint)
+                    if path:
+                        w['screenshot_path'] = path
+                        shot_count += 1
+        elapsed = time.time() - t0
+        emit('progress', text=f'  ✓ 截图完成: {shot_count} 张 ({elapsed:.1f}s)')
 
     # ── 种子扩展（单层 pivot: IP→ASN→网段→反向DNS 发现新域名）──
     if not options.get('no_seed_expansion'):
