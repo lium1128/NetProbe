@@ -64,6 +64,12 @@ const router = createRouter({
       meta: { title: 'Timeline', icon: 'Timer' },
     },
     {
+      path: '/alerts',
+      name: 'alerts',
+      component: () => import('../views/Alerts.vue'),
+      meta: { title: 'Alerts', icon: 'Bell' },
+    },
+    {
       path: '/assets',
       name: 'assets',
       component: () => import('../views/Assets.vue'),

@@ -113,13 +113,13 @@ NetProbe 不做"又一个安全扫描器"，而要做 **开源领域唯一的一
 - [x] **HTML 报告** — 独立可分享的 HTML 格式报告，复用 PDF 模板（formatter.save_to_html + download 端点 + 前端下载项）
 - [x] **资产生命周期仪表盘** — 同目标多次扫描的资产新增/消失/变化趋势（diff_service.compute_timeline + ECharts 折线图 + Timeline.vue）
 
-### v2.6 — 告警与集成
+### v2.6 — 告警与集成 ✅ 已完成
 
-- [ ] **多渠道通知** — 邮件、Slack、企业微信、钉钉、Webhook 推送
-- [ ] **告警规则** — 新开放端口、新子域名、高危路径、证书过期、技术栈变化
-- [ ] **子域名接管检测** — 检测 CNAME 指向未注册 SaaS 的 dangling DNS 记录
-- [ ] **CI/CD 集成** — `netprobe ci` 命令，发现新高危资产时退出码非零，支持 DevSecOps 管道
-- [ ] **REST API 完善** — 完整的 CRUD API，支持 SIEM / SOAR 集成
+- [x] **多渠道通知** — Webhook 推送（notify_service + settings.notifications 配置，可扩展邮件/钉钉/Slack）
+- [x] **告警规则** — 新端口/新子域名/高危路径/证书过期/技术栈变化 5 类规则（alert_service 定时扫描后自动检查，复用 compute_diff，命中触发通知 + 写历史）
+- [x] **子域名接管检测** — CNAME 指向未注册 SaaS 的 dangling DNS 检测（takeover_fingerprints.json 10 种 SaaS 指纹 + takeover_detect + engine 接入）
+- [x] **CI/CD 集成** — `netprobe ci` 子命令，发现高危资产（风险分超阈值/高危敏感路径）退出码非零（main.py 重构 subparsers，复用 scan_all_targets）
+- [x] **REST API 完善** — alert/notify CRUD 端点（GET/POST/DELETE /api/alerts + 触发历史，照 schedules.py 模板）
 
 ### v3.0 — 协作与高级功能
 

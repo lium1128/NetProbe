@@ -115,6 +115,28 @@ export function getTimeline(target: string): Promise<any> {
   return api.get('/result/timeline', { params: { target } })
 }
 
+// ── 告警规则 ──
+
+/** 获取告警规则列表 */
+export function getAlerts(): Promise<{ items: any[]; total: number }> {
+  return api.get('/alerts')
+}
+
+/** 创建告警规则 */
+export function createAlert(req: { name: string; condition_type: string; target?: string; threshold?: string; enabled?: boolean }): Promise<any> {
+  return api.post('/alerts', req)
+}
+
+/** 删除告警规则 */
+export function deleteAlert(id: number): Promise<{ ok: boolean }> {
+  return api.delete(`/alerts/${id}`)
+}
+
+/** 获取告警触发历史 */
+export function getAlertEvents(limit = 50): Promise<{ items: any[]; total: number }> {
+  return api.get('/alerts/events', { params: { limit } })
+}
+
 // ── 资产关联 ──
 
 /** 获取资产关联簇 */
