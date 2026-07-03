@@ -6,7 +6,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import requests as req_lib
 
-from .dns_utils import is_subdomain_of, resolve_a_record, reverse_dns_lookup
+from .dns_utils import (
+    is_subdomain_of, resolve_a_record, reverse_dns_lookup,
+    resolve_dns_records, get_nameservers, try_zone_transfer,
+)
 from .scanner import check_nmap_available, run_dns_brute, run_port_scan, resolve_ports
 from .tools.dnsx import run_dnsx
 from .tools.httpx_tool import run_httpx
@@ -22,6 +25,7 @@ from .sensitive_probe import probe_sensitive_for_hosts
 from .tools.crtsh import query_crtsh, query_crtsh_certificates
 from .tools.fofa import query_fofa
 from .tools.hunter import query_hunter
+from .tools.whois import query_rdap_domain, query_rdap_ip
 from .wordlist import get_default_wordlist_path, load_external_wordlist
 
 
@@ -320,6 +324,37 @@ def do_passive_recon(base_domain: str, emit) -> list[dict]:
                 new += 1
         emit('progress', text=f'  [Hunter] 发现 {new} 个子域名')
 
+    # DNS 记录收集（MX/NS/CNAME/TXT，情报线索）
+    try:
+        mx = resolve_dns_records(base_domain, 'MX')
+        if mx:
+            emit('progress', text=f'  [DNS] MX: {", ".join(mx[:3])}')
+        ns_records = get_nameservers(base_domain)
+        if ns_records:
+            emit('progress', text=f'  [DNS] NS: {", ".join(ns_records[:3])}')
+        txt = resolve_dns_records(base_domain, 'TXT')
+        if txt:
+            emit('progress', text=f'  [DNS] TXT 记录 {len(txt)} 条')
+    except Exception as e:
+        emit('progress', text=f'  [DNS] 记录查询失败: {e}')
+
+    # 尝试 DNS 区域传送（绝大多数域名会拒绝，仅线索）
+    try:
+        zone = try_zone_transfer(base_domain, timeout=8)
+        if zone:
+            emit('progress', text=f'  [DNS] AXFR 成功({zone["ns"]})，获取 {zone["count"]} 条记录')
+            # 从 zone 记录里提取可能的子域名作为线索
+            for rec in zone.get('records', []):
+                if rec['type'] in ('A', 'CNAME') and rec['name'] and rec['name'] != base_domain:
+                    h = rec['name'].lower()
+                    if h.endswith('.' + base_domain) and h not in seen:
+                        seen.add(h)
+                        results.append({'hostname': h, 'ip': rec['value'] if rec['type'] == 'A' else '', 'source': 'axfr'})
+        else:
+            emit('progress', text='  [DNS] AXFR 被拒绝（正常）')
+    except Exception as e:
+        emit('progress', text=f'  [DNS] AXFR 失败: {e}')
+
     return results
 
 
@@ -329,6 +364,81 @@ def _is_cancelled(options: dict) -> bool:
     """检查是否收到取消信号。"""
     cb = options.get('_cancel_check')
     return cb() if cb else False
+
+
+def do_seed_expansion(hosts: list[dict], options: dict, emit):
+    """种子扩展（单层 pivot）: IP→ASN→网段→反向DNS 发现新域名。
+
+    流程:
+    1. 收集 hosts 里所有唯一 IP
+    2. 对每个 IP 查 ASN/网段（ipwhois RDAP）
+    3. 对发现的网段，反向 DNS 扫前若干 IP 发现新 hostname
+    4. 新发现的 hostname 加入 hosts（单层，不递归）
+
+    防无限循环: 限单层、seen 去重、每网段最多扫 20 IP。
+    """
+    import ipaddress
+
+    try:
+        from ipwhois import IPWhois
+    except ImportError:
+        emit('progress', text='  [种子扩展] ipwhois 未安装，跳过')
+        return
+
+    if _is_cancelled(options):
+        return
+
+    emit('progress', text='  [种子扩展] 分析 IP 的 ASN/网段 ...')
+    seen_ips = {h.get('ip') for h in hosts if h.get('ip')}
+    seen_hostnames = {h.get('hostname', '').lower() for h in hosts}
+    discovered = []
+
+    for ip in list(seen_ips):
+        if _is_cancelled(options):
+            break
+        try:
+            lookup = IPWhois(ip).lookup_rdap(rate_limit_timeout=15)
+        except Exception:
+            continue
+
+        asn = lookup.get('asn') or ''
+        cidr = lookup.get('asn_cidr') or ''
+        if not cidr:
+            continue
+
+        emit('progress', text=f'    {ip} → AS{asn} {cidr} ({(lookup.get("asn_description") or "")[:40]})')
+
+        # 对网段内 IP 反向 DNS，发现新 hostname（最多扫 20 个）
+        try:
+            net = ipaddress.ip_network(cidr, strict=False)
+        except ValueError:
+            continue
+
+        scanned = 0
+        for candidate_ip in net.hosts():
+            if scanned >= 20 or _is_cancelled(options):
+                break
+            scanned += 1
+            candidate = str(candidate_ip)
+            if candidate in seen_ips:
+                continue
+            hostname = reverse_dns_lookup(candidate)
+            if hostname and hostname.lower() not in seen_hostnames:
+                seen_hostnames.add(hostname.lower())
+                seen_ips.add(candidate)
+                discovered.append({'hostname': hostname, 'ip': candidate, 'source': 'seed_expansion'})
+
+    if discovered:
+        for d in discovered:
+            hosts.append({
+                'hostname': d['hostname'],
+                'ip': d['ip'],
+                'ports': [], 'banners': [], 'web_info': [],
+                'sensitive': [], 'js_findings': [], '_whois': [],
+            })
+        emit('progress', text=f'  ✓ 种子扩展完成: 发现 {len(discovered)} 个新域名（单层 pivot）')
+    else:
+        emit('progress', text='  ✓ 种子扩展完成: 无新发现')
 
 
 def scan_target(target: str, options: dict, emit) -> list[dict]:
@@ -526,6 +636,41 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         emit('progress', text=f'  ✓ Banner 抓取完成: {banner_total} 条 ({elapsed:.1f}s)')
     else:
         emit('progress', text=f'  ✓ Banner 抓取完成: 无结果 ({elapsed:.1f}s)')
+
+    # ── WHOIS/RDAP 查询（域名注册信息 + IP 的 ASN/网段）──
+    emit('progress', text=ph('WHOIS/RDAP 查询 ...'))
+    t0 = time.time()
+    whois_count = 0
+    queried_domains = set()
+    queried_ips = set()
+    for host in all_hosts:
+        hostname = host.get('hostname', '')
+        ip = host.get('ip', '')
+        host['_whois'] = []
+        # 域名 RDAP（同域名只查一次）
+        root = extract_root_domain(hostname) if hostname else ''
+        if root and root not in queried_domains:
+            queried_domains.add(root)
+            rdap = query_rdap_domain(root)
+            if rdap:
+                host['_whois'].append({'type': 'domain', 'target': root, 'data': rdap})
+                whois_count += 1
+        # IP 的 ASN/网段（同 IP 只查一次）
+        if ip and ip not in queried_ips:
+            queried_ips.add(ip)
+            rdap_ip = query_rdap_ip(ip)
+            if rdap_ip:
+                host['_whois'].append({'type': 'ip', 'target': ip, 'data': rdap_ip})
+                whois_count += 1
+    elapsed = time.time() - t0
+    if whois_count:
+        emit('progress', text=f'  ✓ WHOIS 查询完成: {whois_count} 条 ({elapsed:.1f}s)')
+    else:
+        emit('progress', text=f'  ✓ WHOIS 查询完成: 无结果 ({elapsed:.1f}s)')
+
+    # ── 种子扩展（单层 pivot: IP→ASN→网段→反向DNS 发现新域名）──
+    if not options.get('no_seed_expansion'):
+        do_seed_expansion(all_hosts, options, emit)
 
     # ── 目标扫描总结 ──
     total_elapsed = time.time() - target_start
