@@ -105,13 +105,13 @@ NetProbe 不做"又一个安全扫描器"，而要做 **开源领域唯一的一
 - [x] **威胁情报增强** — 复用 Hunter API 的 risk_level 字段标记高危资产（>=2 计入风险评分）
 - [x] **CDN 背后溯源** — HTTP 头特征检测（CF-Ray/X-Amz-Cf-Id 等）+ 本地 CDN IP 段库（Cloudflare/AWS/阿里云/腾讯云等）双重识别
 
-### v2.5 — 可视化与报告
+### v2.5 — 可视化与报告 ✅ 已完成
 
-- [ ] **资产关系图谱** — 域名 ↔ IP ↔ 证书 ↔ ASN ↔ 组织的关联关系可视化（ECharts）
-- [ ] **交互式统计图表** — 端口分布、技术栈统计、资产拓扑图
-- [ ] **Web 截图** — 对探测到的 Web 站点自动截图
-- [ ] **HTML 报告** — 独立可分享的 HTML 格式报告
-- [ ] **资产生命周期仪表盘** — 资产趋势图：新增/消失/变化的时间线
+- [x] **资产关系图谱** — 域名 ↔ IP ↔ 证书 ↔ 技术栈 ↔ Favicon 的关联关系可视化（ECharts 力导向图，correlation_service.build_graph + Graph.vue）
+- [x] **交互式统计图表** — 风险等级分布饼图、端口数量分布柱状图、Top 资产条形图（ECharts + Stats.vue）
+- [x] **Web 截图** — 深度模式开关，复用 Playwright 对 Web 站点全页截图，存 data/screenshots/（screenshot.py + engine 深度模式 + DB screenshot_path 列）
+- [x] **HTML 报告** — 独立可分享的 HTML 格式报告，复用 PDF 模板（formatter.save_to_html + download 端点 + 前端下载项）
+- [x] **资产生命周期仪表盘** — 同目标多次扫描的资产新增/消失/变化趋势（diff_service.compute_timeline + ECharts 折线图 + Timeline.vue）
 
 ### v2.6 — 告警与集成
 
