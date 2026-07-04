@@ -14,6 +14,7 @@ export interface ScanRequest {
   custom_ports?: string
   screenshot?: boolean
   scan_mode?: string
+  engine_id?: number
 }
 
 /** 扫描响应 */

@@ -12,7 +12,21 @@ from netprobe.formatter import save_results
 
 from ..config import DATA_DIR
 from ..db import SessionLocal
-from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding, WhoisRecord, Vulnerability
+from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding, WhoisRecord, Vulnerability, ScanEngine
+
+
+def _load_engine_config(engine_id: int) -> dict | None:
+    """加载扫描引擎的 config（含 stages/工具/参数）。"""
+    db = SessionLocal()
+    try:
+        engine = db.query(ScanEngine).filter(ScanEngine.id == engine_id).first()
+        if not engine or not engine.config_json:
+            return None
+        return json.loads(engine.config_json)
+    except (json.JSONDecodeError, Exception):
+        return None
+    finally:
+        db.close()
 from ..utils import to_iso_z
 
 # 全局任务存储（内存 + DB 双写）
@@ -153,6 +167,18 @@ def start_scan(raw_targets: str, options: dict) -> str:
 
     # 把 UI 配置的 API key 注入环境变量，让 netprobe 工具（fofa/hunter/shodan）能读到
     _inject_api_keys()
+
+    # 如果指定了扫描引擎，加载引擎 config 合并进 options（引擎的 stages/工具/参数覆盖请求字段）
+    engine_id = options.get("engine_id")
+    if engine_id:
+        engine_config = _load_engine_config(engine_id)
+        if engine_config:
+            # 引擎 config 的工具/参数字段覆盖 options（引擎优先级高于请求默认值）
+            for k, v in engine_config.items():
+                if k == "stages":
+                    options["stages"] = v
+                elif v not in (None, "", []):
+                    options[k] = v
 
     _tasks[task_id] = {
         "id": task_id,

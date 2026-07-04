@@ -18,6 +18,7 @@ class ScanRequest(BaseModel):
     custom_ports: str = Field(default="", description="自定义端口（port_preset=custom 时使用）")
     screenshot: bool = Field(default=False, description="深度模式：对 Web 站点截图（使用 Playwright，较慢）")
     scan_mode: str = Field(default="", description="扫描模式: quick / normal / deep")
+    engine_id: int | None = Field(default=None, description="扫描引擎 ID（指定后引擎 config 覆盖各阶段开关/工具/参数）")
 
 
 class ScanResponse(BaseModel):

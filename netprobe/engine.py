@@ -382,6 +382,38 @@ def _is_cancelled(options: dict) -> bool:
     return cb() if cb else False
 
 
+# ── 扫描阶段开关 ───────────────────────────────────────────
+# 统一的阶段启停控制。支持两种配置方式（向后兼容）：
+# 1. 新版: options['stages'] = {subdomain:bool, port:bool, web:bool, ...}
+# 2. 旧版: options['no_dns_brute']/['no_web'] 等布尔标志
+# 阶段名: subdomain / port / web / fingerprint / sensitive / takeover / js / vuln / screenshot / banner
+# 默认行为：未配置 stages 时，全部启用（向后兼容）
+_DEFAULT_STAGES = {
+    'subdomain': True, 'port': True, 'web': True, 'fingerprint': True,
+    'sensitive': True, 'takeover': True, 'js': True, 'vuln': True,
+    'screenshot': False, 'banner': True,
+}
+
+
+def _stage_enabled(options: dict, stage: str) -> bool:
+    """检查某扫描阶段是否启用。
+
+    优先读 options['stages'][stage]，回退到旧版 no_xxx 标志，再回退默认值。
+    """
+    stages = options.get('stages')
+    if isinstance(stages, dict) and stage in stages:
+        return bool(stages[stage])
+    # 旧版兼容：no_dns_brute 关闭 subdomain，no_web 关闭 web 系列
+    if stage == 'subdomain' and options.get('no_dns_brute'):
+        return False
+    if stage in ('web', 'fingerprint', 'sensitive', 'takeover', 'js', 'vuln') and options.get('no_web'):
+        return False
+    # screenshot 仅 deep 模式或显式开启
+    if stage == 'screenshot':
+        return options.get('scan_mode') == 'deep' or bool(stages and stages.get('screenshot'))
+    return _DEFAULT_STAGES.get(stage, True)
+
+
 def do_seed_expansion(hosts: list[dict], options: dict, emit):
     """种子扩展（单层 pivot）: IP→ASN→网段→反向DNS 发现新域名。
 
@@ -467,16 +499,29 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         emit('progress', text=f'  跳过无效目标 {target}: {e}')
         return []
 
-    skip_dns = options.get('no_dns_brute')
-    skip_web = options.get('no_web')
+    skip_dns = not _stage_enabled(options, 'subdomain')
+    skip_web = not _stage_enabled(options, 'web')
 
-    # 计算阶段数
-    phases = 2  # DNS解析 + 端口扫描 始终执行
-    if not skip_dns:
+    # 计算阶段数（根据启用的阶段动态计算）
+    phases = 1  # DNS解析 始终执行
+    if _stage_enabled(options, 'subdomain'):
         phases += 2  # 被动收集 + 子域名枚举
-    if not skip_web:
-        phases += 3  # Web探测 + 敏感路径 + JS分析
-    phases += 1  # Banner
+    if _stage_enabled(options, 'port'):
+        phases += 1
+    if _stage_enabled(options, 'web'):
+        phases += 1
+    if _stage_enabled(options, 'fingerprint'):
+        phases += 0  # 指纹识别在 Web 探测阶段内联，不单独计数
+    if _stage_enabled(options, 'sensitive'):
+        phases += 1
+    if _stage_enabled(options, 'takeover'):
+        phases += 1
+    if _stage_enabled(options, 'js'):
+        phases += 1
+    if _stage_enabled(options, 'vuln'):
+        phases += 1
+    if _stage_enabled(options, 'banner'):
+        phases += 1
     phase_num = [0]
     def ph(text):
         phase_num[0] += 1
@@ -523,7 +568,7 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
 
     # ── 子域名枚举 ──
     subdomains = []
-    if not skip_dns:
+    if _stage_enabled(options, 'subdomain'):
         emit('progress', text=ph(f'主动子域名枚举 ({base_domain}) ...'))
         t0 = time.time()
         raw = do_subdomain_enum(base_domain, options, emit)
@@ -561,28 +606,32 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
     emit('progress', text=f'  → 目标主机: {len(all_hosts)} 台 ({", ".join(h["ip"] for h in all_hosts[:5])}{"..." if len(all_hosts) > 5 else ""})')
 
     # ── 端口扫描 ──
-    emit('progress', text=ph(f'端口扫描 ({len(all_hosts)} 台主机) ...'))
-    t0 = time.time()
-    scan_results = do_port_scan(all_hosts, options, emit)
-    for host in all_hosts:
-        ip = host['ip']
-        if ip in scan_results:
-            data = scan_results[ip]
-            host['ports'] = data if isinstance(data, list) else data.get('ports', [])
-            if isinstance(data, dict) and data.get('os'):
-                host['os'] = data['os']
-        else:
+    if _stage_enabled(options, 'port'):
+        emit('progress', text=ph(f'端口扫描 ({len(all_hosts)} 台主机) ...'))
+        t0 = time.time()
+        scan_results = do_port_scan(all_hosts, options, emit)
+        for host in all_hosts:
+            ip = host['ip']
+            if ip in scan_results:
+                data = scan_results[ip]
+                host['ports'] = data if isinstance(data, list) else data.get('ports', [])
+                if isinstance(data, dict) and data.get('os'):
+                    host['os'] = data['os']
+            else:
+                host['ports'] = []
+        total_open = sum(len(h.get('ports', [])) for h in all_hosts)
+        elapsed = time.time() - t0
+        emit('progress', text=f'  ✓ 端口扫描完成: {total_open} 个开放端口 ({elapsed:.1f}s)')
+    else:
+        for host in all_hosts:
             host['ports'] = []
-    total_open = sum(len(h.get('ports', [])) for h in all_hosts)
-    elapsed = time.time() - t0
-    emit('progress', text=f'  ✓ 端口扫描完成: {total_open} 个开放端口 ({elapsed:.1f}s)')
 
     if _is_cancelled(options):
         emit('progress', text='  扫描已取消')
         return all_hosts
 
-    # ── Web 探测 ──
-    if not skip_web:
+    # ── Web 探测 ──（含指纹识别，内联在 web_probe）
+    if _stage_enabled(options, 'web'):
         emit('progress', text=ph(f'Web 站点探测 ({len(all_hosts)} 台主机) ...'))
         t0 = time.time()
         do_web_probe(all_hosts, options, emit)
@@ -598,7 +647,7 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         return all_hosts
 
     # ── 敏感路径探测 ──
-    if not skip_web:
+    if _stage_enabled(options, 'sensitive'):
         emit('progress', text=ph('敏感路径探测 ...'))
         t0 = time.time()
         probe_sensitive_for_hosts(all_hosts)
@@ -610,7 +659,7 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             emit('progress', text=f'  ✓ 敏感路径探测完成: 无发现 ({elapsed:.1f}s)')
 
     # ── 子域名接管检测 ──
-    if not skip_web:
+    if _stage_enabled(options, 'takeover'):
         emit('progress', text=ph('子域名接管检测 ...'))
         t0 = time.time()
         takeover_count = detect_takeover_for_hosts(all_hosts)
@@ -621,7 +670,7 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             emit('progress', text=f'  ✓ 接管检测完成: 无发现 ({elapsed:.1f}s)')
 
     # ── JS 文件分析 ──
-    if not skip_web:
+    if _stage_enabled(options, 'js'):
         from .js_analyzer import analyze_js_for_hosts
         emit('progress', text=ph('JavaScript 文件分析 ...'))
         t0 = time.time()
@@ -644,7 +693,7 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         return all_hosts
 
     # ── 漏洞扫描（nuclei，对 Web 站点批量检测）──
-    if not skip_web:
+    if _stage_enabled(options, 'vuln'):
         emit('progress', text=ph('漏洞扫描 (nuclei) ...'))
         t0 = time.time()
         # 收集所有 Web 站点 URL
@@ -705,27 +754,31 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             emit('progress', text='  ✓ 漏洞扫描跳过: 无 Web 站点')
 
     # ── Banner 抓取 ──
-    emit('progress', text=ph('Banner 抓取 ...'))
-    t0 = time.time()
+    if _stage_enabled(options, 'banner'):
+        emit('progress', text=ph('Banner 抓取 ...'))
+        t0 = time.time()
 
-    def _grab_host_banners(host):
-        open_ports = [p['port'] for p in host.get('ports', [])]
-        return host, grab_banners_for_host(host['ip'], open_ports)
+        def _grab_host_banners(host):
+            open_ports = [p['port'] for p in host.get('ports', [])]
+            return host, grab_banners_for_host(host['ip'], open_ports)
 
-    with ThreadPoolExecutor(max_workers=8) as pool:
-        futures = {pool.submit(_grab_host_banners, h): h for h in all_hosts}
-        for future in as_completed(futures):
-            host, banners = future.result()
-            host['banners'] = banners
-            # Phase E: banner 版本回填 ports（仅填 nmap 未识别的空值，不覆盖权威数据）
-            _backfill_ports_from_banners(host, banners)
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            futures = {pool.submit(_grab_host_banners, h): h for h in all_hosts}
+            for future in as_completed(futures):
+                host, banners = future.result()
+                host['banners'] = banners
+                # Phase E: banner 版本回填 ports（仅填 nmap 未识别的空值，不覆盖权威数据）
+                _backfill_ports_from_banners(host, banners)
 
-    banner_total = sum(len(h.get('banners', [])) for h in all_hosts)
-    elapsed = time.time() - t0
-    if banner_total:
-        emit('progress', text=f'  ✓ Banner 抓取完成: {banner_total} 条 ({elapsed:.1f}s)')
+        banner_total = sum(len(h.get('banners', [])) for h in all_hosts)
+        elapsed = time.time() - t0
+        if banner_total:
+            emit('progress', text=f'  ✓ Banner 抓取完成: {banner_total} 条 ({elapsed:.1f}s)')
+        else:
+            emit('progress', text=f'  ✓ Banner 抓取完成: 无结果 ({elapsed:.1f}s)')
     else:
-        emit('progress', text=f'  ✓ Banner 抓取完成: 无结果 ({elapsed:.1f}s)')
+        for host in all_hosts:
+            host['banners'] = []
 
     # ── WHOIS/RDAP 查询（域名注册信息 + IP 的 ASN/网段）──
     emit('progress', text=ph('WHOIS/RDAP 查询 ...'))

@@ -146,8 +146,27 @@
           <label class="np-form-label">{{ t('dashboard.target') }}</label>
           <el-input v-model="form.target" type="textarea" :rows="4" :placeholder="t('dashboard.targetPlaceholder')" />
         </div>
-        <!-- Scan mode -->
+        <!-- 扫描引擎选择器（替代旧的 scanMode，更灵活） -->
         <div class="np-form-row">
+          <label class="np-form-label">扫描引擎</label>
+          <div class="engine-group">
+            <label
+              v-for="e in engines"
+              :key="e.id"
+              class="engine-option"
+              :class="{ active: form.engineId === e.id }"
+            >
+              <input type="radio" v-model="form.engineId" :value="e.id" class="sr-only" />
+              <span class="engine-name">
+                {{ e.name }}
+                <el-tag v-if="e.is_preset" size="small" type="info" effect="plain">预设</el-tag>
+              </span>
+              <span class="engine-desc">{{ e.description }}</span>
+            </label>
+          </div>
+        </div>
+        <!-- Scan mode（保留向后兼容，引擎未指定时用模式） -->
+        <div class="np-form-row" v-if="!form.engineId">
           <label class="np-form-label">{{ t('dashboard.scanMode') }}</label>
           <div class="mode-group">
             <label v-for="m in scanModes" :key="m.value" class="mode-option" :class="{ active: form.scanMode === m.value }">
@@ -227,6 +246,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { startScan, getHistory, cancelTask, deleteHistory } from '../api/scan'
+import api from '../api/index'
 import type { HistoryItem, ScanRequest } from '../types'
 
 const { t } = useI18n()
@@ -260,10 +280,12 @@ function goCompare() {
 // Form
 const showForm = ref(false)
 const submitting = ref(false)
+const engines = ref<any[]>([])
 const form = reactive({
   taskName: defaultTaskName(),
   target: '',
   scanMode: 'normal',
+  engineId: null as number | null,  // 扫描引擎 ID（null=用旧版 scanMode）
   portPreset: 'common',
   customPorts: '',
   portscanTool: 'auto',
@@ -380,15 +402,21 @@ async function handleScan() {
       timeout: form.timeout,
       screenshot: form.screenshot,
       scan_mode: form.scanMode,
-    }
-    if (form.scanMode === 'quick') {
-      opts.portscan_tool = 'masscan'
-      opts.no_dns_brute = true
-      opts.no_web = true
-      opts.timeout = 120
-    } else if (form.scanMode === 'deep') {
-      opts.portscan_tool = 'nmap'
-      opts.timeout = 900
+    } as any
+    // 选了扫描引擎：传 engine_id，引擎 config 在后端覆盖阶段/工具/参数
+    if (form.engineId) {
+      (opts as any).engine_id = form.engineId
+    } else {
+      // 未选引擎：用旧版模式逻辑
+      if (form.scanMode === 'quick') {
+        opts.portscan_tool = 'masscan'
+        opts.no_dns_brute = true
+        opts.no_web = true
+        opts.timeout = 120
+      } else if (form.scanMode === 'deep') {
+        opts.portscan_tool = 'nmap'
+        opts.timeout = 900
+      }
     }
     if (form.portscanTool !== 'auto') opts.portscan_tool = form.portscanTool
     if (form.subdomainTool !== 'auto') opts.subdomain_tool = form.subdomainTool
@@ -436,8 +464,23 @@ async function handleDelete(row: HistoryItem) {
   } catch {}
 }
 
+/** 加载扫描引擎列表（预设 + 自定义） */
+async function loadEngines() {
+  try {
+    const res = await api.get('/api/scan-engines')
+    engines.value = res.data.items || []
+    // 默认选中「标准」预设引擎
+    if (!form.engineId && engines.value.length) {
+      const standard = engines.value.find(e => e.name === '标准')
+      form.engineId = standard ? standard.id : engines.value[0].id
+    }
+  } catch {
+    /* 引擎加载失败不阻塞，回退到旧版 scanMode */
+  }
+}
+
 onMounted(async () => {
-  await loadData()
+  await Promise.all([loadData(), loadEngines()])
   if (items.value.some(i => i.status === 'running')) startPolling()
 })
 
@@ -518,6 +561,36 @@ onUnmounted(() => {
 .mode-name { font-size: 13px; font-weight: 600; color: var(--np-text-primary); }
 .mode-desc { font-size: 11px; color: var(--np-text-muted); margin-top: 2px; line-height: 1.4; }
 
+/* 扫描引擎选项（复用 mode 风格，3列网格） */
+.engine-group {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.engine-option {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 12px;
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius-md);
+  cursor: pointer;
+  transition: all var(--np-transition);
+}
+.engine-option:hover { border-color: var(--np-blue-500); }
+.engine-option.active {
+  border-color: var(--np-blue-500);
+  background: rgba(96, 165, 250, 0.08);
+}
+.engine-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--np-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.engine-desc { font-size: 11px; color: var(--np-text-muted); margin-top: 2px; line-height: 1.4; }
+
 .port-group {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -570,6 +643,7 @@ onUnmounted(() => {
 /* ═══ Responsive ═══════════════════════════════════════ */
 @media (max-width: 768px) {
   .mode-group { grid-template-columns: 1fr; }
+  .engine-group { grid-template-columns: 1fr; }
   .port-group { grid-template-columns: repeat(2, 1fr); }
   .adv-grid { grid-template-columns: 1fr; }
 }
