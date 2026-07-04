@@ -104,7 +104,7 @@
       v-model="drawerVisible"
       :title="drawerTitle"
       direction="rtl"
-      size="640px"
+      size="620px"
       class="asset-drawer"
     >
       <div v-loading="detailLoading" class="drawer-body">
@@ -640,7 +640,18 @@ onMounted(loadData)
 
 /* ═══ 详情抽屉 ═══ */
 .drawer-body {
-  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* el-drawer body 撑满高度 */
+:deep(.el-drawer__body) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 0;
 }
 .drawer-error {
   display: flex;
@@ -658,6 +669,7 @@ onMounted(loadData)
   padding-bottom: var(--np-space-3);
   margin-bottom: var(--np-space-4);
   border-bottom: 1px solid var(--np-border);
+  flex-shrink: 0;
 }
 .detail-overview .ov-item {
   display: inline-flex;
@@ -819,10 +831,26 @@ onMounted(loadData)
 /* ── Tab 样式 ── */
 .detail-tabs {
   margin-top: var(--np-space-4);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .detail-tabs :deep(.el-tabs__header) {
   margin-bottom: var(--np-space-3);
+  flex-shrink: 0;
+}
+
+.detail-tabs :deep(.el-tabs__content) {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.detail-tabs :deep(.el-tab-pane) {
+  height: 100%;
 }
 
 .detail-tabs :deep(.el-tabs__nav-wrap::after) {
@@ -862,7 +890,9 @@ onMounted(loadData)
 }
 
 .tab-content {
-  min-height: 100px;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .tech-tags-detail {
