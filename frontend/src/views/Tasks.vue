@@ -304,6 +304,8 @@ function statusLabel(status: string) {
 function formatDuration(row: HistoryItem) {
   if (row.status === 'running' && row.started_at) {
     const elapsed = Math.floor((Date.now() - new Date(row.started_at).getTime()) / 1000)
+    // 超过 1 小时的 running 视为僵尸，不显示天文数字
+    if (elapsed > 3600) return t('tasks.timeout')
     return `${elapsed}s`
   }
   if (row.duration_secs != null) return `${row.duration_secs}s`

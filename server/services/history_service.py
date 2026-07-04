@@ -2,6 +2,7 @@
 
 from ..db import SessionLocal
 from ..models import Scan
+from ..utils import to_iso_z
 
 
 def list_scans(page: int = 1, per_page: int = 20, q: str = "", status: str = "") -> dict:
@@ -38,8 +39,8 @@ def list_scans(page: int = 1, per_page: int = 20, q: str = "", status: str = "")
                     "web_count": s.web_count,
                     "sensitive_count": s.sensitive_count,
                     "error_msg": s.error_msg,
-                    "started_at": s.started_at,
-                    "finished_at": s.finished_at,
+                    "started_at": to_iso_z(s.started_at),
+                    "finished_at": to_iso_z(s.finished_at),
                     "duration_secs": s.duration_secs,
                 }
                 for s in items
@@ -70,8 +71,8 @@ def get_scan_detail(scan_id: str) -> dict | None:
             "web_count": s.web_count,
             "sensitive_count": s.sensitive_count,
             "error_msg": s.error_msg,
-            "started_at": s.started_at,
-            "finished_at": s.finished_at,
+            "started_at": to_iso_z(s.started_at),
+            "finished_at": to_iso_z(s.finished_at),
             "duration_secs": s.duration_secs,
         }
     finally:

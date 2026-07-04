@@ -13,6 +13,7 @@ from netprobe.formatter import save_results
 from ..config import DATA_DIR
 from ..db import SessionLocal
 from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding, WhoisRecord
+from ..utils import to_iso_z
 
 # 全局任务存储（内存 + DB 双写）
 _tasks: dict[str, dict] = {}
@@ -114,7 +115,7 @@ def list_active_tasks() -> list[dict]:
     """返回内存中所有任务的序列化列表。"""
     result = []
     for tid, t in _tasks.items():
-        elapsed = (datetime.now() - t.get("created_at", datetime.now())).total_seconds()
+        elapsed = (datetime.utcnow() - t.get("created_at", datetime.utcnow())).total_seconds()
         result.append({
             "id": tid,
             "scan_id": tid,
@@ -124,7 +125,7 @@ def list_active_tasks() -> list[dict]:
             "host_count": len(t.get("hosts", [])),
             "port_count": 0,
             "web_count": 0,
-            "started_at": t.get("created_at", datetime.now()).isoformat(),
+            "started_at": to_iso_z(t.get("created_at")),
             "finished_at": None,
             "duration_secs": int(elapsed) if t["status"] == "running" else None,
             "progress": t.get("progress", ""),
@@ -135,7 +136,7 @@ def list_active_tasks() -> list[dict]:
 
 
 def _cleanup_old_tasks():
-    now = datetime.now()
+    now = datetime.utcnow()
     expired = [
         tid for tid, t in _tasks.items()
         if t.get("status") in ("done", "error", "cancelled")
@@ -161,7 +162,7 @@ def start_scan(raw_targets: str, options: dict) -> str:
         "queue": queue.Queue(maxsize=500),
         "hosts": [],
         "base_domain": "",
-        "created_at": datetime.now(),
+        "created_at": datetime.utcnow(),
         "cancel_event": cancel_event,
         "options": options.copy(),
         "processes": [],

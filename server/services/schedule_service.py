@@ -18,6 +18,7 @@ from apscheduler.triggers.cron import CronTrigger
 
 from ..db import SessionLocal
 from ..models import Schedule
+from ..utils import to_iso_z
 from .scan_service import start_scan, _tasks
 
 logger = logging.getLogger(__name__)
@@ -298,7 +299,7 @@ def _serialize(s: Schedule) -> dict:
         "cron_expr": s.cron_expr,
         "options": json.loads(s.options_json) if s.options_json else {},
         "enabled": bool(s.enabled),
-        "last_run_at": s.last_run_at.isoformat() if s.last_run_at else None,
-        "next_run_at": s.next_run_at.isoformat() if s.next_run_at else None,
-        "created_at": s.created_at.isoformat() if s.created_at else None,
+        "last_run_at": to_iso_z(s.last_run_at),
+        "next_run_at": to_iso_z(s.next_run_at),
+        "created_at": to_iso_z(s.created_at),
     }

@@ -13,6 +13,7 @@ from datetime import datetime
 
 from ..db import SessionLocal
 from ..models import Scan, Alert, AlertEvent
+from ..utils import to_iso_z
 from .notify_service import send_notification
 
 logger = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ def list_events(limit: int = 50) -> list[dict]:
             "id": e.id,
             "alert_id": e.alert_id,
             "scan_id": e.scan_id,
-            "triggered_at": e.triggered_at.isoformat() if e.triggered_at else "",
+            "triggered_at": to_iso_z(e.triggered_at) or "",
             "summary": e.summary,
             "channels": json.loads(e.channels_json) if e.channels_json else [],
         } for e in rows]
@@ -212,6 +213,6 @@ def _serialize_alert(a: Alert) -> dict:
         "target": a.target or "",
         "threshold": a.threshold or "",
         "enabled": bool(a.enabled),
-        "created_at": a.created_at.isoformat() if a.created_at else "",
-        "last_triggered_at": a.last_triggered_at.isoformat() if a.last_triggered_at else None,
+        "created_at": to_iso_z(a.created_at) or "",
+        "last_triggered_at": to_iso_z(a.last_triggered_at),
     }

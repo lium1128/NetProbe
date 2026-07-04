@@ -13,6 +13,7 @@ from ..services.scan_service import (
 from ..services.history_service import delete_scan
 from ..db import SessionLocal
 from ..models import Scan
+from ..utils import to_iso_z
 
 router = APIRouter(tags=["tasks"])
 
@@ -44,8 +45,8 @@ def list_tasks():
                 "host_count": s.host_count,
                 "port_count": s.port_count,
                 "web_count": s.web_count,
-                "started_at": s.started_at.isoformat() if s.started_at else "",
-                "finished_at": s.finished_at.isoformat() if s.finished_at else None,
+                "started_at": to_iso_z(s.started_at) or "",
+                "finished_at": to_iso_z(s.finished_at),
                 "duration_secs": s.duration_secs,
                 "progress": "",
                 "options": json.loads(s.options_json) if s.options_json else None,
@@ -72,7 +73,7 @@ def get_task_detail(task_id: str):
         elapsed = None
         if task["status"] == "running":
             from datetime import datetime
-            elapsed = int((datetime.now() - task["created_at"]).total_seconds())
+            elapsed = int((datetime.utcnow() - task["created_at"]).total_seconds())
         return {
             "id": task_id,
             "scan_id": task_id,
@@ -82,7 +83,7 @@ def get_task_detail(task_id: str):
             "host_count": len(task.get("hosts", [])),
             "port_count": 0,
             "web_count": 0,
-            "started_at": task.get("created_at").isoformat() if task.get("created_at") else "",
+            "started_at": to_iso_z(task.get("created_at")) or "",
             "finished_at": None,
             "duration_secs": elapsed,
             "progress": task.get("progress", ""),
@@ -105,8 +106,8 @@ def get_task_detail(task_id: str):
             "host_count": s.host_count,
             "port_count": s.port_count,
             "web_count": s.web_count,
-            "started_at": s.started_at.isoformat() if s.started_at else "",
-            "finished_at": s.finished_at.isoformat() if s.finished_at else None,
+            "started_at": to_iso_z(s.started_at) or "",
+            "finished_at": to_iso_z(s.finished_at),
             "duration_secs": s.duration_secs,
             "progress": "",
             "options": json.loads(s.options_json) if s.options_json else None,

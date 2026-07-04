@@ -234,7 +234,8 @@ def compute_timeline(base_domain: str) -> dict:
 
     for scan in scans:
         scan_id = scan.scan_id
-        started_at = scan.started_at.isoformat() if scan.started_at else ""
+        from ..utils import to_iso_z
+        started_at = to_iso_z(scan.started_at) or ""
 
         # 取本次扫描的 hosts
         curr = _get_hosts_for_scan(scan_id)
