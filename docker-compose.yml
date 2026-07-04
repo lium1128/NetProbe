@@ -1,0 +1,34 @@
+# NetProbe 一键部署
+# 用法: docker compose up -d
+# 访问: http://localhost:8000
+
+services:
+  netprobe:
+    build: .
+    image: netprobe:latest
+    container_name: netprobe
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # 数据持久化：数据库 + 配置 + 截图
+      - ./data:/app/data
+      # 扫描报告输出（可选）
+      - ./output:/app/output
+      # nuclei 模板持久化（避免重启重新下载）
+      - nuclei-templates:/root/nuclei-templates
+    environment:
+      TZ: Asia/Shanghai
+      # 情报源 API Keys（也可在 UI 设置页配置，二选一）
+      # FOFA_EMAIL: ""
+      # FOFA_KEY: ""
+      # HUNTER_KEY: ""
+      # NVD_API_KEY: ""
+      # SHODAN_API_KEY: ""
+    # 扫描工具（nmap SYN 扫描/masscan）需要额外网络权限
+    # 如需 SYN 扫描，取消下行注释：
+    # cap_add:
+    #   - NET_RAW
+
+volumes:
+  nuclei-templates:

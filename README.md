@@ -2,411 +2,321 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Vue](https://img.shields.io/badge/Vue-3-42b883?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)]()
 
-多引擎域名探测平台，集成 Subfinder、Nmap、Masscan、RustScan、Httpx、DNSx 六大扫描引擎，自动检测可用引擎并按优先级调度。支持子域名发现、端口扫描、服务版本检测、Web 技术指纹识别、敏感路径探测、SSL 证书分析、Banner 抓取、JS 文件分析，提供 Web 界面和命令行两种使用方式。跨平台支持 Windows、macOS、Linux。
+> 开源一体化资产探测与攻击面管理平台
+
+NetProbe 是一个面向红蓝对抗与资产巡检的一站式攻击面管理平台，采用 **FastAPI + Vue 3 前后端分离**架构。一条管道打通「子域名发现 → 端口扫描 → 指纹识别 → 漏洞扫描 → 风险评分 → 变更检测 → 资产关联 → 多渠道告警」全流程，内置 961 条 Web 指纹与 566 条敏感路径规则，融合中英文情报源，提供 Web UI 与命令行两种使用方式，支持 Docker 一键部署。
 
 ![NetProbe Web 界面](readme_resource/scan_1.png)
 ![NetProbe Web2 界面](readme_resource/scan_2.png)
 
 ## 功能特性
 
-- **跨平台支持** — 支持 Windows、macOS、Linux，自动适配不同平台的工具安装路径
-- **多引擎支持** — 集成 6 个扫描引擎，自动检测已安装工具，按可靠性优先级调度，优雅降级
-- **智能路径检测** — 自动搜索 GOPATH/bin、Homebrew、系统目录等平台特定路径，无需手动配置 PATH
-- **DNS 容错** — dnspython 解析失败时自动 fallback 到系统 DNS，确保不会因 DNS 超时跳过目标
-- **被动情报收集** — crt.sh 证书透明度日志（免费）、FOFA 网络空间搜索、Hunter 奇安信鹰图，多源聚合子域名
-- **子域名枚举** — Subfinder（被动聚合 30+ 数据源）+ Nmap dns-brute（主动字典枚举），结果合并去重
-- **端口扫描** — 两步扫描策略（快速发现 + 服务版本检测），auto 模式按可靠性优先级自动降级
-- **Web 技术指纹** — 42 条指纹规则，覆盖 CMS、前端框架、Web 服务器、CDN、WAF、统计分析等 8 大类，支持 HTTP 头部 + HTML 内容 + Cookie 多维度匹配
-- **敏感路径探测** — 53 条规则，检测 Git/SVN 泄露、配置文件、备份文件、管理后台、API 文档、Spring Actuator 等，并发探测提升速度
-- **JS 文件分析** — 从页面 JavaScript 中提取 API 端点和泄露的密钥/Token（AWS Key、GitHub Token、JWT 等）
-- **SSL/TLS 证书分析** — 提取证书主体、颁发者、有效期、SAN 域名、加密套件、协议版本
-- **Banner 抓取** — 支持 FTP、SSH、SMTP、MySQL、Redis、MongoDB 等 12 种协议的 Banner 识别
-- **DNS 验证** — dnspython（最可靠）> DNSx（批量快速），验证子域名可解析性
-- **域名过滤** — 自动过滤不属于目标域名的结果，支持多段 TLD（如 .com.cn、.co.uk）
-- **多目标输入** — 支持逗号、换行、空格分隔多个目标，按目标分组展示结果
-- **IP 输入支持** — 输入 IP 自动反向 DNS 解析出域名，再进行子域名枚举
-- **结果导出** — 支持 TXT、CSV、JSON 三种格式，文件名自动按域名+时间命名
-- **中文编码** — 自动检测网页编码（GBK/GB2312/UTF-8），正确显示中文标题
-- **实时进度** — Web 界面通过 SSE 实时推送扫描进度，显示每个引擎的运行状态
+- **一站式扫描管道** — 子域名 → 端口 → Web 指纹 → 漏洞 → 风险评分 → 变更检测 → 资产关联 → 告警，单次任务全流程覆盖
+- **指纹识别** — 961 条 Web 技术指纹规则，覆盖 CMS、前端框架、Web 服务器、CDN、WAF、统计分析等类别，支持 HTTP 头部 + HTML 内容 + Cookie 多维度匹配
+- **敏感路径探测** — 566 条敏感路径规则，检测 Git/SVN 泄露、配置文件、备份文件、管理后台、API 文档、Spring Actuator 等，按 high/medium/low/info 分级
+- **漏洞扫描** — 集成 [nuclei v3](https://github.com/projectdiscovery/nuclei)，基于模板的自动化漏洞检测，结果入库并纳入风险评分
+- **接管检测** — 96 条子域名接管指纹，识别 CNAME 悬挂 / 未解析 / 可注册等高危场景
+- **风险评分** — 6 维度加权计算 0–100 综合风险分（漏洞、敏感路径、暴露端口、过期证书、接管风险、技术栈老旧），自动分级 low/medium/high/critical
+- **变更检测** — 与历史基线做 6 维 diff（端口 / 指纹 / 敏感路径 / Web 标题 / 证书 / 漏洞），生成变更时间线
+- **资产关联图谱** — 基于 ECharts 的 6 维度关联图谱（IP / 证书 / Banner / 指纹 / 标题 / ASN），可视化资产横向关系
+- **JS 文件分析** — 从页面 JavaScript 中提取 API 端点，并检测泄露的密钥/Token（AWS Key、GitHub Token、JWT、Private Key 等）
+- **多渠道通知** — Webhook、钉钉、企业微信、飞书、Telegram、邮件共 6 种告警渠道，高危发现实时推送
+- **中英文情报融合** — FOFA / Hunter（中文源）+ crt.sh / Shodan / Censys（国际源），多源聚合子域名与资产画像
+- **多扫描引擎** — nmap / masscan / rustscan 三引擎 + nuclei 漏洞扫描，按可靠性优先级自动调度、优雅降级
+- **定时巡检** — APScheduler 定时任务 + 告警策略，资产持续监控
+- **跨平台** — Windows / macOS / Linux 全平台支持，自动适配工具安装路径
 
-## 扫描引擎
+## 快速开始（Docker 部署，推荐）
 
-| 引擎 | 能力 | 安装方式 | 说明 |
-|------|------|---------|------|
-| **Nmap** | 子域名 + 端口 | [官网下载](https://nmap.org/download.html) | dns-brute 字典枚举 + 两步端口扫描（快速发现 + -sV 版本检测），最可靠 |
-| **Subfinder** | 子域名枚举 | `go install` | 被动聚合 crt.sh、VirusTotal 等 30+ 数据源，发现率高 |
-| **Masscan** | 端口扫描 | 下载二进制 | 世界最快端口扫描器，需 root/管理员权限 |
-| **RustScan** | 端口扫描 | 下载二进制 | 快速端口发现 + 自动调用 nmap 做服务检测 |
-| **Httpx** | Web 探测 | `go install` | 批量探测 Web 存活、状态码、标题、技术栈 |
-| **DNSx** | DNS 验证 | `go install` | 批量 DNS 解析验证 |
+> 前提：已安装 [Docker](https://docs.docker.com/get-docker/) 与 Docker Compose（Docker Desktop 自带）。
 
-### Auto 模式调度策略
+```bash
+git clone https://github.com/lium1128/NetProbe.git
+cd NetProbe
 
-auto 模式下按**可靠性从高到低**逐个尝试引擎，第一个成功返回结果的引擎即停，失败自动降级到下一个：
+# 一键启动（首次会自动构建前端 + 安装 nmap/masscan/subfinder/nuclei）
+docker compose up -d
 
-```
-子域名枚举: Subfinder + Nmap dns-brute（两个都跑，结果合并去重）
-端口扫描:   Nmap（最可靠）→ RustScan → Masscan
-DNS 验证:   dnspython（最可靠）→ DNSx
-Web 探测:   Python requests（最可靠）→ Httpx
+# 浏览器访问
+#   http://localhost:8000
 ```
 
-也可以在 Web 界面手动指定某个引擎，指定引擎失败时会降级到 Python 内置引擎。
+容器内已预装 nmap、masscan、subfinder、nuclei、Playwright chromium，开箱即用。
 
-### 端口扫描两步策略
+### 数据持久化与配置
 
-Nmap 端口扫描采用两步策略，兼顾速度和准确性：
+`docker-compose.yml` 已配置以下挂载，**数据库、配置、报告、nuclei 模板**在容器重建后均不丢失：
 
-1. **快速端口发现** — 不做版本检测，快速扫描 COMMON_PORTS 中的 23 个常见端口，筛选出 `open` 状态的端口
-2. **服务版本检测** — 仅对已发现的 open 端口做 `-sV` 版本检测，避免全量 -sV 导致的超时
+| 挂载 | 容器路径 | 说明 |
+|------|---------|------|
+| `./data` | `/app/data` | SQLite 数据库 `netprobe.db` + `settings.json` 配置 + 截图 |
+| `./output` | `/app/output` | 扫描报告输出目录 |
+| `nuclei-templates`（命名卷）| `/root/nuclei-templates` | nuclei 模板，避免重启重新下载 |
 
-## 探测流程
+### 环境变量（情报源 API Keys）
 
-```
-输入目标 (域名/IP，支持多个)
-    │
-    ├─ IP? ──→ 反向 DNS 解析 → 提取根域名
-    │
-    ▼
-阶段1: 被动情报收集
-    ├─ crt.sh 证书透明度日志（免费，无需 API Key）
-    ├─ FOFA 网络空间搜索（需 API Key）
-    └─ Hunter 奇安信鹰图（需 API Key）
-    │
-    ▼
-阶段2: 子域名枚举
-    ├─ Subfinder（被动枚举，发现率高）
-    ├─ Nmap dns-brute（主动字典枚举，内置 210 条字典）
-    └─ 合并去重 → DNS 验证过滤
-    │
-    ▼
-阶段3: 端口扫描 + 服务检测
-    ├─ Nmap 两步扫描（快速发现 + -sV 版本检测）
-    └─ OS 指纹识别
-    │
-    ▼
-阶段4: Web 站点探测
-    ├─ Python requests / Httpx（按可用性自动选择）
-    ├─ 技术栈指纹识别（42 条规则，8 大类）
-    ├─ SSL/TLS 证书信息提取
-    ├─ 敏感路径探测（53 条规则，并发扫描）
-    └─ JS 文件分析（API 端点提取 + 密钥泄露检测）
-    │
-    ▼
-阶段5: Banner 抓取
-    ├─ 并发 TCP Banner 获取（12 种协议）
-    └─ FTP、SSH、SMTP、MySQL、Redis 等
-    │
-    ▼
-结果展示 + 导出文件 (TXT/CSV/JSON)
+API Key 既可以在 `data/settings.json` 中配置，也可以通过环境变量注入（见 `docker-compose.yml` 的 `environment` 段）。两者二选一即可：
+
+```yaml
+environment:
+  TZ: Asia/Shanghai
+  FOFA_EMAIL: ""        # FOFA 邮箱
+  FOFA_KEY: ""          # FOFA API Key
+  HUNTER_KEY: ""        # 奇安信鹰图
+  NVD_API_KEY: ""       # NVD 漏洞库（nuclei 漏洞丰富度）
+  SHODAN_API_KEY: ""    # Shodan
 ```
 
-## 前置要求
+### 启用 SYN 扫描（可选）
 
-- **Python 3.10+**
-- **依赖包** — `pip install -r requirements.txt`
+nmap 的 SYN 扫描（`-sS`）和 masscan 需要 `CAP_NET_RAW` 权限。如需启用，取消 `docker-compose.yml` 中以下两行的注释：
 
-### 工具安装
+```yaml
+    cap_add:
+      - NET_RAW
+```
 
-**必选（至少装一个扫描器）：**
+> 默认 TCP connect 扫描无需额外权限即可工作，SYN 扫描更快更隐蔽。
 
-- **Nmap** — [下载地址](https://nmap.org/download.html)
+## 手动部署
+
+适用于不使用 Docker、需要本地开发或自定义环境的场景。
+
+### 环境要求
+
+- **Python 3.10+**（推荐 3.12）
+- **Node.js 18+**（推荐 20 LTS，用于构建前端）
+- **外部扫描工具**（按需安装）：nmap、masscan、subfinder、nuclei
+
+### 1. 后端（FastAPI）
+
+```bash
+# 安装 Python 依赖
+pip install -r server/requirements.txt
+
+# 开发模式（带热重载，任选其一）
+uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
+python -m server.main
+
+# 生产模式
+uvicorn server.main:app --host 0.0.0.0 --port 8000 --workers 1
+```
+
+后端启动后监听 **8000** 端口，同时托管 `frontend/dist/` 静态文件（同源访问，无需单独起前端服务）。
+
+### 2. 前端（Vue 3 + Vite，仅开发时需要）
+
+```bash
+cd frontend
+npm install
+
+# 开发模式：vite dev server 监听 5173，自动代理 /api → 8000
+npm run dev
+# 访问 http://localhost:5173
+
+# 生产构建：产物输出到 frontend/dist/，后端自动托管
+npm run build
+```
+
+### 3. 安装外部扫描工具
+
+**必选：**
+
+- **Nmap** — [官网下载](https://nmap.org/download.html)
   - Windows：安装时勾选 "Add to PATH"
-  - macOS：`brew install nmap` 或官网下载
+  - macOS：`brew install nmap`
   - Linux：`sudo apt install nmap` / `sudo yum install nmap`
 
-**推荐安装（Go 工具）：**
+**推荐（Go 工具，国内加速）：**
 
 ```bash
-# 安装 Go（如未安装）：https://go.dev/dl/
-# 国内加速
+# 安装 Go：https://go.dev/dl/
 go env -w GOPROXY=https://goproxy.cn,direct
 
-# 安装 Subfinder、Httpx、DNSx
+# subfinder（被动子域名）+ nuclei（漏洞扫描）
 go install -v github.com/projectdiscovery/subfinder/v2/cmd/subfinder@latest
-go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest
-go install -v github.com/projectdiscovery/dnsx/cmd/dnsx@latest
+go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
 ```
 
-**可选安装：**
+**可选：**
 
-- **Masscan** — [下载](https://github.com/robertdavidgraham/masscan/releases)
-  - Linux：`sudo apt install masscan`
-  - macOS：`brew install masscan`
-  - Windows：需自行编译或获取预编译二进制
-- **RustScan** — [下载](https://github.com/RustScan/RustScan/releases)
-  - 下载对应平台的二进制，放入 `$GOPATH/bin` 或任意 PATH 目录
-
-### Python 依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-requirements.txt 内容：
-
-```
-python-nmap>=0.7.1
-dnspython>=2.8.0
-flask>=3.0
-requests>=2.28
-```
-
-### 被动情报 API（可选）
-
-被动情报收集功能需要配置 API Key，通过环境变量设置：
-
-| 服务 | 环境变量 | 说明 |
-|------|---------|------|
-| **crt.sh** | 无需配置 | 证书透明度日志，免费，直接使用 |
-| **FOFA** | `FOFA_EMAIL` + `FOFA_KEY` | [注册](https://fofa.info/)获取免费额度 |
-| **Hunter** | `HUNTER_KEY` | [注册](https://hunter.qianxin.com/)获取免费额度 |
-
-不配置 API Key 时，crt.sh 仍可正常使用，FOFA/Hunter 自动跳过。
+- **Masscan** — 世界最快端口扫描器，需 root/管理员权限
+  - Linux：`sudo apt install masscan`　macOS：`brew install masscan`
+- **RustScan** — 快速端口发现 + 自动调用 nmap 服务检测（[Releases](https://github.com/RustScan/RustScan/releases)）
 
 ## 使用方式
 
-### 方式一：Web 界面（推荐）
+### 方式一：Web UI（推荐）
+
+启动后端后访问 **http://localhost:8000**：
+
+- 多目标输入（逗号 / 换行 / 空格分隔），支持域名与 IP（IP 自动反向 DNS）
+- 引擎选择（子域名 / 端口 / DNS / Web 各阶段可指定引擎，或选 auto 自动调度）
+- 实时进度日志（SSE 推送），显示每个引擎的运行状态与降级情况
+- 结果按目标分组展示：主机、端口、服务、Web 站点、技术栈标签、SSL 证书、敏感路径、JS 分析、漏洞、Banner、风险评分、资产关联图谱
+- 设置页配置 API Key 与通知渠道
+- 定时任务与告警策略管理
+
+### 方式二：命令行（CLI）
 
 ```bash
-python app.py
+# 执行完整扫描
+python main.py scan example.com
+
+# 多目标
+python main.py scan example.com baidu.com qq.com
+
+# 输入 IP（自动反向解析后探测）
+python main.py scan 8.8.8.8
+
+# 保存结果为指定格式（txt / csv / json / html）
+python main.py scan example.com -f json -o report.json
+
+# 跳过子域名枚举 / Web 探测
+python main.py scan example.com --no-dns-brute --no-web
+
+# 自定义子域名字典
+python main.py scan example.com -w custom_wordlist.txt
+
+# CI/CD 模式：发现高危时退出码非零，便于接入流水线
+python main.py ci example.com --severity-threshold 70 --fail-on high_risk
+
+# 从 Wappalyzer 拉取并合并最新指纹库
+python main.py update-fingerprints
 ```
 
-浏览器访问 **http://127.0.0.1:5000**
-
-Web 界面功能：
-- 多目标输入（逗号或换行分隔）
-- 引擎选择（子域名/端口/DNS/Web 各阶段可单独指定引擎，或选 auto 自动调度）
-- 勾选控制：子域名枚举 / Web 探测 / DNS 验证
-- 实时进度日志，显示每个引擎的运行状态和降级情况
-- 结果按目标分组展示（主机、端口、服务、Web 站点、技术栈标签、SSL 证书、敏感路径、JS 分析、Banner）
-- 一键导出 TXT / CSV / JSON 文件
-
-### 方式二：命令行
-
-```bash
-# 完整探测（被动情报 + 子域名 + 端口 + Web + 敏感路径 + JS 分析 + Banner）
-python main.py example.com
-
-# 多目标探测
-python main.py example.com baidu.com qq.com
-
-# 输入 IP，自动反向解析后探测
-python main.py 8.8.8.8
-
-# 保存结果为 JSON
-python main.py example.com -f json
-
-# 保存结果为 CSV
-python main.py example.com -f csv -o my_report.csv
-
-# 使用自定义子域名字典
-python main.py example.com -w custom_wordlist.txt
-
-# 只探测主域名，跳过子域名枚举
-python main.py example.com --no-dns-brute
-
-# 跳过 Web 探测
-python main.py example.com --no-web
-```
-
-命令行参数说明：
+常用参数：
 
 | 参数 | 说明 |
 |------|------|
-| `targets` | 目标域名或 IP，多个用空格分隔（必填）|
-| `-f, --format` | 输出格式：txt / csv / json（默认 txt）|
-| `-o, --output` | 自定义输出文件路径（不指定则自动按 `域名_时间.格式` 命名）|
-| `-w, --wordlist` | 外部子域名字典文件（不指定则使用内置 210 条字典）|
-| `--no-dns-brute` | 跳过子域名枚举，只探测主域名 |
+| `targets` | 目标域名或 IP，空格分隔（必填）|
+| `-f, --format` | 输出格式：txt / csv / json / html（默认 txt）|
+| `-o, --output` | 输出文件路径（不指定则自动按 `域名_时间.格式` 命名）|
+| `-w, --wordlist` | 外部子域名字典文件 |
+| `--no-dns-brute` | 跳过子域名枚举 |
 | `--no-web` | 跳过 Web 站点探测 |
 | `--no-validate` | 跳过 DNS 解析验证 |
 | `--timeout` | 扫描超时秒数（默认 300）|
+| `-v, --verbose` | 显示详细过程 |
+
+`ci` 子命令额外参数：
+
+| 参数 | 说明 |
+|------|------|
+| `--severity-threshold` | 风险分阈值，≥此值视为高危（默认 70）|
+| `--fail-on` | 失败条件：`high_risk` / `sensitive` / `any`（默认 high_risk）|
 
 ## 项目结构
 
 ```
 domain-Identify/
-├── app.py                  # Web 入口 (Flask 路由 + 任务管理 + SSE)
-├── main.py                 # CLI 入口 (argparse)
-├── netprobe/               # 核心包
-│   ├── __init__.py         # 包定义
-│   ├── engine.py           # 扫描引擎 (统一流水线，CLI/Web 共用)
-│   ├── scanner.py          # Nmap 交互层 (dns-brute + 两步端口扫描)
-│   ├── dns_utils.py        # DNS 工具 (反向查询、A 记录、域名过滤，含系统 DNS fallback)
-│   ├── utils.py            # 输入校验 (IP/域名判断、根域名提取)
-│   ├── web_probe.py        # Web 探测 (HTTP/HTTPS + SSL 证书 + 编码检测 + JS URL 提取)
-│   ├── fingerprint.py      # 技术栈指纹识别 (从 JSON 加载规则)
-│   ├── sensitive_probe.py  # 敏感路径探测 (从 JSON 加载规则，并发扫描)
-│   ├── js_analyzer.py      # JS 文件分析 (API 端点提取 + 密钥泄露检测)
-│   ├── banner_grab.py      # Banner 抓取 (12 种协议)
-│   ├── formatter.py        # 结果格式化 (终端表格 + TXT/CSV/JSON)
-│   ├── wordlist.py         # 内置 210 条子域名字典
+├── server/                     # 后端：FastAPI 应用（API + ORM + 调度 + 静态托管）
+│   ├── main.py                 # 入口：create_app()，uvicorn 启动
+│   ├── config.py               # 路径与数据库配置
+│   ├── db.py                   # SQLAlchemy 引擎 / 会话
+│   ├── utils.py                # 通用工具
+│   ├── models/                 # ORM 模型（12 张表）
+│   ├── schemas/                # Pydantic 请求/响应模型
+│   ├── routers/                # API 路由（扫描 / 资产 / 调度 / 告警 / 设置 ...）
+│   ├── services/               # 业务服务层（扫描调度、通知、变更检测、关联等）
+│   └── requirements.txt        # 后端 Python 依赖
+├── frontend/                   # 前端：Vue 3 + TypeScript + Element Plus
+│   ├── src/                    # 源码（视图、组件、store、路由、i18n）
+│   ├── dist/                   # 构建产物（后端托管，gitignore）
+│   ├── vite.config.ts          # dev server 5173，代理 /api → 8000
+│   └── package.json
+├── netprobe/                   # 核心扫描引擎包（CLI 与 server 共用）
+│   ├── engine.py               # 统一扫描流水线
+│   ├── scanner.py              # Nmap 交互层（dns-brute + 两步端口扫描）
+│   ├── web_probe.py            # Web 探测（HTTP/HTTPS + SSL + 编码 + JS URL）
+│   ├── fingerprint.py          # 技术栈指纹识别
+│   ├── sensitive_probe.py      # 敏感路径探测
+│   ├── takeover_detect.py      # 子域名接管检测
+│   ├── risk.py                 # 6 维风险评分
+│   ├── js_analyzer.py          # JS 分析（API + 密钥泄露）
+│   ├── banner_grab.py          # Banner 抓取（多协议）
+│   ├── dns_utils.py            # DNS 工具（含系统 DNS fallback）
+│   ├── screenshot.py           # Playwright 截图
+│   ├── formatter.py            # 结果格式化（终端 + TXT/CSV/JSON/HTML）
 │   ├── data/
-│   │   ├── fingerprints.json     # 42 条技术指纹规则
-│   │   └── sensitive_paths.json  # 53 条敏感路径规则
-│   └── tools/
-│       ├── registry.py     # 工具注册表 (跨平台路径检测、能力查询)
-│       ├── subfinder.py    # Subfinder — 被动子域名枚举
-│       ├── masscan.py      # Masscan — 快速端口扫描
-│       ├── rustscan.py     # RustScan — 快速端口发现 + nmap 服务检测
-│       ├── httpx_tool.py   # Httpx — 批量 Web 探测
-│       ├── dnsx.py         # DNSx — 快速 DNS 解析验证
-│       ├── crtsh.py        # crt.sh — 证书透明度日志查询
-│       ├── fofa.py         # FOFA — 网络空间搜索
-│       └── hunter.py       # Hunter — 奇安信鹰图
-├── static/
-│   └── favicon.svg         # 网站图标
-├── templates/
-│   └── index.html          # Web 前端页面
-├── requirements.txt
+│   │   ├── fingerprints.json       # 961 条 Web 指纹
+│   │   ├── sensitive_paths.json    # 566 条敏感路径
+│   │   ├── takeover_fingerprints.json  # 96 条接管指纹
+│   │   └── cdn_cidrs.json
+│   └── tools/                  # 外部工具适配（nmap/masscan/rustscan/subfinder/nuclei/crt.sh/fofa/hunter/shodan/censys）
+├── scripts/
+│   └── import_wappalyzer.py    # Wappalyzer 指纹导入脚本
+├── data/
+│   ├── netprobe.db             # SQLite 数据库（12 张表）
+│   └── settings.json           # API Key + 布局/主题配置
+├── output/                     # 扫描报告输出
+├── main.py                     # CLI 入口（scan / ci / update-fingerprints）
+├── Dockerfile                  # 多阶段构建（前端构建 + 运行时）
+├── docker-compose.yml          # 一键部署编排
+├── requirements.txt            # 核心扫描包依赖（netprobe）
 └── README.md
 ```
 
-## 工具路径自动检测
+## 配置说明
 
-程序会根据运行平台自动搜索工具安装路径，无需手动配置。搜索顺序：
+### settings.json
 
-**Windows：**
-- `$GOPATH/bin`、`~/go/bin`
-- `{C,D,E}:\Program Files\Nmap`、`{C,D,E}:\Program Files (x86)\Nmap`
-- `~/scoop/shims`
+位于 `data/settings.json`，由 Web UI「设置」页维护，也可手动编辑：
 
-**macOS：**
-- `$GOPATH/bin`、`~/go/bin`
-- `/usr/local/bin`
-- `/opt/homebrew/bin`、`/opt/homebrew/sbin`（Apple Silicon Homebrew）
-- `/opt/local/bin`、`/opt/local/sbin`（MacPorts）
+```json
+{
+  "layout": "topnav",
+  "theme": "light",
+  "api_keys": {
+    "shodan": "",
+    "fofa_email": "",
+    "fofa_key": "",
+    "censys_id": "",
+    "censys_secret": ""
+  }
+}
+```
 
-**Linux：**
-- `$GOPATH/bin`、`~/go/bin`
-- `/usr/bin`、`/usr/local/bin`
-- `/usr/sbin`、`/usr/local/sbin`
-- `/snap/bin`、`~/.local/bin`
+通知渠道（钉钉 / 企业微信 / 飞书 / Telegram / 邮件 / Webhook）的 webhook 地址、邮件 SMTP、Telegram bot token 等同样在设置页配置，写入数据库。
 
-优先从以上路径查找（避免同名程序冲突，如 hermes 的 httpx），找不到再查系统 PATH。
+### 环境变量
 
-如果工具安装在其他位置，可以：
-1. 将工具所在目录加入系统 PATH 环境变量
-2. 在 `netprobe/tools/registry.py` 的 `_get_extra_paths()` 函数中添加自定义路径
-
-## Web API
-
-Web 后端提供以下 API，可用于集成：
-
-| 接口 | 方法 | 说明 |
+| 变量 | 说明 | 默认 |
 |------|------|------|
-| `/` | GET | Web 界面 |
-| `/api/tools` | GET | 获取可用扫描引擎列表（含路径和状态）|
-| `/api/scan` | POST | 提交扫描任务，返回 task_id |
-| `/api/stream/<task_id>` | GET | SSE 实时推送扫描进度 |
-| `/api/result/<task_id>` | GET | 获取扫描结果 JSON |
-| `/api/download/<task_id>/<fmt>` | GET | 下载结果文件 (txt/csv/json) |
+| `FOFA_EMAIL` + `FOFA_KEY` | FOFA 网络空间搜索（[注册](https://fofa.info/)）| 空，跳过 |
+| `HUNTER_KEY` | 奇安信鹰图（[注册](https://hunter.qianxin.com/)）| 空，跳过 |
+| `SHODAN_API_KEY` | Shodan 国际资产搜索 | 空，跳过 |
+| `CENSYS_ID` + `CENSYS_SECRET` | Censys 资产搜索 | 空，跳过 |
+| `NVD_API_KEY` | NVD 漏洞库，提升漏洞识别率 | 空，跳过 |
+| `TZ` | 时区（影响定时任务调度）| Asia/Shanghai |
 
-提交扫描示例：
+> 不配置任何 Key 时，crt.sh（证书透明度，免费）仍可正常使用，其余源自动跳过。
 
-```bash
-curl -X POST http://127.0.0.1:5000/api/scan \
-  -H "Content-Type: application/json" \
-  -d '{
-    "target": "example.com",
-    "subdomain_tool": "auto",
-    "portscan_tool": "auto",
-    "web_tool": "auto",
-    "dns_tool": "auto"
-  }'
-```
+## 技术栈
 
-`*_tool` 参数可选值：`auto`（按可靠性优先级自动调度）、`nmap`、`subfinder`、`masscan`、`rustscan`、`httpx`、`dnsx`。
-
-## 输出示例
-
-Web 日志（显示引擎调度和降级）：
-
-```
-[12:30:01] 可用工具: Nmap, Subfinder, Httpx, DNSx
-[12:30:01] 共 1 个目标: example.com
-[12:30:01] ━━━ 目标 [1/1] example.com ━━━
-[12:30:02]   被动情报收集 (example.com)...
-[12:30:04]   [crt.sh] 发现 15 个子域名
-[12:30:05]   子域名枚举 (example.com)...
-[12:30:08]   [subfinder] 发现 12 个子域名
-[12:30:11]   [nmap dns-brute] 发现 3 个 (共 8 条)
-[12:30:13]   [dnspython] 验证完成: 18/26 可解析
-[12:30:13]   子域名枚举完成: 18 个有效
-[12:30:14]   端口扫描 (19 个主机)...
-[12:30:28]   [nmap] 扫描完成: 24 个端口
-[12:30:29]   [python] Web 探测...
-[12:30:33]   [python] 发现 10 个 Web 站点
-[12:30:34]   敏感路径探测...
-[12:30:40]   敏感路径探测完成: 5 条发现
-[12:30:41]   JavaScript 文件分析...
-[12:30:43]   JS 分析完成: 3 个文件, 1 条泄露
-[12:30:44]   Banner 抓取完成: 8 条
-```
-
-Web 界面展示内容包括：
-- 主机列表（主机名、IP、操作系统）
-- 开放端口表（端口/协议、状态、服务/版本）
-- Web 站点表（URL、状态码、标题、技术栈标签、HTTP 指纹、SSL 证书信息、重定向）
-- 敏感路径表（路径、说明、状态码、风险等级）
-- JS 文件分析表（JS 文件 URL、API 端点、泄露密钥/Token）
-- Banner 信息表（端口、服务、Banner 内容）
-
-技术栈标签按类别颜色区分：CMS（紫色）、Framework（蓝色）、Server（绿色）、CDN（黄色）、WAF（红色）、Analytics（靛蓝）、Runtime（粉色）。
-
-## 常见问题
-
-### 工具已安装但检测不到？
-
-程序会根据平台自动搜索常见安装路径（见「工具路径自动检测」章节）。如果工具安装在其他位置：
-
-1. 将工具所在目录加入系统 PATH 环境变量
-2. 在 `netprobe/tools/registry.py` 的 `_get_extra_paths()` 函数中添加自定义路径
-
-### Httpx 检测到错误的程序？
-
-如果系统中存在其他同名程序（如 hermes-agent 的 httpx），程序会优先从 GOPATH/bin 查找 ProjectDiscovery 的 httpx，避免冲突。
-
-### 域名解析失败？
-
-程序使用 dnspython 进行 DNS 解析，部分域名的 DNS 服务器可能对 dnspython 的查询超时。此时程序会自动 fallback 到系统 DNS（`socket.getaddrinfo`），确保不会因 DNS 超时而跳过目标。
-
-### 中文标题显示乱码？
-
-Web 探测模块已内置多编码检测：优先检查 HTTP Content-Type 头中的 charset 声明，再检查 HTML meta 标签中的 charset，最后使用 apparent_encoding 自动检测。支持 GBK、GB2312、UTF-8 等常见中文编码。
-
-### 如何添加自定义指纹规则？
-
-编辑 `netprobe/data/fingerprints.json`，按现有格式添加新的规则对象即可，无需修改 Python 代码。每条规则包含 `name`（名称）、`category`（类别）、`patterns`（匹配模式数组）。
-
-### 如何添加自定义敏感路径？
-
-编辑 `netprobe/data/sensitive_paths.json`，按现有格式添加新的路径规则即可。每条规则包含 `path`（路径）、`description`（说明）、`indicator`（响应内容指示器）、`severity`（风险等级：high/medium/low/info）。
-
-### JS 文件分析支持哪些检测？
-
-JS 分析模块从页面中提取 JavaScript 文件并分析：
-- **API 端点** — `/api/...`、`/v1/...`、`fetch()`、`axios`、`XMLHttpRequest` 等调用
-- **密钥泄露** — AWS Key、GitHub Token、JWT、API Key、硬编码密码、Private Key 等 9 类
-- 自动跳过第三方 CDN（googleapis、cloudflare 等），减少噪音
-
-### 国内 Go 工具安装失败？
-
-```bash
-# 设置 Go 代理
-go env -w GOPROXY=https://goproxy.cn,direct
-
-# 如果 sumdb 验证超时（PowerShell）
-$env:GONOSUMDB="*"
-$env:GONOSUMCHECK="*"
-
-# 如果 sumdb 验证超时（Bash）
-export GONOSUMDB="*"
-export GONOSUMCHECK="*"
-```
+| 类别 | 技术 |
+|------|------|
+| 后端框架 | FastAPI + Uvicorn |
+| 数据库 | SQLite + SQLAlchemy ORM（12 张表）|
+| 数据校验 | Pydantic v2 |
+| 定时任务 | APScheduler |
+| 浏览器自动化 | Playwright（Web 截图）|
+| 前端框架 | Vue 3 + TypeScript |
+| UI 组件库 | Element Plus |
+| 图表 | ECharts + vue-echarts（资产关联图谱、风险分布）|
+| 状态/路由 | Pinia + Vue Router |
+| 国际化 | vue-i18n（中英双语）|
+| 构建工具 | Vite |
+| 端口扫描 | python-nmap（nmap）/ masscan / rustscan |
+| 漏洞扫描 | nuclei v3 |
+| 子域名 | subfinder + crt.sh + FOFA + Hunter + nmap dns-brute |
+| DNS | dnspython（含系统 DNS fallback）|
+| HTTP | requests |
+| 规则数据 | JSON（961 指纹 + 566 敏感路径 + 96 接管指纹）|
 
 ## 法律与免责声明
 
@@ -448,17 +358,6 @@ export GONOSUMCHECK="*"
 
 **如果你不确定自己的使用行为是否合法，请不要使用本工具。**
 
-## 技术栈
-
-| 类别 | 技术 |
-|------|------|
-| 后端 | Python 3.10+, Flask |
-| 前端 | 原生 HTML/CSS/JavaScript |
-| DNS | dnspython |
-| 端口扫描 | python-nmap |
-| HTTP | requests |
-| 数据格式 | JSON (指纹规则、敏感路径规则) |
-
 ## 致谢
 
 本工具依赖以下优秀的开源项目：
@@ -481,7 +380,7 @@ export GONOSUMCHECK="*"
 
 1. **提交 Issue** — 报告 Bug、提出功能建议
 2. **提交 Pull Request** — 修复问题或添加新功能
-3. **完善规则** — 添加指纹规则 (`netprobe/data/fingerprints.json`) 或敏感路径规则 (`netprobe/data/sensitive_paths.json`)
+3. **完善规则** — 扩充 Web 指纹 (`netprobe/data/fingerprints.json`)、敏感路径 (`netprobe/data/sensitive_paths.json`) 或接管指纹 (`netprobe/data/takeover_fingerprints.json`)
 
 ### 开发指南
 
@@ -490,14 +389,19 @@ export GONOSUMCHECK="*"
 git clone https://github.com/lium1128/NetProbe.git
 cd NetProbe
 
-# 安装依赖
-pip install -r requirements.txt
+# 后端依赖
+pip install -r server/requirements.txt
 
-# 运行 Web 服务
-python app.py
+# 启动后端（开发，热重载）
+uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
 
-# 或使用命令行
-python main.py example.com
+# 另开终端：启动前端 dev server（5173，自动代理 /api → 8000）
+cd frontend
+npm install
+npm run dev
+
+# 或使用命令行扫描
+python main.py scan example.com
 ```
 
 ## 开源协议
