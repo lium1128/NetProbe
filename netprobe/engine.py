@@ -225,9 +225,21 @@ def do_web_probe(hosts: list[dict], options: dict, emit) -> None:
                     js_urls.extend(w.pop('_js_urls', []))
                     cookies = raw_hdrs.get('Set-Cookie', '')
                     try:
-                        w['tech'] = detect_technologies(raw_hdrs, raw_html, cookies)
+                        tech = detect_technologies(raw_hdrs, raw_html, cookies, w.get('status', 0))
                     except Exception:
-                        w['tech'] = []
+                        tech = []
+                    # Phase C: CDN/WAF 整合 — 把 cdn.py 的检测结果注入 tech（避免与指纹库 CDN 规则割裂）
+                    cdn_name = w.get('cdn', '')
+                    if cdn_name:
+                        tech_names = {t.get('name', '').lower() for t in tech}
+                        if cdn_name.lower() not in tech_names:
+                            tech.append({
+                                'name': cdn_name,
+                                'category': 'CDN',
+                                'version': '',
+                                'confidence': 95,
+                            })
+                    w['tech'] = tech
                 host['web_info'] = web_info
                 host['_pending_js_urls'] = js_urls
 
@@ -705,6 +717,8 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         for future in as_completed(futures):
             host, banners = future.result()
             host['banners'] = banners
+            # Phase E: banner 版本回填 ports（仅填 nmap 未识别的空值，不覆盖权威数据）
+            _backfill_ports_from_banners(host, banners)
 
     banner_total = sum(len(h.get('banners', [])) for h in all_hosts)
     elapsed = time.time() - t0
@@ -796,6 +810,33 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
     emit('progress', text=f'━━━ {target} 扫描完成: {total_hosts} 台主机 · {total_ports} 个端口 · {total_web} 个网站 · 耗时 {total_elapsed:.1f}s ━━━')
 
     return all_hosts
+
+
+def _backfill_ports_from_banners(host: dict, banners: list[dict]) -> None:
+    """用 banner 提取的 product/version 回填 ports（仅填空值，不覆盖 nmap 权威数据）。
+
+    nmap -sV 的探测结果最权威，但当 nmap 未识别出服务时（如 masscan 引擎、
+    或 nmap 返回空 product），banner 抓取的版本信息可作为兜底，提升协议分层
+    和 CVE 查询的准确度。
+    """
+    if not banners:
+        return
+    ports = host.get('ports', [])
+    # 按 port 建 banner 索引
+    banner_by_port = {b.get('port'): b for b in banners if b.get('product') or b.get('version')}
+    for p in ports:
+        port_num = p.get('port', 0)
+        b = banner_by_port.get(port_num)
+        if not b:
+            continue
+        # 仅在 nmap 未识别时回填
+        if not p.get('product'):
+            p['product'] = b.get('product', '')
+        if not p.get('version'):
+            p['version'] = b.get('version', '')
+        # service 兜底：nmap 没给就用 banner 的
+        if not p.get('service'):
+            p['service'] = b.get('service', '')
 
 
 def scan_all_targets(targets: list[str], options: dict, emit) -> list[dict]:

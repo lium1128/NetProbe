@@ -78,8 +78,8 @@ def probe_web(hostname: str, ip: str, port: int) -> dict | None:
             if scheme == 'https':
                 result['ssl'] = _get_ssl_info(target, port)
 
-            # Favicon 哈希指纹（FOFA icon_hash 同款，用于跨资产关联）
-            result['favicon_hash'] = compute_favicon_hash(url)
+            # Favicon 哈希指纹（FOFA icon_hash 同款，优先解析 <link rel=icon>，用于跨资产关联）
+            result['favicon_hash'] = compute_favicon_hash(url, result.get('_raw_html', ''))
 
             # CDN 检测（HTTP 头特征 + IP 网段）
             result['cdn'] = detect_cdn(ip or target, dict(resp.headers))

@@ -106,16 +106,24 @@ def get_asset_detail(hostname: str, ip: str) -> dict | None:
         # Web 站点 + 技术栈
         web_rows = db.query(WebInfo).filter(WebInfo.host_id.in_(host_ids)).all()
         web_info = []
-        all_tech = set()
+        all_tech = []  # 保留完整 tech 对象（含 version/confidence），按 name 去重
+        seen_tech = set()
         for w in web_rows:
             tech = json.loads(w.tech_json) if w.tech_json else []
             for t in tech:
-                if t.get("name"):
-                    all_tech.add(t["name"])
+                name = t.get("name")
+                if name and name not in seen_tech:
+                    seen_tech.add(name)
+                    all_tech.append({
+                        "name": name,
+                        "version": t.get("version", ""),
+                        "confidence": t.get("confidence"),
+                        "category": t.get("category", ""),
+                    })
             web_info.append({
                 "url": w.url, "port": w.port, "status": w.status_code,
                 "title": w.title,
-                "tech": [t.get("name", "") for t in tech if t.get("name")],
+                "tech": tech,
                 "ssl": json.loads(w.ssl_json) if w.ssl_json and w.ssl_json != "null" else None,
                 "cdn": w.cdn_detected or "",
                 "favicon_hash": w.favicon_hash or "",

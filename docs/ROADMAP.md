@@ -72,14 +72,14 @@ NetProbe 不做"又一个安全扫描器"，而要做 **开源领域唯一的一
 
 ## 版本规划
 
-### v2.1 — 资产指纹增强
+### v2.1 — 资产指纹增强 ✅ 已完成
 
-- [ ] **Favicon 哈希指纹** — 计算站点 favicon 的 MMH3 哈希（参考 FOFA `icon_hash`），用于精准识别 Web 应用产品
-- [ ] **指纹版本提取** — 从 Banner、HTTP 头、HTML 内容中提取组件具体版本号（如 `nginx/1.24.0`、`WordPress 6.4`），而不仅仅是名称
-- [ ] **扩展协议 Banner 解析** — 新增 RDP、SMB、VNC、Telnet、MQTT、Memcached、Elasticsearch、Docker API、K8s API 等 10+ 协议识别（参考 Shodan 深度协议检测）
-- [ ] **CDN / WAF / 云平台检测** — 识别 Cloudflare、AWS CloudFront、Akamai、宝塔、安全狗等 CDN 和 WAF 产品（参考 Censys、Wappalyzer）
-- [ ] **指纹置信度评分** — 为每条指纹匹配结果附加置信度百分比（参考 Wappalyzer），减少误报
-- [ ] **社区指纹规则扩展** — 兼容 Wappalyzer JSON 指纹格式 + EHole/Finger 规则，支持导入社区指纹库（覆盖数千种技术）
+- [x] **Favicon 哈希指纹** — 计算站点 favicon 的 MMH3 哈希（FOFA `icon_hash` 同款），优先解析 HTML `<link rel="icon">` 自定义路径回退 `/favicon.ico`，用于跨资产关联
+- [x] **指纹版本提取** — 指纹引擎 pattern 规则新增 `version` 字段（正则提取），从 HTTP 头/meta/HTML 提取组件具体版本号（如 `nginx/1.25.3`、`WordPress 6.4.1`、`PHP/8.2.1`）；多 pattern 命中取最优（有版本 > 无版本，高置信度优先）
+- [x] **扩展协议 Banner 解析** — 补全 SSH/FTP/SMTP/POP3/IMAP/PostgreSQL 版本正则提取（如 `SSH-2.0-OpenSSH_8.9p1` → OpenSSH 8.9p1），banner 结果回填 ports 表（仅填 nmap 未识别的空值，不覆盖权威数据）
+- [x] **CDN / WAF / 云平台检测** — 整合 cdn.py（HTTP 头特征 + IP 网段库）与指纹库 CDN/WAF 规则，检测结果注入 tech 统一展示，避免两套割裂
+- [x] **指纹置信度评分** — 按 pattern 来源加权：header=90 / cookie=85 / meta=80 / script_src=75 / status_code=70 / html=60，前端标签 hover 显示置信度与来源类型
+- [x] **指纹库扩充** — 为 14 条高频产品 pattern 补 version 提取规则（WordPress/Drupal/Joomla/Ghost/Apache/Nginx/Tomcat/IIS/OpenResty/PHP/ThinkPHP），向后兼容不破坏现有规则
 
 ### v2.2 — 任务控制与持久化（v3.0 架构重构）✅ 已完成
 

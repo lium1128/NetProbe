@@ -60,13 +60,19 @@
               {{ row._preview.firstSite.url }}
             </a>
             <div class="tech-tags" v-if="row._preview.firstSite.tech?.length">
-              <el-tag
+              <el-tooltip
                 v-for="(tech, ti) in row._preview.firstSite.tech.slice(0, 5)"
                 :key="ti"
-                size="small"
-                type="info"
-                class="tech-tag"
-              >{{ tech }}</el-tag>
+                :content="techTooltip(tech)"
+                :disabled="!techTooltip(tech)"
+                placement="top"
+              >
+                <el-tag
+                  size="small"
+                  :type="techTagType(tech)"
+                  class="tech-tag"
+                >{{ techLabel(tech) }}</el-tag>
+              </el-tooltip>
             </div>
           </div>
 
@@ -267,9 +273,17 @@
                   </div>
                   <div class="web-title" v-if="site.title">{{ site.title }}</div>
                   <div class="web-tags" v-if="site.tech?.length">
-                    <el-tag v-for="(tech, ti) in site.tech" :key="ti" size="small" type="info" class="tech-tag">
-                      {{ typeof tech === 'string' ? tech : tech.name }}
-                    </el-tag>
+                    <el-tooltip
+                      v-for="(tech, ti) in site.tech"
+                      :key="ti"
+                      :content="techTooltip(tech)"
+                      :disabled="!techTooltip(tech)"
+                      placement="top"
+                    >
+                      <el-tag size="small" :type="techTagType(tech)" class="tech-tag">
+                        {{ techLabel(tech) }}
+                      </el-tag>
+                    </el-tooltip>
                   </div>
                 </div>
               </div>
@@ -312,7 +326,17 @@
               </template>
               <div class="tab-content">
                 <div class="np-tag-group tech-tags-detail">
-                  <el-tag v-for="(tech, i) in detail.tech_stack" :key="i" size="default" type="info">{{ tech }}</el-tag>
+                  <el-tooltip
+                    v-for="(tech, i) in detail.tech_stack"
+                    :key="i"
+                    :content="techTooltip(tech)"
+                    :disabled="!techTooltip(tech)"
+                    placement="top"
+                  >
+                    <el-tag size="default" :type="techTagType(tech)">
+                      {{ techLabel(tech) }}
+                    </el-tag>
+                  </el-tooltip>
                 </div>
               </div>
             </el-tab-pane>
@@ -360,9 +384,17 @@ import type { AssetSummary } from '../types'
 
 const { t } = useI18n()
 
+/** 归一化的技术栈项（兼容旧版 string 数组和新版 {name,version,confidence}） */
+interface TechItem {
+  name: string
+  version?: string
+  confidence?: number
+  category?: string
+}
+
 /** 卡片预览数据：从详情接口抽取用于卡片展示的轻量字段 */
 interface CardPreview {
-  firstSite?: { url: string; status: number | null; title: string; tech: string[]; server?: string }
+  firstSite?: { url: string; status: number | null; title: string; tech: TechItem[]; server?: string }
   ports?: { port: number; proto: string }[]
   /** 头部主端口（站点端口优先，否则第一个开放端口） */
   primary?: { port: number; proto: string }
@@ -439,7 +471,7 @@ function extractPreview(d: any): CardPreview {
         url: d.web_info[0].url,
         status: d.web_info[0].status ?? null,
         title: d.web_info[0].title || '',
-        tech: (d.web_info[0].tech || []).map((x: any) => (typeof x === 'string' ? x : x.name)).filter(Boolean),
+        tech: (d.web_info[0].tech || []).map((x: any) => _normalizeTech(x)).filter(Boolean),
         server: pickHeader(d.web_info[0].headers, 'Server'),
       }
     : undefined)
@@ -468,6 +500,40 @@ function inferProto(url?: string, fallback = 'tcp'): string {
   if (url?.startsWith('https://')) return 'https'
   if (url?.startsWith('http://')) return 'http'
   return fallback
+}
+
+/** 归一化技术栈项：兼容旧版 string 和新版 {name,version,confidence,category} */
+function _normalizeTech(x: any): TechItem {
+  if (typeof x === 'string') return { name: x }
+  return {
+    name: x?.name || '',
+    version: x?.version || '',
+    confidence: typeof x?.confidence === 'number' ? x.confidence : undefined,
+    category: x?.category || '',
+  }
+}
+
+/** 技术栈标签显示文本（带版本） */
+function techLabel(tech: any): string {
+  const t = typeof tech === 'string' ? { name: tech } : tech || {}
+  return t.version ? `${t.name} ${t.version}` : (t.name || '')
+}
+
+/** 技术栈标签 hover tooltip（置信度 + 来源类型） */
+function techTooltip(tech: any): string {
+  const t = typeof tech === 'string' ? {} : tech || {}
+  const parts: string[] = []
+  if (t.category) parts.push(t.category)
+  if (typeof t.confidence === 'number') parts.push(`置信度 ${t.confidence}%`)
+  return parts.join(' · ') || ''
+}
+
+/** CDN/WAF 类标签用 warning 色，其余 info */
+function techTagType(tech: any): '' | 'info' | 'warning' {
+  const t = typeof tech === 'string' ? {} : tech || {}
+  const cat = (t.category || '').toLowerCase()
+  if (cat === 'cdn' || cat === 'waf') return 'warning'
+  return 'info'
 }
 
 /** 点击卡片：打开抽屉并加载完整详情 */
