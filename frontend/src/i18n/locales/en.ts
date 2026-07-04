@@ -359,6 +359,8 @@ export default {
     empty: 'No correlation data. Run scans to generate asset correlations.',
     nodes: 'nodes',
     edges: 'edges',
+    layoutTree: 'Tree',
+    layoutForce: 'Force',
   },
   taskDetail: {
     config: 'Task Config',

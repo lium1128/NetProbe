@@ -359,6 +359,8 @@ export default {
     empty: '暂无关联数据，需先扫描产生资产关联。',
     nodes: '节点',
     edges: '关系',
+    layoutTree: '树形',
+    layoutForce: '力导向',
   },
   taskDetail: {
     config: '任务配置',
