@@ -35,6 +35,10 @@ _API_PATTERNS = [
     re.compile(r'''\.open\s*\(\s*["']\w+["']\s*,\s*["']([^"']+)["']'''),
     # 完整 URL 以 .json/.xml 结尾
     re.compile(r'''["']\s*(https?://[^\s"'<>]+\.(?:json|xml))\s*["']'''),
+    # linkfinder 式：字符串拼接的相对路径 /xxx/yyy（至少两段）
+    re.compile(r'''["']((?:/[a-z0-9_-]+){2,}/?)["']''', re.IGNORECASE),
+    # Vue Router / React Router 路由声明 path: '/xxx'
+    re.compile(r'''path\s*:\s*["'](/[a-z0-9_/:{}-]+)["']''', re.IGNORECASE),
 ]
 
 # ── 密钥泄露检测规则 ──────────────────────────────────
@@ -45,8 +49,24 @@ _SECRET_RULES = [
     (re.compile(r'AKIA[0-9A-Z]{16}'), 'AWS Access Key', 'high'),
     # AWS Secret Key
     (re.compile(r'''(?:aws_secret_access_key|AWS_SECRET_ACCESS_KEY)\s*[=:]\s*["']([A-Za-z0-9/+=]{20,})["']'''), 'AWS Secret Key', 'high'),
+    # AWS STS 临时凭证
+    (re.compile(r'ASIA[0-9A-Z]{16}'), 'AWS STS Token', 'high'),
+    # Google Cloud API Key (AIza 开头)
+    (re.compile(r'AIza[0-9A-Za-z\-_]{35}'), 'Google API Key', 'high'),
+    # Google OAuth Access Token (ya29.)
+    (re.compile(r'ya29\.[0-9A-Za-z\-_]+'), 'Google OAuth Token', 'high'),
     # GitHub Token
-    (re.compile(r'ghp_[A-Za-z0-9]{36}'), 'GitHub Token', 'high'),
+    (re.compile(r'gh[pousr]_[A-Za-z0-9]{36}'), 'GitHub Token', 'high'),
+    # GitLab Token
+    (re.compile(r'glpat-[A-Za-z0-9_-]{20}'), 'GitLab Token', 'high'),
+    # Slack Token
+    (re.compile(r'xox[baprs]-[A-Za-z0-9-]{10,}'), 'Slack Token', 'high'),
+    # Slack Webhook
+    (re.compile(r'https://hooks\.slack\.com/services/T[A-Za-z0-9]+/B[A-Za-z0-9]+/[A-Za-z0-9]+'), 'Slack Webhook', 'high'),
+    # Stripe Key
+    (re.compile(r'(?:sk|pk|rk)_(?:live|test)_[0-9a-zA-Z]{24}'), 'Stripe Key', 'high'),
+    # Azure Storage Key
+    (re.compile(r'DefaultEndpointsProtocol=https?;AccountName=[^;]+;AccountKey=[A-Za-z0-9+/=]{80,}'), 'Azure Storage Key', 'high'),
     # JWT Token
     (re.compile(r'eyJ[A-Za-z0-9\-_+=]{10,}\.eyJ[A-Za-z0-9\-_+=]{10,}'), 'JWT Token', 'medium'),
     # Bearer / Basic Auth
@@ -55,10 +75,12 @@ _SECRET_RULES = [
     (re.compile(r'''(?:api[_-]?key|apikey|api_secret)\s*[=:]\s*["']([^\s"']{8,})["']''', re.IGNORECASE), 'API Key', 'high'),
     # 硬编码密码
     (re.compile(r'''(?:password|passwd|pwd)\s*[=:]\s*["']([^\s"']{4,})["']''', re.IGNORECASE), 'Password', 'high'),
-    # Private Key
-    (re.compile(r'''-----BEGIN\s+(?:RSA\s+)?PRIVATE\s+KEY-----'''), 'Private Key', 'high'),
+    # Private Key（RSA/EC/OpenSSH/DCE）
+    (re.compile(r'''-----BEGIN\s+(?:RSA\s+|EC\s+|OPENSSH\s+|DSA\s+|PGP\s+)?PRIVATE\s+KEY-----'''), 'Private Key', 'high'),
     # 通用 secret/token
-    (re.compile(r'''(?:secret[_-]?key|access[_-]?token|auth[_-]?token|private[_-]?key)\s*[=:]\s*["']([^\s"']{8,})["']''', re.IGNORECASE), 'Secret', 'high'),
+    (re.compile(r'''(?:secret[_-]?key|access[_-]?token|auth[_-]?token|private[_-]?key|client[_-]?secret)\s*[=:]\s*["']([^\s"']{8,})["']''', re.IGNORECASE), 'Secret', 'high'),
+    # 数据库连接串（含密码）
+    (re.compile(r'''(?:mongodb|mysql|postgres|redis)://[^:\s]+:[^\s@]+@[^\s]+''', re.IGNORECASE), 'DB Connection String', 'high'),
 ]
 
 

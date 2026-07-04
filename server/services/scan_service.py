@@ -370,6 +370,22 @@ def _write_results_to_db(scan_id: str, hosts: list[dict], base_domain: str):
                 ))
                 total_sensitive += 1
 
+            # 目录爆破结果复用 SensitivePath 表（severity=info，description 标注 dir_brute）
+            for d in h.get("_dir_findings", []):
+                desc = f"[dir_brute] {d.get('description', '')}".strip()
+                # 把响应体大小也记进 description 辅助判断
+                size = d.get("size", 0)
+                if size:
+                    desc = f"{desc} size={size}" if desc else f"[dir_brute] size={size}"
+                db.add(SensitivePath(
+                    host_id=host.host_id,
+                    path=d.get("path", ""),
+                    description=desc or "[dir_brute]",
+                    severity="info",
+                    status_code=d.get("status"),
+                ))
+                total_sensitive += 1
+
             for j in h.get("js_findings", []):
                 db.add(JSFinding(
                     host_id=host.host_id,

@@ -513,11 +513,11 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
     if _stage_enabled(options, 'fingerprint'):
         phases += 0  # 指纹识别在 Web 探测阶段内联，不单独计数
     if _stage_enabled(options, 'sensitive'):
-        phases += 1
+        phases += 2  # 敏感路径探测 + 目录爆破
     if _stage_enabled(options, 'takeover'):
         phases += 1
     if _stage_enabled(options, 'js'):
-        phases += 1
+        phases += 2  # JS 分析 + API 端点发现
     if _stage_enabled(options, 'vuln'):
         phases += 1
     if _stage_enabled(options, 'banner'):
@@ -658,6 +658,19 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         else:
             emit('progress', text=f'  ✓ 敏感路径探测完成: 无发现 ({elapsed:.1f}s)')
 
+    # ── 目录爆破 ──（复用 sensitive 阶段开关：与敏感路径探测性质类似）
+    if _stage_enabled(options, 'sensitive'):
+        from .dir_brute import brute_for_hosts
+        emit('progress', text=ph('目录爆破 ...'))
+        t0 = time.time()
+        brute_for_hosts(all_hosts)
+        dir_total = sum(len(h.get('_dir_findings', [])) for h in all_hosts)
+        elapsed = time.time() - t0
+        if dir_total:
+            emit('progress', text=f'  ✓ 目录爆破完成: {dir_total} 条发现 ({elapsed:.1f}s)')
+        else:
+            emit('progress', text=f'  ✓ 目录爆破完成: 无发现 ({elapsed:.1f}s)')
+
     # ── 子域名接管检测 ──
     if _stage_enabled(options, 'takeover'):
         emit('progress', text=ph('子域名接管检测 ...'))
@@ -687,6 +700,42 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
             emit('progress', text=f'  ✓ JS 分析完成: {detail} ({elapsed:.1f}s)')
         else:
             emit('progress', text=f'  ✓ JS 分析完成: 无发现 ({elapsed:.1f}s)')
+
+    # ── API 端点发现 ──（复用 js 阶段开关：API 发现依赖 JS 分析的同源逻辑）
+    if _stage_enabled(options, 'js'):
+        from .api_discovery import discover_apis_for_hosts
+        emit('progress', text=ph('API 端点发现 ...'))
+        t0 = time.time()
+        discover_apis_for_hosts(all_hosts)
+        # 把 _api_findings 合并到 js_findings[0]['api_endpoints']（如有）
+        api_merged = 0
+        for host in all_hosts:
+            api_eps = host.pop('_api_findings', [])
+            if not api_eps:
+                continue
+            jsf = host.get('js_findings')
+            if jsf:
+                existing = set(jsf[0].get('api_endpoints', []))
+                jsf[0].setdefault('api_endpoints', [])
+                for ep in api_eps:
+                    if ep not in existing:
+                        jsf[0]['api_endpoints'].append(ep)
+                        existing.add(ep)
+                        api_merged += 1
+            else:
+                # 没有 js_findings 时，创建一个占位条目承接 API 端点
+                host['js_findings'] = [{
+                    'js_url': '',
+                    'size': 0,
+                    'api_endpoints': list(api_eps),
+                    'secrets': [],
+                }]
+                api_merged += len(api_eps)
+        elapsed = time.time() - t0
+        if api_merged:
+            emit('progress', text=f'  ✓ API 发现完成: 新增 {api_merged} 个端点 ({elapsed:.1f}s)')
+        else:
+            emit('progress', text=f'  ✓ API 发现完成: 无发现 ({elapsed:.1f}s)')
 
     if _is_cancelled(options):
         emit('progress', text='  扫描已取消')
