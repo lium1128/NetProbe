@@ -104,6 +104,7 @@ export default {
     title: '任务管理',
     newScan: '新建扫描',
     name: '名称',
+    mode: '类型',
     target: '目标',
     status: '状态',
     hosts: '主机',

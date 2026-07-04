@@ -1,8 +1,35 @@
 """历史查询服务 — 分页、搜索、详情。"""
 
+import json
+
 from ..db import SessionLocal
 from ..models import Scan
 from ..utils import to_iso_z
+
+
+def _infer_scan_mode(options_json: str) -> str:
+    """从 options_json 反推扫描模式（兼容老数据 + 新数据的显式 scan_mode）。
+
+    quick: masscan + no_dns_brute + no_web
+    deep:  nmap + timeout>=900
+    normal: 其余
+    """
+    if not options_json:
+        return "normal"
+    try:
+        opts = json.loads(options_json)
+    except (json.JSONDecodeError, TypeError):
+        return "normal"
+    # 新数据直接有 scan_mode
+    mode = opts.get("scan_mode", "")
+    if mode in ("quick", "normal", "deep"):
+        return mode
+    # 老数据反推
+    if opts.get("portscan_tool") == "masscan" and opts.get("no_dns_brute") and opts.get("no_web"):
+        return "quick"
+    if opts.get("portscan_tool") == "nmap" and opts.get("timeout", 0) >= 900:
+        return "deep"
+    return "normal"
 
 
 def list_scans(page: int = 1, per_page: int = 20, q: str = "", status: str = "") -> dict:
@@ -42,6 +69,7 @@ def list_scans(page: int = 1, per_page: int = 20, q: str = "", status: str = "")
                     "started_at": to_iso_z(s.started_at),
                     "finished_at": to_iso_z(s.finished_at),
                     "duration_secs": s.duration_secs,
+                    "scan_mode": _infer_scan_mode(s.options_json),
                 }
                 for s in items
             ],

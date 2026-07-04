@@ -17,6 +17,7 @@ class ScanRequest(BaseModel):
     port_preset: str = Field(default="common", description="端口预设: common / top1000 / all / custom")
     custom_ports: str = Field(default="", description="自定义端口（port_preset=custom 时使用）")
     screenshot: bool = Field(default=False, description="深度模式：对 Web 站点截图（使用 Playwright，较慢）")
+    scan_mode: str = Field(default="", description="扫描模式: quick / normal / deep")
 
 
 class ScanResponse(BaseModel):

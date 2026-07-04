@@ -104,6 +104,7 @@ export default {
     title: 'Tasks',
     newScan: 'New Scan',
     name: 'Name',
+    mode: 'Mode',
     target: 'Target',
     status: 'Status',
     hosts: 'Hosts',

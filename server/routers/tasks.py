@@ -10,7 +10,7 @@ from ..services.scan_service import (
     cancel_task,
     list_active_tasks,
 )
-from ..services.history_service import delete_scan
+from ..services.history_service import delete_scan, _infer_scan_mode
 from ..db import SessionLocal
 from ..models import Scan
 from ..utils import to_iso_z
@@ -50,6 +50,7 @@ def list_tasks():
                 "duration_secs": s.duration_secs,
                 "progress": "",
                 "options": json.loads(s.options_json) if s.options_json else None,
+                "scan_mode": _infer_scan_mode(s.options_json),
                 "error_msg": s.error_msg or "",
             })
     finally:

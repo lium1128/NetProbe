@@ -48,6 +48,13 @@
               <span class="task-name">{{ row.name || row.base_domain || row.target_raw }}</span>
             </template>
           </el-table-column>
+          <el-table-column :label="t('tasks.mode')" width="90" align="center">
+            <template #default="{ row }">
+              <el-tag :type="modeTagType(row.scan_mode)" size="small" effect="plain">
+                {{ modeLabel(row.scan_mode) }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column :label="t('tasks.target')" min-width="180">
             <template #default="{ row }">
               <router-link :to="`/tasks/${row.scan_id}`" class="link">
@@ -293,6 +300,18 @@ function statusType(status: string) {
   return 'warning'
 }
 
+function modeTagType(mode: string) {
+  if (mode === 'quick') return 'info'
+  if (mode === 'deep') return 'danger'
+  return 'success'
+}
+
+function modeLabel(mode: string) {
+  if (mode === 'quick') return t('dashboard.modeQuick')
+  if (mode === 'deep') return t('dashboard.modeDeep')
+  return t('dashboard.modeNormal')
+}
+
 function statusLabel(status: string) {
   if (status === 'done') return t('history.statusDone')
   if (status === 'error') return t('history.statusError')
@@ -360,6 +379,7 @@ async function handleScan() {
       port_preset: form.portPreset,
       timeout: form.timeout,
       screenshot: form.screenshot,
+      scan_mode: form.scanMode,
     }
     if (form.scanMode === 'quick') {
       opts.portscan_tool = 'masscan'

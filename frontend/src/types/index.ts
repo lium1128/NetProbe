@@ -13,6 +13,7 @@ export interface ScanRequest {
   port_preset?: string
   custom_ports?: string
   screenshot?: boolean
+  scan_mode?: string
 }
 
 /** 扫描响应 */
