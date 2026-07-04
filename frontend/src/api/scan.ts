@@ -137,6 +137,18 @@ export function getAlertEvents(limit = 50): Promise<{ items: any[]; total: numbe
   return api.get('/alerts/events', { params: { limit } })
 }
 
+// ── 全局统计 ──
+
+/** 获取仪表盘全局概览统计 */
+export function getStats(): Promise<Record<string, any>> {
+  return api.get('/stats')
+}
+
+/** 获取单个资产详情（展开行） */
+export function getAssetDetail(hostname: string, ip: string): Promise<any> {
+  return api.get('/stats/asset', { params: { hostname, ip } })
+}
+
 // ── 资产关联 ──
 
 /** 获取资产关联簇 */

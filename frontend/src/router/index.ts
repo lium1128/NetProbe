@@ -18,8 +18,8 @@ const router = createRouter({
     {
       path: '/tasks/:id',
       name: 'task-detail',
-      component: () => import('../views/ScanDetail.vue'),
-      meta: { title: 'Scan Detail' },
+      component: () => import('../views/TaskDetail.vue'),
+      meta: { title: 'Task Detail' },
     },
     {
       path: '/scan/:id',

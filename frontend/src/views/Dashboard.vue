@@ -7,7 +7,7 @@
           <el-icon :size="20" :color="stat.color"><component :is="stat.icon" /></el-icon>
         </div>
         <div class="stat-info">
-          <span class="stat-value">{{ stat.value }}</span>
+          <span class="stat-value" :style="stat.valueColor ? { color: stat.valueColor } : null">{{ stat.value }}</span>
           <span class="stat-label">{{ t(stat.labelKey) }}</span>
         </div>
       </div>
@@ -137,7 +137,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getTasks, getHistory } from '../api/scan'
+import { getTasks, getHistory, getStats } from '../api/scan'
 import type { TaskInfo, HistoryItem } from '../types'
 
 const { t } = useI18n()
@@ -146,6 +146,7 @@ const loadingTasks = ref(true)
 const loadingRecent = ref(true)
 const runningTasks = ref<TaskInfo[]>([])
 const recentScans = ref<HistoryItem[]>([])
+const statsData = ref<Record<string, any>>({})
 let pollTimer: ReturnType<typeof setInterval> | null = null
 
 // ── 实时控制台（SSE 监听运行中任务）──
@@ -219,12 +220,20 @@ watch(liveLogs.value, async () => {
   if (consoleRef.value) consoleRef.value.scrollTop = consoleRef.value.scrollHeight
 })
 
-const stats = computed(() => [
-  { labelKey: 'dashboard.stats.scans', value: recentScans.value.length, icon: 'DataLine', color: '#165dff', bg: 'rgba(22,93,255,0.08)' },
-  { labelKey: 'dashboard.stats.hosts', value: recentScans.value.reduce((s, i) => s + i.host_count, 0), icon: 'Monitor', color: '#00b42a', bg: 'rgba(0,180,42,0.08)' },
-  { labelKey: 'dashboard.stats.ports', value: recentScans.value.reduce((s, i) => s + i.port_count, 0), icon: 'Connection', color: '#ff7d00', bg: 'rgba(255,125,0,0.08)' },
-  { labelKey: 'dashboard.stats.web', value: recentScans.value.reduce((s, i) => s + i.web_count, 0), icon: 'Globe', color: '#722ed1', bg: 'rgba(114,46,209,0.08)' },
-])
+const stats = computed(() => {
+  const d = statsData.value
+  const vuln = Number(d.vuln_count ?? 0)
+  return [
+    { labelKey: 'dashboard.stats.scans', value: d.scan_count ?? 0, icon: 'DataLine', color: '#165dff', bg: 'rgba(22,93,255,0.08)', valueColor: '' },
+    { labelKey: 'dashboard.stats.assets', value: d.asset_count ?? 0, icon: 'Monitor', color: '#00b42a', bg: 'rgba(0,180,42,0.08)', valueColor: '' },
+    { labelKey: 'dashboard.stats.ips', value: d.ip_count ?? 0, icon: 'Link', color: '#ff7d00', bg: 'rgba(255,125,0,0.08)', valueColor: '' },
+    { labelKey: 'dashboard.stats.ports', value: d.port_count ?? 0, icon: 'Connection', color: '#722ed1', bg: 'rgba(114,46,209,0.08)', valueColor: '' },
+    { labelKey: 'dashboard.stats.web', value: d.web_count ?? 0, icon: 'Globe', color: '#165dff', bg: 'rgba(22,93,255,0.08)', valueColor: '' },
+    { labelKey: 'dashboard.stats.protocols', value: d.protocol_count ?? 0, icon: 'Files', color: '#00b42a', bg: 'rgba(0,180,42,0.08)', valueColor: '' },
+    { labelKey: 'dashboard.stats.vulns', value: vuln, icon: 'Warning', color: '#f53f3f', bg: 'rgba(245,63,63,0.08)', valueColor: vuln > 0 ? '#f53f3f' : 'var(--np-text-muted)' },
+    { labelKey: 'dashboard.stats.sensitive', value: d.sensitive_count ?? 0, icon: 'Lock', color: '#ff7d00', bg: 'rgba(255,125,0,0.08)', valueColor: '' },
+  ]
+})
 
 function statusType(status: string) {
   if (status === 'done') return 'success'
@@ -272,6 +281,12 @@ async function fetchRecent() {
   } catch {}
 }
 
+async function fetchStats() {
+  try {
+    statsData.value = await getStats()
+  } catch {}
+}
+
 function startPolling() {
   if (pollTimer) return
   pollTimer = setInterval(fetchRunning, 3000)
@@ -287,7 +302,7 @@ function stopPolling() {
 onMounted(async () => {
   loadingTasks.value = true
   loadingRecent.value = true
-  await Promise.all([fetchRunning(), fetchRecent()])
+  await Promise.all([fetchRunning(), fetchRecent(), fetchStats()])
   loadingTasks.value = false
   loadingRecent.value = false
   if (runningTasks.value.length) startPolling()
@@ -308,7 +323,7 @@ onUnmounted(() => {
 /* ── Stats Row ─────────────────────────────────────────── */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: var(--np-space-4);
   margin-bottom: var(--np-space-5);
 }
