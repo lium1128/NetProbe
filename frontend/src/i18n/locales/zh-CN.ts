@@ -155,6 +155,7 @@ export default {
     openPorts: '开放端口',
     noWebSites: '未发现 Web 站点',
     noPorts: '无开放端口',
+    vulnerabilities: '漏洞',
   },
   history: {
     title: '扫描历史',

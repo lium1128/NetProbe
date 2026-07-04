@@ -36,6 +36,24 @@ class WhoisRecord(Base):
     queried_at = Column(DateTime, default=datetime.utcnow)
 
 
+class Vulnerability(Base):
+    """nuclei 漏洞扫描结果。"""
+
+    __tablename__ = "vulnerabilities"
+
+    vuln_id = Column(Integer, primary_key=True, autoincrement=True)
+    host_id = Column(Integer, ForeignKey("hosts.host_id", ondelete="CASCADE"), nullable=False, index=True)
+    template_id = Column(String(255), default="")
+    name = Column(Text, default="")
+    severity = Column(String(16), default="info", index=True)
+    cve = Column(String(64), default="", index=True)
+    cvss_score = Column(String(8), default="")
+    url = Column(Text, default="")
+    matched_at = Column(Text, default="")
+    extracted_data_json = Column(Text, default="{}")
+    detected_at = Column(DateTime, default=datetime.utcnow)
+
+
 class SensitivePath(Base):
     __tablename__ = "sensitive_paths"
 

@@ -22,6 +22,7 @@ class Host(Base):
     web_info_list = relationship("WebInfo", backref="host", cascade="all, delete-orphan")
     sensitive_paths = relationship("SensitivePath", backref="host", cascade="all, delete-orphan")
     js_findings = relationship("JSFinding", backref="host", cascade="all, delete-orphan")
+    vulnerabilities = relationship("Vulnerability", backref="host", cascade="all, delete-orphan")
 
 
 class Port(Base):

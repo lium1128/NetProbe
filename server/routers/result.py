@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
 from ..db import SessionLocal
-from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding
+from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding, Vulnerability
 from ..services.scan_service import get_task
 from ..services.diff_service import compute_diff, compute_timeline
 from netprobe.formatter import save_results
@@ -98,6 +98,18 @@ def get_result(scan_id: str):
                         "secrets": json.loads(j.secrets_json) if j.secrets_json else [],
                     }
                     for j in host.js_findings
+                ],
+                "vulnerabilities": [
+                    {
+                        "template_id": v.template_id,
+                        "name": v.name,
+                        "severity": v.severity,
+                        "cve": v.cve,
+                        "cvss_score": v.cvss_score,
+                        "url": v.url,
+                        "matched_at": v.matched_at,
+                    }
+                    for v in host.vulnerabilities
                 ],
             }
             hosts.append(host_data)

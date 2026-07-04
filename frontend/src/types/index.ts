@@ -80,6 +80,17 @@ export interface JSFinding {
   secrets: SecretFinding[]
 }
 
+/** 漏洞信息（nuclei） */
+export interface Vulnerability {
+  template_id: string
+  name: string
+  severity: string
+  cve?: string
+  cvss_score?: string
+  url: string
+  matched_at: string
+}
+
 export interface SecretFinding {
   type: string
   match: string
@@ -98,6 +109,7 @@ export interface Host {
   web_info: WebInfo[]
   sensitive: SensitivePath[]
   js_findings: JSFinding[]
+  vulnerabilities?: Vulnerability[]
 }
 
 /** 扫描结果 */

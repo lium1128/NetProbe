@@ -23,6 +23,7 @@ WEAK_TLS_PROTOCOLS = {'TLSv1', 'TLSv1.0', 'TLSv1.1', 'SSLv3', 'SSLv2'}
 CAP_SENSITIVE = 30
 CAP_HIGH_RISK_PORT = 25
 CAP_CVE = 20
+CAP_VULN = 25
 CAP_SSL = 15
 CAP_THREAT = 10
 
@@ -98,6 +99,22 @@ def compute_risk_score(host: dict) -> dict:
     cve_score = min(cve_score, CAP_CVE)
     factors['cve'] = {'score': cve_score, 'details': cve_details}
 
+    # ── 维度: nuclei 漏洞（主动验证的漏洞，比 CVE 匹配更准）──
+    vuln_score = 0
+    vuln_details = []
+    sev_points = {'critical': 25, 'high': 15, 'medium': 8, 'low': 3}
+    for v in host.get('vulnerabilities', []):
+        sev = (v.get('severity') or '').lower()
+        pts = sev_points.get(sev, 0)
+        if pts:
+            vuln_score += pts
+            vuln_details.append({
+                'name': v.get('name', ''), 'severity': sev,
+                'cve': v.get('cve', ''), 'points': pts,
+            })
+    vuln_score = min(vuln_score, CAP_VULN)
+    factors['vulnerabilities'] = {'score': vuln_score, 'details': vuln_details}
+
     # ── 维度 4: SSL 证书问题 ──
     ssl_score = 0
     ssl_details = []
@@ -136,6 +153,7 @@ def compute_risk_score(host: dict) -> dict:
         factors['sensitive']['score']
         + factors['high_risk_ports']['score']
         + factors['cve']['score']
+        + factors['vulnerabilities']['score']
         + factors['ssl']['score']
         + factors['threat']['score']
     )

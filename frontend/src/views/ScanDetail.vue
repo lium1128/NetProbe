@@ -175,6 +175,22 @@
               </div>
             </div>
 
+            <!-- Vulnerabilities (nuclei) -->
+            <div class="site-section" v-if="site._vulns?.length">
+              <div class="section-label danger">
+                {{ t('scanDetail.vulnerabilities') }}
+                <span class="section-badge danger">{{ site._vulns.length }}</span>
+              </div>
+              <div class="mini-table">
+                <div class="mini-row vulnerable" v-for="(v, i) in site._vulns" :key="i">
+                  <el-tag :type="vulnSeverityType(v.severity)" size="small" effect="dark">{{ v.severity }}</el-tag>
+                  <span class="vuln-name">{{ v.name }}</span>
+                  <a v-if="v.cve" :href="`https://nvd.nist.gov/vuln/detail/${v.cve}`" target="_blank" class="mono vuln-cve">{{ v.cve }}</a>
+                  <span class="mono cvss" v-if="v.cvss_score">CVSS {{ v.cvss_score }}</span>
+                </div>
+              </div>
+            </div>
+
             <!-- Sensitive paths -->
             <div class="site-section" v-if="site._sensitive?.length">
               <div class="section-label warn">
@@ -287,6 +303,7 @@ interface SiteInfo extends WebInfo {
   _sensitive: Host['sensitive']
   _jsFindings: Host['js_findings']
   _banners: Host['banners']
+  _vulns: Host['vulnerabilities']
 }
 
 const allWebInfo = computed<SiteInfo[]>(() => {
@@ -300,6 +317,7 @@ const allWebInfo = computed<SiteInfo[]>(() => {
         _sensitive: host.sensitive || [],
         _jsFindings: host.js_findings || [],
         _banners: host.banners || [],
+        _vulns: host.vulnerabilities || [],
       })
     }
   }
@@ -323,6 +341,13 @@ function statusColor(statusStr: string) {
 
 function severityType(sev: string) {
   if (sev === 'high' || sev === 'critical') return 'danger'
+  if (sev === 'medium') return 'warning'
+  return 'info'
+}
+
+function vulnSeverityType(sev: string) {
+  if (sev === 'critical') return 'danger'
+  if (sev === 'high') return 'danger'
   if (sev === 'medium') return 'warning'
   return 'info'
 }
@@ -591,6 +616,15 @@ onMounted(async () => {
   color: var(--np-warning, #e6a23c);
 }
 
+.section-label.danger {
+  color: var(--np-danger, #f53f3f);
+}
+
+.section-badge.danger {
+  background: var(--np-danger-bg, rgba(245,63,63,0.12));
+  color: var(--np-danger, #f53f3f);
+}
+
 .section-badge {
   display: inline-flex;
   align-items: center;
@@ -661,6 +695,35 @@ onMounted(async () => {
 
 .mini-row.sensitive {
   padding: 4px 0;
+}
+
+.mini-row.vulnerable {
+  padding: 5px 0;
+  border-bottom: 1px solid var(--np-border, #e5e6eb);
+  gap: var(--np-space-2, 8px);
+}
+.mini-row.vulnerable:last-child {
+  border-bottom: none;
+}
+.vuln-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--np-text-primary);
+}
+.vuln-cve {
+  font-size: 12px;
+  color: var(--np-blue-500, #165dff);
+  text-decoration: none;
+}
+.vuln-cve:hover {
+  text-decoration: underline;
+}
+.cvss {
+  font-size: 11px;
+  color: var(--np-text-muted, #86909c);
+  background: var(--np-bg-elevated, #f0f2f5);
+  padding: 1px 6px;
+  border-radius: 3px;
 }
 
 /* ═══ Responsive ═══════════════════════════════════════ */

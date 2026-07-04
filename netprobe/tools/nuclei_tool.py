@@ -1,0 +1,177 @@
+"""Nuclei — ProjectDiscovery 漏洞扫描器集成。
+
+调用 nuclei 对 Web 站点批量扫描，解析 JSONL 输出提取漏洞信息。
+照抄 masscan.py 的 subprocess + 逐行解析 + 进度回调 + process_callback 模式。
+"""
+
+import json
+import subprocess
+import tempfile
+import threading
+
+
+def run_nuclei(
+    urls: list[str],
+    severity: str = 'critical,high,medium',
+    templates: str | None = None,
+    rate_limit: int = 50,
+    concurrency: int = 10,
+    timeout: int = 5,
+    max_time: int = 300,
+    on_progress=None,
+    process_callback=None,
+) -> list[dict]:
+    """运行 nuclei 漏洞扫描。
+
+    参数:
+        urls: 待扫描的 URL 列表
+        severity: 严重度过滤 (critical,high,medium,low,info)
+        templates: 模板目录/标签（如 'cves/,vulnerabilities/'），None=默认全部
+        rate_limit: 每秒请求数限制
+        concurrency: 并发模板数
+        timeout: 单个请求超时秒数
+        max_time: 整体最大扫描时间秒数
+        on_progress: 进度回调 on_progress(text)
+        process_callback: 子进程注册回调 process_callback('start'|'end', proc)
+    返回: [{template_id, name, severity, cve, cvss_score, url, matched_at, extracted_data}, ...]
+    """
+    from .registry import get_tool_path
+
+    if not urls:
+        return []
+
+    # 把 URLs 写入临时文件，nuclei 用 -l 批量扫描
+    fd, url_file = tempfile.mkstemp(suffix='.txt', prefix='nuclei_targets_')
+    try:
+        import os
+        os.write(fd, '\n'.join(urls).encode())
+        os.close(fd)
+    except OSError:
+        return []
+
+    cmd = [
+        get_tool_path('nuclei'),
+        '-l', url_file,
+        '-j', '-silent',
+        '-severity', severity,
+        '-rate-limit', str(rate_limit),
+        '-c', str(concurrency),
+        '-timeout', str(timeout),
+        '-max-time', str(max_time),
+        '-retries', '1',
+        '-no-color',
+    ]
+    if templates:
+        cmd.extend(['-t', templates])
+
+    vulns = []
+
+    def _read_stderr(proc):
+        """后台线程读 stderr，转发为进度日志。"""
+        try:
+            for line in proc.stderr:
+                line = line.strip()
+                if not line:
+                    continue
+                # nuclei stderr 含 INF/WRN/ERR 日志
+                if on_progress and ('[' in line or 'ERR' in line or 'FTL' in line):
+                    # 只上报错误/警告，跳过 INF 噪音
+                    if 'ERR' in line or 'FTL' in line or 'WRN' in line:
+                        on_progress(f'    nuclei: {line[40:] if len(line) > 40 else line}')
+        except Exception:
+            pass
+
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+            encoding='utf-8',
+            errors='replace',
+        )
+
+        if process_callback:
+            process_callback('start', proc)
+
+        # 后台读 stderr
+        stderr_thread = threading.Thread(target=_read_stderr, args=(proc,), daemon=True)
+        stderr_thread.start()
+
+        # 主线程逐行读 stdout（JSONL）
+        for line in proc.stdout:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+            except (json.JSONDecodeError, ValueError):
+                continue
+
+            vuln = _parse_nuclei_result(data)
+            if vuln:
+                vulns.append(vuln)
+                if on_progress:
+                    sev = vuln.get('severity', 'info')
+                    name = vuln.get('name', '')[:60]
+                    on_progress(f'    [{sev}] {name}')
+
+        proc.wait(timeout=10)
+
+    except (subprocess.TimeoutExpired, FileNotFoundError) as e:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+        if isinstance(e, FileNotFoundError):
+            if on_progress:
+                on_progress('    [nuclei] 工具未安装，跳过漏洞扫描')
+            return []
+    except Exception:
+        pass
+    finally:
+        if process_callback and 'proc' in dir():
+            try:
+                process_callback('end', proc)
+            except Exception:
+                pass
+        # 清理临时文件
+        try:
+            import os
+            os.unlink(url_file)
+        except OSError:
+            pass
+
+    return vulns
+
+
+def _parse_nuclei_result(data: dict) -> dict | None:
+    """解析 nuclei JSONL 单行结果，提取标准化漏洞字段。"""
+    info = data.get('info') or {}
+
+    # CVE（取第一个）
+    classification = info.get('classification') or {}
+    cve_ids = classification.get('cve-id') or []
+    if isinstance(cve_ids, list) and cve_ids:
+        cve = cve_ids[0]
+    elif isinstance(cve_ids, str):
+        cve = cve_ids
+    else:
+        cve = ''
+
+    cvss_score = ''
+    cvss = classification.get('cvss-score')
+    if cvss is not None:
+        cvss_score = str(cvss)
+
+    return {
+        'template_id': data.get('template-id', '') or data.get('templateID', ''),
+        'name': info.get('name', ''),
+        'severity': (info.get('severity', 'info') or 'info').lower(),
+        'cve': cve,
+        'cvss_score': cvss_score,
+        'url': data.get('url', '') or data.get('matched-at', ''),
+        'matched_at': data.get('matched-at', '') or data.get('matched', ''),
+        'extracted_data': data,
+    }

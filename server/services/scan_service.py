@@ -12,7 +12,7 @@ from netprobe.formatter import save_results
 
 from ..config import DATA_DIR
 from ..db import SessionLocal
-from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding, WhoisRecord
+from ..models import Scan, Host, Port, Banner, WebInfo, SensitivePath, JSFinding, WhoisRecord, Vulnerability
 from ..utils import to_iso_z
 
 # 全局任务存储（内存 + DB 双写）
@@ -359,6 +359,20 @@ def _write_results_to_db(scan_id: str, hosts: list[dict], base_domain: str):
                     type=w.get("type", ""),
                     target=w.get("target", ""),
                     data_json=json.dumps(w.get("data", {}), ensure_ascii=False),
+                ))
+
+            # 漏洞扫描结果（nuclei）
+            for v in h.get("vulnerabilities", []):
+                db.add(Vulnerability(
+                    host_id=host.host_id,
+                    template_id=v.get("template_id", ""),
+                    name=v.get("name", ""),
+                    severity=v.get("severity", "info"),
+                    cve=v.get("cve", ""),
+                    cvss_score=v.get("cvss_score", ""),
+                    url=v.get("url", ""),
+                    matched_at=v.get("matched_at", ""),
+                    extracted_data_json=json.dumps(v.get("extracted_data", {}), ensure_ascii=False),
                 ))
 
             total_hosts += 1

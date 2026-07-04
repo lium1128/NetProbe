@@ -27,6 +27,8 @@ def _get_extra_paths() -> list[str]:
                 paths.append(pf)
         # scoop
         paths.append(str(home / 'scoop' / 'shims'))
+        # 自定义 Go 工具目录（nuclei/masscan 等）
+        paths.append('D:\\go_item\\bin')
     elif is_mac:
         paths.append('/usr/local/bin')
         paths.append('/opt/homebrew/bin')

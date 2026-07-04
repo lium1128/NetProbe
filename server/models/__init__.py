@@ -1,7 +1,7 @@
 from ..db import Base, init_db
 from .scan import Scan
 from .host import Host, Port, Banner
-from .web import WebInfo, SensitivePath, JSFinding, WhoisRecord
+from .web import WebInfo, SensitivePath, JSFinding, WhoisRecord, Vulnerability
 from .schedule import Schedule
 from .alert import Alert, AlertEvent
 
@@ -16,6 +16,7 @@ __all__ = [
     "SensitivePath",
     "JSFinding",
     "WhoisRecord",
+    "Vulnerability",
     "Schedule",
     "Alert",
     "AlertEvent",

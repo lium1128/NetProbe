@@ -155,6 +155,7 @@ export default {
     openPorts: 'Open Ports',
     noWebSites: 'No web sites found',
     noPorts: 'No open ports',
+    vulnerabilities: 'Vulnerabilities',
   },
   history: {
     title: 'Scan History',

@@ -14,6 +14,7 @@ from .scanner import check_nmap_available, run_dns_brute, run_port_scan, resolve
 from .tools.dnsx import run_dnsx
 from .tools.httpx_tool import run_httpx
 from .tools.masscan import run_masscan
+from .tools.nuclei_tool import run_nuclei
 from .tools.rustscan import run_rustscan
 from .tools.subfinder import run_subfinder
 from .tools.registry import get_available_tools
@@ -629,6 +630,67 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
     if _is_cancelled(options):
         emit('progress', text='  扫描已取消')
         return all_hosts
+
+    # ── 漏洞扫描（nuclei，对 Web 站点批量检测）──
+    if not skip_web:
+        emit('progress', text=ph('漏洞扫描 (nuclei) ...'))
+        t0 = time.time()
+        # 收集所有 Web 站点 URL
+        all_urls = []
+        for host in all_hosts:
+            host['vulnerabilities'] = []
+            for w in host.get('web_info', []):
+                url = w.get('url', '')
+                if url:
+                    all_urls.append((host, url))
+
+        if all_urls:
+            # 深度模式跑更多模板
+            is_deep = options.get('scan_mode') == 'deep' or options.get('timeout', 300) >= 900
+            templates = None if is_deep else 'cves/,vulnerabilities/,misconfiguration/'
+            severity = 'critical,high,medium,low' if is_deep else 'critical,high,medium'
+
+            # 按 host 分组跑（每组一个 nuclei 进程，避免 URL 太多超时）
+            from collections import defaultdict
+            host_urls = defaultdict(list)
+            for host, url in all_urls:
+                host_urls[id(host)].append((host, url))
+
+            total_vulns = 0
+            for hid, url_list in host_urls.items():
+                if _is_cancelled(options):
+                    break
+                urls_only = [u for _, u in url_list]
+                host_obj = url_list[0][0]
+                try:
+                    vulns = run_nuclei(
+                        urls_only,
+                        severity=severity,
+                        templates=templates,
+                        max_time=120 if not is_deep else 300,
+                        on_progress=lambda msg: emit('progress', text=msg),
+                        process_callback=options.get('_process_callback'),
+                    )
+                    if vulns:
+                        host_obj['vulnerabilities'] = vulns
+                        total_vulns += len(vulns)
+                except Exception as e:
+                    emit('progress', text=f'    [nuclei] 扫描失败: {e}')
+
+            elapsed = time.time() - t0
+            if total_vulns:
+                # 统计严重度分布
+                sev_counts = {}
+                for h in all_hosts:
+                    for v in h.get('vulnerabilities', []):
+                        s = v.get('severity', 'info')
+                        sev_counts[s] = sev_counts.get(s, 0) + 1
+                dist = ' '.join(f'{k}:{v}' for k, v in sorted(sev_counts.items(), key=lambda x: ['critical','high','medium','low','info'].index(x[0]) if x[0] in ['critical','high','medium','low','info'] else 9))
+                emit('progress', text=f'  ✓ 漏洞扫描完成: {total_vulns} 个漏洞 ({dist}) ({elapsed:.1f}s)')
+            else:
+                emit('progress', text=f'  ✓ 漏洞扫描完成: 无发现 ({elapsed:.1f}s)')
+        else:
+            emit('progress', text='  ✓ 漏洞扫描跳过: 无 Web 站点')
 
     # ── Banner 抓取 ──
     emit('progress', text=ph('Banner 抓取 ...'))
