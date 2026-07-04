@@ -13,7 +13,7 @@ env/
 output/
 
 # ── 数据库与运行时数据 ──
-data/
+/data/
 instance/
 
 # ── 前端 ──

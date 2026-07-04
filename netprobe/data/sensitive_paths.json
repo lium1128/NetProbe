@@ -1,0 +1,3398 @@
+[
+  {
+    "path": "/.git/HEAD",
+    "description": "Git 目录泄露",
+    "indicator": "ref: refs/",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/config",
+    "description": "Git 配置泄露",
+    "indicator": "[core]",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/entries",
+    "description": "SVN 目录泄露",
+    "indicator": "dir",
+    "severity": "high"
+  },
+  {
+    "path": "/.hg/store",
+    "description": "Mercurial 目录泄露",
+    "indicator": "data",
+    "severity": "medium"
+  },
+  {
+    "path": "/.env",
+    "description": "环境变量泄露",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/config.php",
+    "description": "PHP 配置文件",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/config.json",
+    "description": "JSON 配置文件",
+    "indicator": "{",
+    "severity": "low"
+  },
+  {
+    "path": "/config.yaml",
+    "description": "YAML 配置文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/web.config",
+    "description": "IIS 配置文件",
+    "indicator": "<configuration",
+    "severity": "medium"
+  },
+  {
+    "path": "/application.yml",
+    "description": "Spring 配置文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/application.properties",
+    "description": "Spring 属性文件",
+    "indicator": "=",
+    "severity": "medium"
+  },
+  {
+    "path": "/backup.sql",
+    "description": "SQL 备份文件",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/backup.zip",
+    "description": "ZIP 备份文件",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/backup.tar.gz",
+    "description": "TAR 备份文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/db.sql",
+    "description": "数据库备份",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/database.sql",
+    "description": "数据库备份",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/www.zip",
+    "description": "网站源码备份",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/www.tar.gz",
+    "description": "网站源码备份",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/wwwroot.zip",
+    "description": "网站源码备份",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/web.zip",
+    "description": "网站源码备份",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/site.zip",
+    "description": "网站源码备份",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/.DS_Store",
+    "description": "macOS 目录信息",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/Thumbs.db",
+    "description": "Windows 缩略图",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/robots.txt",
+    "description": "Robots 文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/sitemap.xml",
+    "description": "站点地图",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/crossdomain.xml",
+    "description": "Flash 跨域策略",
+    "indicator": "<cross-domain-policy",
+    "severity": "medium"
+  },
+  {
+    "path": "/clientaccesspolicy.xml",
+    "description": "Silverlight 策略",
+    "indicator": "<access-policy",
+    "severity": "medium"
+  },
+  {
+    "path": "/admin",
+    "description": "管理后台",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/admin/login",
+    "description": "管理登录页",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/login",
+    "description": "登录页",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/wp-login.php",
+    "description": "WordPress 登录",
+    "indicator": "wp-login",
+    "severity": "info"
+  },
+  {
+    "path": "/wp-admin/",
+    "description": "WordPress 后台",
+    "indicator": "wp-admin",
+    "severity": "info"
+  },
+  {
+    "path": "/phpmyadmin/",
+    "description": "phpMyAdmin",
+    "indicator": "phpMyAdmin",
+    "severity": "info"
+  },
+  {
+    "path": "/phpinfo.php",
+    "description": "PHP 信息泄露",
+    "indicator": "phpinfo",
+    "severity": "high"
+  },
+  {
+    "path": "/swagger-ui.html",
+    "description": "Swagger UI",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/api-docs",
+    "description": "API 文档",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/swagger.json",
+    "description": "Swagger JSON",
+    "indicator": "\"swagger\"",
+    "severity": "medium"
+  },
+  {
+    "path": "/api/swagger.json",
+    "description": "API Swagger",
+    "indicator": "\"swagger\"",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphql",
+    "description": "GraphQL 端点",
+    "indicator": "\"data\"",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator",
+    "description": "Spring Actuator",
+    "indicator": "\"_links\"",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/env",
+    "description": "Spring 环境变量",
+    "indicator": "\"propertySources\"",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/health",
+    "description": "Spring 健康检查",
+    "indicator": "\"status\"",
+    "severity": "info"
+  },
+  {
+    "path": "/debug",
+    "description": "调试页面",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/trace",
+    "description": "请求追踪",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/status",
+    "description": "服务状态",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/server-info",
+    "description": "服务器信息",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/README.md",
+    "description": "README 文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/readme.txt",
+    "description": "README 文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/CHANGELOG.md",
+    "description": "更新日志",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/package.json",
+    "description": "NPM 包信息",
+    "indicator": "\"dependencies\"",
+    "severity": "medium"
+  },
+  {
+    "path": "/composer.json",
+    "description": "Composer 包信息",
+    "indicator": "\"require\"",
+    "severity": "medium"
+  },
+  {
+    "path": "/Gemfile",
+    "description": "Ruby Gemfile",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/.well-known/security.txt",
+    "description": "安全联系方式",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/.git/index",
+    "description": "Git 索引文件",
+    "indicator": "DIRC",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/objects",
+    "description": "Git 对象目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/logs/HEAD",
+    "description": "Git 日志泄露",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/description",
+    "description": "Git 描述文件",
+    "indicator": "Unnamed repository",
+    "severity": "medium"
+  },
+  {
+    "path": "/.git/packed-refs",
+    "description": "Git 打包引用",
+    "indicator": "refs/",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/info/refs",
+    "description": "Git 引用信息",
+    "indicator": "refs/",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/wc.db",
+    "description": "SVN 数据库泄露",
+    "indicator": "SQLite",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/.svn",
+    "description": "SVN 隐藏目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.hg/dirstate",
+    "description": "Mercurial 状态文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.hg/hgrc",
+    "description": "Mercurial 配置文件",
+    "indicator": "[ui]",
+    "severity": "high"
+  },
+  {
+    "path": "/.bzr/README",
+    "description": "Bazaar 目录泄露",
+    "indicator": "This is a Bazaar",
+    "severity": "medium"
+  },
+  {
+    "path": "/.gitignore",
+    "description": "Git 忽略规则",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/.dockerenv",
+    "description": "Docker 环境标志",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/CVS/Root",
+    "description": "CVS 根目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/CVS/Entries",
+    "description": "CVS 条目文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.env.local",
+    "description": "本地环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.production",
+    "description": "生产环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.development",
+    "description": "开发环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.bak",
+    "description": "环境变量备份",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/config.ini",
+    "description": "INI 配置文件",
+    "indicator": "[",
+    "severity": "medium"
+  },
+  {
+    "path": "/config.yml",
+    "description": "YAML 配置文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/config/database.yml",
+    "description": "Rails 数据库配置",
+    "indicator": "adapter",
+    "severity": "high"
+  },
+  {
+    "path": "/database.yml",
+    "description": "数据库 YAML 配置",
+    "indicator": "adapter",
+    "severity": "high"
+  },
+  {
+    "path": "/settings.py",
+    "description": "Django 设置文件",
+    "indicator": "SECRET_KEY",
+    "severity": "high"
+  },
+  {
+    "path": "/local_settings.py",
+    "description": "本地设置文件",
+    "indicator": "SECRET_KEY",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-config.php",
+    "description": "WordPress 配置文件",
+    "indicator": "DB_PASSWORD",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-config.php.bak",
+    "description": "WordPress 配置备份",
+    "indicator": "DB_PASSWORD",
+    "severity": "high"
+  },
+  {
+    "path": "/configuration.php",
+    "description": "Joomla 配置文件",
+    "indicator": "JConfig",
+    "severity": "high"
+  },
+  {
+    "path": "/config/settings.inc.php",
+    "description": "PrestaShop 配置",
+    "indicator": "_DB_PASSWD_",
+    "severity": "high"
+  },
+  {
+    "path": "/conn.php",
+    "description": "数据库连接文件",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/db.php",
+    "description": "数据库配置文件",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/database.php",
+    "description": "数据库配置文件",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/settings.php",
+    "description": "设置文件",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/settings.json",
+    "description": "JSON 设置文件",
+    "indicator": "{",
+    "severity": "low"
+  },
+  {
+    "path": "/secrets.yml",
+    "description": "Rails 密钥文件",
+    "indicator": "secret_key_base",
+    "severity": "high"
+  },
+  {
+    "path": "/master.key",
+    "description": "Rails 主密钥",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/credentials.yml",
+    "description": "Rails 凭证文件",
+    "indicator": "secret_key_base",
+    "severity": "high"
+  },
+  {
+    "path": "/credentials.yml.enc",
+    "description": "Rails 加密凭证",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.htaccess",
+    "description": "Apache 配置文件",
+    "indicator": "RewriteEngine",
+    "severity": "medium"
+  },
+  {
+    "path": "/.htpasswd",
+    "description": "Apache 密码文件",
+    "indicator": ":",
+    "severity": "high"
+  },
+  {
+    "path": "/httpd.conf",
+    "description": "Apache 主配置",
+    "indicator": "ServerRoot",
+    "severity": "medium"
+  },
+  {
+    "path": "/nginx.conf",
+    "description": "Nginx 配置文件",
+    "indicator": "server {",
+    "severity": "medium"
+  },
+  {
+    "path": "/server.xml",
+    "description": "Tomcat 配置文件",
+    "indicator": "<Connector",
+    "severity": "medium"
+  },
+  {
+    "path": "/weblogic.xml",
+    "description": "WebLogic 配置",
+    "indicator": "<weblogic-web-app",
+    "severity": "medium"
+  },
+  {
+    "path": "/Dockerfile",
+    "description": "Docker 构建文件",
+    "indicator": "FROM",
+    "severity": "medium"
+  },
+  {
+    "path": "/docker-compose.yml",
+    "description": "Docker Compose 配置",
+    "indicator": "services:",
+    "severity": "medium"
+  },
+  {
+    "path": "/docker-compose.yaml",
+    "description": "Docker Compose 配置",
+    "indicator": "services:",
+    "severity": "medium"
+  },
+  {
+    "path": "/dockerfile.bak",
+    "description": "Dockerfile 备份",
+    "indicator": "FROM",
+    "severity": "medium"
+  },
+  {
+    "path": "/Makefile",
+    "description": "Make 构建文件",
+    "indicator": ":",
+    "severity": "low"
+  },
+  {
+    "path": "/.idea/",
+    "description": "JetBrains IDE 配置目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.vscode/",
+    "description": "VS Code 配置目录",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/.vscode/settings.json",
+    "description": "VS Code 设置",
+    "indicator": "{",
+    "severity": "low"
+  },
+  {
+    "path": "/.idea/workspace.xml",
+    "description": "JetBrains 工作区",
+    "indicator": "<project",
+    "severity": "medium"
+  },
+  {
+    "path": "/.git-credentials",
+    "description": "Git 凭证文件",
+    "indicator": "https://",
+    "severity": "high"
+  },
+  {
+    "path": "/.npmrc",
+    "description": "NPM 配置文件",
+    "indicator": "registry",
+    "severity": "medium"
+  },
+  {
+    "path": "/.yarnrc",
+    "description": "Yarn 配置文件",
+    "indicator": "registry",
+    "severity": "medium"
+  },
+  {
+    "path": "/.netrc",
+    "description": "网络凭证文件",
+    "indicator": "login",
+    "severity": "high"
+  },
+  {
+    "path": "/.bash_history",
+    "description": "Bash 历史记录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.bashrc",
+    "description": "Bash 配置文件",
+    "indicator": "alias",
+    "severity": "medium"
+  },
+  {
+    "path": "/.ssh/id_rsa",
+    "description": "SSH 私钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/.ssh/id_dsa",
+    "description": "DSA 私钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/.ssh/id_ecdsa",
+    "description": "ECDSA 私钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/.ssh/id_ed25519",
+    "description": "Ed25519 私钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/.ssh/authorized_keys",
+    "description": "SSH 授权密钥",
+    "indicator": "ssh-",
+    "severity": "high"
+  },
+  {
+    "path": "/.ssh/known_hosts",
+    "description": "SSH 已知主机",
+    "indicator": "ssh-",
+    "severity": "medium"
+  },
+  {
+    "path": "/.ssh/config",
+    "description": "SSH 配置文件",
+    "indicator": "Host",
+    "severity": "high"
+  },
+  {
+    "path": "/id_rsa",
+    "description": "SSH 私钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/private.key",
+    "description": "私有密钥文件",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/privateKey",
+    "description": "私有密钥文件",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/server.key",
+    "description": "服务器密钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/ssl.key",
+    "description": "SSL 私钥",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/key.pem",
+    "description": "PEM 密钥文件",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/cert.pem",
+    "description": "PEM 证书文件",
+    "indicator": "CERTIFICATE",
+    "severity": "high"
+  },
+  {
+    "path": "/server.pem",
+    "description": "服务器 PEM 文件",
+    "indicator": "PRIVATE KEY",
+    "severity": "critical"
+  },
+  {
+    "path": "/ca.crt",
+    "description": "CA 证书",
+    "indicator": "CERTIFICATE",
+    "severity": "high"
+  },
+  {
+    "path": "/ca-bundle.crt",
+    "description": "CA 证书包",
+    "indicator": "CERTIFICATE",
+    "severity": "high"
+  },
+  {
+    "path": "/fullchain.pem",
+    "description": "证书链文件",
+    "indicator": "CERTIFICATE",
+    "severity": "high"
+  },
+  {
+    "path": "/keystore.jks",
+    "description": "Java 密钥库",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/truststore.jks",
+    "description": "Java 信任库",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.pypirc",
+    "description": "Python 包配置",
+    "indicator": "password",
+    "severity": "high"
+  },
+  {
+    "path": "/.aws/credentials",
+    "description": "AWS 凭证文件",
+    "indicator": "aws_access_key_id",
+    "severity": "critical"
+  },
+  {
+    "path": "/.aws/config",
+    "description": "AWS 配置文件",
+    "indicator": "[default]",
+    "severity": "high"
+  },
+  {
+    "path": "/credentials.json",
+    "description": "凭证 JSON 文件",
+    "indicator": "{",
+    "severity": "high"
+  },
+  {
+    "path": "/service-account.json",
+    "description": "GCP 服务账号",
+    "indicator": "private_key",
+    "severity": "critical"
+  },
+  {
+    "path": "/firebase-adminsdk.json",
+    "description": "Firebase 凭证",
+    "indicator": "private_key",
+    "severity": "critical"
+  },
+  {
+    "path": "/adminer.php",
+    "description": "Adminer 数据库管理",
+    "indicator": "Adminer",
+    "severity": "info"
+  },
+  {
+    "path": "/adminer/",
+    "description": "Adminer 目录",
+    "indicator": "Adminer",
+    "severity": "info"
+  },
+  {
+    "path": "/pgadmin/",
+    "description": "pgAdmin 管理面板",
+    "indicator": "pgAdmin",
+    "severity": "info"
+  },
+  {
+    "path": "/phpMyAdmin/",
+    "description": "phpMyAdmin 大小写变体",
+    "indicator": "phpMyAdmin",
+    "severity": "info"
+  },
+  {
+    "path": "/pma/",
+    "description": "phpMyAdmin 简写路径",
+    "indicator": "phpMyAdmin",
+    "severity": "info"
+  },
+  {
+    "path": "/mysql/",
+    "description": "MySQL 管理路径",
+    "indicator": "mysql",
+    "severity": "info"
+  },
+  {
+    "path": "/phpmanager/",
+    "description": "PHP 管理器",
+    "indicator": "php",
+    "severity": "info"
+  },
+  {
+    "path": "/manager/",
+    "description": "Tomcat 管理器",
+    "indicator": "Tomcat",
+    "severity": "info"
+  },
+  {
+    "path": "/manager/html",
+    "description": "Tomcat 管理界面",
+    "indicator": "Tomcat",
+    "severity": "high"
+  },
+  {
+    "path": "/host-manager/",
+    "description": "Tomcat 主机管理",
+    "indicator": "Tomcat",
+    "severity": "info"
+  },
+  {
+    "path": "/jmx-console/",
+    "description": "JBoss JMX 控制台",
+    "indicator": "JMImplementation",
+    "severity": "high"
+  },
+  {
+    "path": "/web-console/",
+    "description": "JBoss Web 控制台",
+    "indicator": "JBoss",
+    "severity": "high"
+  },
+  {
+    "path": "/console/",
+    "description": "Web 控制台",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/console/app/",
+    "description": "应用控制台",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/administrator/",
+    "description": "管理员目录",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/manage/",
+    "description": "管理目录",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/system/",
+    "description": "系统目录",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/panel/",
+    "description": "控制面板",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/cp/",
+    "description": "控制面板简写",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/controlpanel/",
+    "description": "控制面板",
+    "indicator": "<title>",
+    "severity": "info"
+  },
+  {
+    "path": "/cpanel/",
+    "description": "cPanel 面板",
+    "indicator": "cPanel",
+    "severity": "info"
+  },
+  {
+    "path": "/whm/",
+    "description": "WHM 管理面板",
+    "indicator": "WHM",
+    "severity": "info"
+  },
+  {
+    "path": "/plesk/",
+    "description": "Plesk 面板",
+    "indicator": "Plesk",
+    "severity": "info"
+  },
+  {
+    "path": "/webmin/",
+    "description": "Webmin 面板",
+    "indicator": "Webmin",
+    "severity": "info"
+  },
+  {
+    "path": "/usermin/",
+    "description": "Usermin 面板",
+    "indicator": "Usermin",
+    "severity": "info"
+  },
+  {
+    "path": "/adminer.php.bak",
+    "description": "Adminer 备份",
+    "indicator": "Adminer",
+    "severity": "medium"
+  },
+  {
+    "path": "/admin.php",
+    "description": "管理入口",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/admin/index.php",
+    "description": "管理后台入口",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/manage.py",
+    "description": "Django 管理脚本",
+    "indicator": "DJANGO_SETTINGS_MODULE",
+    "severity": "medium"
+  },
+  {
+    "path": "/server-status",
+    "description": "Apache 服务器状态",
+    "indicator": "Apache Server Status",
+    "severity": "high"
+  },
+  {
+    "path": "/server-status/",
+    "description": "Apache 服务器状态",
+    "indicator": "Apache Server Status",
+    "severity": "high"
+  },
+  {
+    "path": "/server-info",
+    "description": "Apache 服务器信息",
+    "indicator": "Server Settings",
+    "severity": "high"
+  },
+  {
+    "path": "/server-info/",
+    "description": "Apache 服务器信息",
+    "indicator": "Server Settings",
+    "severity": "high"
+  },
+  {
+    "path": "/balancer-manager",
+    "description": "Apache 负载均衡管理",
+    "indicator": "Balancer",
+    "severity": "high"
+  },
+  {
+    "path": "/nginx_status",
+    "description": "Nginx 状态页",
+    "indicator": "Active connections",
+    "severity": "high"
+  },
+  {
+    "path": "/stub_status",
+    "description": "Nginx 状态信息",
+    "indicator": "Active connections",
+    "severity": "high"
+  },
+  {
+    "path": "/.well-known/openid-configuration",
+    "description": "OpenID Connect 配置",
+    "indicator": "issuer",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/jwks.json",
+    "description": "JSON Web 密钥集",
+    "indicator": "keys",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/apple-app-site-association",
+    "description": "iOS 应用关联",
+    "indicator": "appIDs",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/assetlinks.json",
+    "description": "Android 应用关联",
+    "indicator": "package_name",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/host-meta",
+    "description": "主机元数据",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/host-meta.json",
+    "description": "主机元数据 JSON",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/phpinfo/",
+    "description": "PHP 信息目录",
+    "indicator": "phpinfo",
+    "severity": "high"
+  },
+  {
+    "path": "/info.php",
+    "description": "PHP 信息文件",
+    "indicator": "phpinfo",
+    "severity": "high"
+  },
+  {
+    "path": "/test.php",
+    "description": "测试 PHP 文件",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/__debug__",
+    "description": "Django 调试页面",
+    "indicator": "Django",
+    "severity": "high"
+  },
+  {
+    "path": "/_next/",
+    "description": "Next.js 静态资源",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/_next/data",
+    "description": "Next.js 数据接口",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/_nuxt/",
+    "description": "Nuxt.js 静态资源",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/__nextjs_original-stack-frame",
+    "description": "Next.js 调试端点",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/_next/image",
+    "description": "Next.js 图像优化",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/actuator/beans",
+    "description": "Spring Bean 列表",
+    "indicator": "bean",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/mappings",
+    "description": "Spring 请求映射",
+    "indicator": "handler",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/configprops",
+    "description": "Spring 配置属性",
+    "indicator": "configs",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/heapdump",
+    "description": "Spring 堆转储",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/actuator/threaddump",
+    "description": "Spring 线程转储",
+    "indicator": "threadName",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/metrics",
+    "description": "Spring 指标",
+    "indicator": "names",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/loggers",
+    "description": "Spring 日志配置",
+    "indicator": "loggers",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/httptrace",
+    "description": "Spring HTTP 追踪",
+    "indicator": "exchanges",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/auditevents",
+    "description": "Spring 审计事件",
+    "indicator": "events",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/shutdown",
+    "description": "Spring 关闭端点",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/actuator/info",
+    "description": "Spring 应用信息",
+    "indicator": "app",
+    "severity": "info"
+  },
+  {
+    "path": "/actuator/scheduledtasks",
+    "description": "Spring 定时任务",
+    "indicator": "cron",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/sessions",
+    "description": "Spring 会话信息",
+    "indicator": "sessions",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/refresh",
+    "description": "Spring 刷新端点",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/gateway/routes",
+    "description": "Spring Gateway 路由",
+    "indicator": "route",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/caches",
+    "description": "Spring 缓存信息",
+    "indicator": "cacheManagers",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/conditions",
+    "description": "Spring 条件评估",
+    "indicator": "positiveMatches",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/flyway",
+    "description": "Spring Flyway 迁移",
+    "indicator": "migrations",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/liquibase",
+    "description": "Spring Liquibase 迁移",
+    "indicator": "changeSets",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/logfile",
+    "description": "Spring 日志文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/prometheus",
+    "description": "Spring Prometheus 指标",
+    "indicator": "# HELP",
+    "severity": "medium"
+  },
+  {
+    "path": "/actuator/trace",
+    "description": "Spring 旧版追踪",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/actuator/dump",
+    "description": "Spring 线程转储旧版",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/jolokia/",
+    "description": "Jolokia JMX 端点",
+    "indicator": "jolokia",
+    "severity": "high"
+  },
+  {
+    "path": "/jolokia/list",
+    "description": "Jolokia MBean 列表",
+    "indicator": "MBean",
+    "severity": "high"
+  },
+  {
+    "path": "/api/",
+    "description": "API 根目录",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/api/v1/",
+    "description": "API v1",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/api/v2/",
+    "description": "API v2",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/v1/",
+    "description": "API v1 根",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/v2/",
+    "description": "API v2 根",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/swagger-ui/",
+    "description": "Swagger UI 目录",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/swagger-ui/index.html",
+    "description": "Swagger UI 主页",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/swagger-resources",
+    "description": "Swagger 资源配置",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/swagger-resources/configuration/ui",
+    "description": "Swagger UI 配置",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/v2/api-docs",
+    "description": "Swagger API 文档",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/v3/api-docs",
+    "description": "OpenAPI v3 文档",
+    "indicator": "openapi",
+    "severity": "medium"
+  },
+  {
+    "path": "/v3/api-docs/swagger",
+    "description": "OpenAPI v3 Swagger",
+    "indicator": "openapi",
+    "severity": "medium"
+  },
+  {
+    "path": "/openapi.json",
+    "description": "OpenAPI JSON",
+    "indicator": "openapi",
+    "severity": "medium"
+  },
+  {
+    "path": "/openapi.yaml",
+    "description": "OpenAPI YAML",
+    "indicator": "openapi",
+    "severity": "medium"
+  },
+  {
+    "path": "/redoc",
+    "description": "ReDoc API 文档",
+    "indicator": "redoc",
+    "severity": "medium"
+  },
+  {
+    "path": "/rapidoc",
+    "description": "RapiDoc API 文档",
+    "indicator": "rapidoc",
+    "severity": "medium"
+  },
+  {
+    "path": "/elements",
+    "description": "Stoplight Elements 文档",
+    "indicator": "elements",
+    "severity": "medium"
+  },
+  {
+    "path": "/postman",
+    "description": "Postman 集合",
+    "indicator": "info",
+    "severity": "medium"
+  },
+  {
+    "path": "/postman/collection.json",
+    "description": "Postman 集合文件",
+    "indicator": "item",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphql/playground",
+    "description": "GraphQL Playground",
+    "indicator": "GraphQL Playground",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphiql",
+    "description": "GraphiQL IDE",
+    "indicator": "GraphiQL",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphiql.php",
+    "description": "GraphiQL PHP",
+    "indicator": "GraphiQL",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphql.php",
+    "description": "GraphQL PHP 端点",
+    "indicator": "graphql",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphql/schema",
+    "description": "GraphQL Schema",
+    "indicator": "data",
+    "severity": "medium"
+  },
+  {
+    "path": "/graphql.json",
+    "description": "GraphQL 配置",
+    "indicator": "data",
+    "severity": "medium"
+  },
+  {
+    "path": "/altair",
+    "description": "Altair GraphQL Client",
+    "indicator": "Altair",
+    "severity": "medium"
+  },
+  {
+    "path": "/api/graphql",
+    "description": "GraphQL API 端点",
+    "indicator": "data",
+    "severity": "medium"
+  },
+  {
+    "path": "/.well-known/",
+    "description": "Well-known 目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/elmah.axd",
+    "description": "ELMAH 错误日志",
+    "indicator": "Error Log",
+    "severity": "high"
+  },
+  {
+    "path": "/trace.axd",
+    "description": "ASP.NET 追踪",
+    "indicator": "Application Trace",
+    "severity": "high"
+  },
+  {
+    "path": "/Web.config",
+    "description": "IIS 配置文件",
+    "indicator": "<configuration",
+    "severity": "medium"
+  },
+  {
+    "path": "/Web.config.bak",
+    "description": "IIS 配置备份",
+    "indicator": "<configuration",
+    "severity": "medium"
+  },
+  {
+    "path": "/app.config",
+    "description": ".NET 应用配置",
+    "indicator": "<configuration",
+    "severity": "medium"
+  },
+  {
+    "path": "/machine.config",
+    "description": ".NET 机器配置",
+    "indicator": "<configuration",
+    "severity": "medium"
+  },
+  {
+    "path": "/Global.asax",
+    "description": "ASP.NET 全局文件",
+    "indicator": "<%@",
+    "severity": "medium"
+  },
+  {
+    "path": "/Default.aspx",
+    "description": "ASP.NET 默认页",
+    "indicator": "<html",
+    "severity": "info"
+  },
+  {
+    "path": "/login.aspx",
+    "description": "ASP.NET 登录页",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/admin.aspx",
+    "description": "ASP.NET 管理页",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/elmah/",
+    "description": "ELMAH 目录",
+    "indicator": "Error Log",
+    "severity": "high"
+  },
+  {
+    "path": "/bin/",
+    "description": ".NET bin 目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/App_Data/",
+    "description": ".NET 数据目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/App_Code/",
+    "description": ".NET 代码目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/backup/",
+    "description": "备份目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/backups/",
+    "description": "备份目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/old/",
+    "description": "旧文件目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/old.zip",
+    "description": "旧文件压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/temp/",
+    "description": "临时文件目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/tmp/",
+    "description": "临时文件目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.tmp/",
+    "description": "隐藏临时目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/private/",
+    "description": "私有目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/upload/",
+    "description": "上传目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/uploads/",
+    "description": "上传目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/files/",
+    "description": "文件目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/download/",
+    "description": "下载目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/downloads/",
+    "description": "下载目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/dump/",
+    "description": "转储目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/dumps/",
+    "description": "转储目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/logs/",
+    "description": "日志目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/log/",
+    "description": "日志目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/error.log",
+    "description": "错误日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/access.log",
+    "description": "访问日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/debug.log",
+    "description": "调试日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/app.log",
+    "description": "应用日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/application.log",
+    "description": "应用日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/out.log",
+    "description": "输出日志",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/nohup.out",
+    "description": "nohup 输出文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.php_error_log",
+    "description": "PHP 错误日志",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/php_error.log",
+    "description": "PHP 错误日志",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/storage/logs/laravel.log",
+    "description": "Laravel 日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/var/log/",
+    "description": "系统日志目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/var/",
+    "description": "Var 目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/cache/",
+    "description": "缓存目录",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/dist/",
+    "description": "构建输出目录",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/build/",
+    "description": "构建目录",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/node_modules/",
+    "description": "Node.js 模块目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/vendor/",
+    "description": "PHP 依赖目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/composer.lock",
+    "description": "Composer 锁文件",
+    "indicator": "packages",
+    "severity": "low"
+  },
+  {
+    "path": "/package-lock.json",
+    "description": "NPM 锁文件",
+    "indicator": "lockfileVersion",
+    "severity": "low"
+  },
+  {
+    "path": "/yarn.lock",
+    "description": "Yarn 锁文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/Gemfile.lock",
+    "description": "Ruby 锁文件",
+    "indicator": "GEM",
+    "severity": "low"
+  },
+  {
+    "path": "/Pipfile",
+    "description": "Python Pipfile",
+    "indicator": "packages",
+    "severity": "low"
+  },
+  {
+    "path": "/Pipfile.lock",
+    "description": "Python Pipfile 锁",
+    "indicator": "default",
+    "severity": "low"
+  },
+  {
+    "path": "/requirements.txt",
+    "description": "Python 依赖",
+    "indicator": "==",
+    "severity": "low"
+  },
+  {
+    "path": "/go.mod",
+    "description": "Go 模块文件",
+    "indicator": "module",
+    "severity": "low"
+  },
+  {
+    "path": "/go.sum",
+    "description": "Go 校验和文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/Cargo.toml",
+    "description": "Rust 项目文件",
+    "indicator": "[package]",
+    "severity": "low"
+  },
+  {
+    "path": "/pom.xml",
+    "description": "Maven 配置文件",
+    "indicator": "<project",
+    "severity": "medium"
+  },
+  {
+    "path": "/build.gradle",
+    "description": "Gradle 构建文件",
+    "indicator": "plugins",
+    "severity": "medium"
+  },
+  {
+    "path": "/build.xml",
+    "description": "Ant 构建文件",
+    "indicator": "<project",
+    "severity": "medium"
+  },
+  {
+    "path": "/BUCK",
+    "description": "Buck 构建文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/pubspec.yaml",
+    "description": "Flutter 项目文件",
+    "indicator": "flutter",
+    "severity": "low"
+  },
+  {
+    "path": "/mix.lock",
+    "description": "Elixir Mix 锁文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/.terraform.tfstate",
+    "description": "Terraform 状态文件",
+    "indicator": "resources",
+    "severity": "high"
+  },
+  {
+    "path": "/terraform.tfstate",
+    "description": "Terraform 状态文件",
+    "indicator": "resources",
+    "severity": "high"
+  },
+  {
+    "path": "/terraform.tfstate.backup",
+    "description": "Terraform 状态备份",
+    "indicator": "resources",
+    "severity": "high"
+  },
+  {
+    "path": "/state.json",
+    "description": "状态文件",
+    "indicator": "{",
+    "severity": "medium"
+  },
+  {
+    "path": "/.terraform/",
+    "description": "Terraform 目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/tfplan",
+    "description": "Terraform 计划文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/install.php",
+    "description": "安装脚本",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/install/",
+    "description": "安装目录",
+    "indicator": "install",
+    "severity": "high"
+  },
+  {
+    "path": "/setup.php",
+    "description": "设置脚本",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/setup/",
+    "description": "设置目录",
+    "indicator": "setup",
+    "severity": "medium"
+  },
+  {
+    "path": "/upgrade.php",
+    "description": "升级脚本",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/update.php",
+    "description": "更新脚本",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/installer/",
+    "description": "安装程序目录",
+    "indicator": "install",
+    "severity": "high"
+  },
+  {
+    "path": "/install/",
+    "description": "应用程序安装目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/protected/",
+    "description": "受保护目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/test/",
+    "description": "测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/tests/",
+    "description": "测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/testing/",
+    "description": "测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/phpunit.xml",
+    "description": "PHPUnit 配置",
+    "indicator": "<phpunit",
+    "severity": "low"
+  },
+  {
+    "path": "/phpunit.xml.dist",
+    "description": "PHPUnit 配置",
+    "indicator": "<phpunit",
+    "severity": "low"
+  },
+  {
+    "path": "/.gitlab-ci.yml",
+    "description": "GitLab CI 配置",
+    "indicator": "stages",
+    "severity": "medium"
+  },
+  {
+    "path": "/.github/workflows/",
+    "description": "GitHub Actions 目录",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/.travis.yml",
+    "description": "Travis CI 配置",
+    "indicator": "language",
+    "severity": "low"
+  },
+  {
+    "path": "/Jenkinsfile",
+    "description": "Jenkins 流水线",
+    "indicator": "pipeline",
+    "severity": "low"
+  },
+  {
+    "path": "/docker-stack.yml",
+    "description": "Docker Stack 文件",
+    "indicator": "services",
+    "severity": "medium"
+  },
+  {
+    "path": "/.editorconfig",
+    "description": "编辑器配置",
+    "indicator": "root",
+    "severity": "low"
+  },
+  {
+    "path": "/.eslintrc",
+    "description": "ESLint 配置",
+    "indicator": "rules",
+    "severity": "low"
+  },
+  {
+    "path": "/.eslintrc.json",
+    "description": "ESLint JSON 配置",
+    "indicator": "rules",
+    "severity": "low"
+  },
+  {
+    "path": "/.eslintrc.js",
+    "description": "ESLint JS 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/tsconfig.json",
+    "description": "TypeScript 配置",
+    "indicator": "compilerOptions",
+    "severity": "low"
+  },
+  {
+    "path": "/jsconfig.json",
+    "description": "JS 配置",
+    "indicator": "compilerOptions",
+    "severity": "low"
+  },
+  {
+    "path": "/webpack.config.js",
+    "description": "Webpack 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/vite.config.js",
+    "description": "Vite 配置",
+    "indicator": "vite",
+    "severity": "low"
+  },
+  {
+    "path": "/vite.config.ts",
+    "description": "Vite TS 配置",
+    "indicator": "vite",
+    "severity": "low"
+  },
+  {
+    "path": "/next.config.js",
+    "description": "Next.js 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/nuxt.config.js",
+    "description": "Nuxt.js 配置",
+    "indicator": "export",
+    "severity": "low"
+  },
+  {
+    "path": "/craco.config.js",
+    "description": "CRACO 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/vue.config.js",
+    "description": "Vue CLI 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/angular.json",
+    "description": "Angular 配置",
+    "indicator": "projects",
+    "severity": "low"
+  },
+  {
+    "path": "/.babelrc",
+    "description": "Babel 配置",
+    "indicator": "presets",
+    "severity": "low"
+  },
+  {
+    "path": "/babel.config.js",
+    "description": "Babel 配置",
+    "indicator": "presets",
+    "severity": "low"
+  },
+  {
+    "path": "/postcss.config.js",
+    "description": "PostCSS 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/tailwind.config.js",
+    "description": "Tailwind 配置",
+    "indicator": "module.exports",
+    "severity": "low"
+  },
+  {
+    "path": "/CNAME",
+    "description": "GitHub Pages CNAME",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/humans.txt",
+    "description": "Humans 文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/security.txt",
+    "description": "安全联系方式",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/security.txt",
+    "description": "标准安全联系方式",
+    "indicator": "Contact",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/dnt-policy.txt",
+    "description": "DNT 策略",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/change-password",
+    "description": "修改密码端点",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/xmlrpc.php",
+    "description": "WordPress XML-RPC",
+    "indicator": "XML-RPC",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-json/",
+    "description": "WordPress REST API",
+    "indicator": "WordPress",
+    "severity": "info"
+  },
+  {
+    "path": "/wp-json/wp/v2/users",
+    "description": "WordPress 用户枚举",
+    "indicator": "id",
+    "severity": "medium"
+  },
+  {
+    "path": "/wp-content/uploads/",
+    "description": "WordPress 上传目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/wp-content/plugins/",
+    "description": "WordPress 插件目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/wp-content/themes/",
+    "description": "WordPress 主题目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/wp-content/backup-db/",
+    "description": "WordPress 数据库备份",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-content/backups/",
+    "description": "WordPress 备份目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-content/debug.log",
+    "description": "WordPress 调试日志",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-content/uploads/wpconfig.bak",
+    "description": "WordPress 配置备份",
+    "indicator": "DB_PASSWORD",
+    "severity": "high"
+  },
+  {
+    "path": "/wp-config-sample.php",
+    "description": "WordPress 配置示例",
+    "indicator": "DB_PASSWORD",
+    "severity": "medium"
+  },
+  {
+    "path": "/wp-content/wp-config.php",
+    "description": "WordPress 配置文件",
+    "indicator": "DB_PASSWORD",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/text-base/",
+    "description": "SVN 文本基目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/prop-base/",
+    "description": "SVN 属性基目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/props/",
+    "description": "SVN 属性目录",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.svn/tmp/",
+    "description": "SVN 临时目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.svn/all-wcprops",
+    "description": "SVN 属性文件",
+    "indicator": "svn:ver",
+    "severity": "high"
+  },
+  {
+    "path": "/CVS/Repository",
+    "description": "CVS 仓库信息",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/CVS/Tag",
+    "description": "CVS 标签文件",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/index.php.bak",
+    "description": "首页 PHP 备份",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/index.php.old",
+    "description": "首页 PHP 旧版",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/index.html.bak",
+    "description": "首页 HTML 备份",
+    "indicator": "<html",
+    "severity": "medium"
+  },
+  {
+    "path": "/index.html.old",
+    "description": "首页 HTML 旧版",
+    "indicator": "<html",
+    "severity": "medium"
+  },
+  {
+    "path": "/config.php.bak",
+    "description": "PHP 配置备份",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/config.php.old",
+    "description": "PHP 配置旧版",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/config.php.swp",
+    "description": "Vim 交换文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.config.php.swp",
+    "description": "隐藏 Vim 交换文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.index.php.swp",
+    "description": "首页 Vim 交换文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.index.html.swp",
+    "description": "首页 HTML 交换文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.config.php~",
+    "description": "编辑器备份文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.index.php~",
+    "description": "首页编辑器备份",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/index.php~",
+    "description": "首页编辑器备份",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/1.sql",
+    "description": "SQL 文件",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/data.sql",
+    "description": "数据 SQL 文件",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/dump.sql",
+    "description": "SQL 转储文件",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/sql.sql",
+    "description": "SQL 文件",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/mysql.sql",
+    "description": "MySQL 备份",
+    "indicator": "MySQL",
+    "severity": "high"
+  },
+  {
+    "path": "/mysqldump.sql",
+    "description": "MySQL 转储",
+    "indicator": "MySQL",
+    "severity": "high"
+  },
+  {
+    "path": "/users.sql",
+    "description": "用户数据 SQL",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/admin.sql",
+    "description": "管理员 SQL",
+    "indicator": "INSERT",
+    "severity": "high"
+  },
+  {
+    "path": "/backup.rar",
+    "description": "RAR 备份文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/backup.7z",
+    "description": "7z 备份文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/backup.tar",
+    "description": "TAR 备份文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/backup.tar.bz2",
+    "description": "TAR BZ2 备份",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/web.tar",
+    "description": "Web TAR 文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/web.rar",
+    "description": "Web RAR 文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/web.7z",
+    "description": "Web 7z 文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/html.zip",
+    "description": "HTML 源码压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/app.zip",
+    "description": "应用源码压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/src.zip",
+    "description": "源码压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/code.zip",
+    "description": "代码压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/1.zip",
+    "description": "数字压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/1.tar.gz",
+    "description": "数字压缩包",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/archive.zip",
+    "description": "归档压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/release.zip",
+    "description": "发布压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/test.zip",
+    "description": "测试压缩包",
+    "indicator": "PK",
+    "severity": "medium"
+  },
+  {
+    "path": "/debug.zip",
+    "description": "调试压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/config.zip",
+    "description": "配置压缩包",
+    "indicator": "PK",
+    "severity": "high"
+  },
+  {
+    "path": "/core",
+    "description": "core dump 文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/core.dump",
+    "description": "core dump 文件",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/heapdump",
+    "description": "Java 堆转储",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/heapdump.hprof",
+    "description": "Java HPROF 堆转储",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/javacore",
+    "description": "Java core 转储",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/Snapfile",
+    "description": "Snapfile 数据库转储",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/proc/self/environ",
+    "description": "进程环境变量",
+    "indicator": "PATH",
+    "severity": "critical"
+  },
+  {
+    "path": "/etc/passwd",
+    "description": "系统密码文件",
+    "indicator": "root:",
+    "severity": "critical"
+  },
+  {
+    "path": "/etc/shadow",
+    "description": "系统影子密码",
+    "indicator": "root:",
+    "severity": "critical"
+  },
+  {
+    "path": "/etc/group",
+    "description": "系统组文件",
+    "indicator": "root:",
+    "severity": "high"
+  },
+  {
+    "path": "/etc/hosts",
+    "description": "主机文件",
+    "indicator": "localhost",
+    "severity": "high"
+  },
+  {
+    "path": "/etc/issue",
+    "description": "系统标识",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/etc/motd",
+    "description": "每日消息",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/etc/fstab",
+    "description": "文件系统表",
+    "indicator": "uuid",
+    "severity": "high"
+  },
+  {
+    "path": "/etc/crontab",
+    "description": "定时任务",
+    "indicator": "cron",
+    "severity": "high"
+  },
+  {
+    "path": "/boot.ini",
+    "description": "Windows 启动配置",
+    "indicator": "boot loader",
+    "severity": "high"
+  },
+  {
+    "path": "/win.ini",
+    "description": "Windows 配置文件",
+    "indicator": "[fonts]",
+    "severity": "high"
+  },
+  {
+    "path": "/system32/",
+    "description": "Windows 系统目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/System32/drivers/etc/hosts",
+    "description": "Windows 主机文件",
+    "indicator": "localhost",
+    "severity": "high"
+  },
+  {
+    "path": "/.well-known/webfinger",
+    "description": "WebFinger 端点",
+    "indicator": "subject",
+    "severity": "info"
+  },
+  {
+    "path": "/manifest.json",
+    "description": "Web 应用清单",
+    "indicator": "name",
+    "severity": "info"
+  },
+  {
+    "path": "/asset.json",
+    "description": "资产清单",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/metrics",
+    "description": "Prometheus 指标",
+    "indicator": "# HELP",
+    "severity": "medium"
+  },
+  {
+    "path": "/prometheus",
+    "description": "Prometheus 指标",
+    "indicator": "# HELP",
+    "severity": "medium"
+  },
+  {
+    "path": "/prometheus/metrics",
+    "description": "Prometheus 指标",
+    "indicator": "# HELP",
+    "severity": "medium"
+  },
+  {
+    "path": "/_metrics",
+    "description": "内部指标",
+    "indicator": "# HELP",
+    "severity": "medium"
+  },
+  {
+    "path": "/internal/metrics",
+    "description": "内部指标",
+    "indicator": "# HELP",
+    "severity": "medium"
+  },
+  {
+    "path": "/stats",
+    "description": "统计信息",
+    "indicator": "{",
+    "severity": "medium"
+  },
+  {
+    "path": "/stats/",
+    "description": "统计目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/_stats",
+    "description": "内部统计",
+    "indicator": "{",
+    "severity": "medium"
+  },
+  {
+    "path": "/internal/",
+    "description": "内部目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/internal/debug",
+    "description": "内部调试",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/internal/",
+    "description": "内部端点",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/dev/",
+    "description": "开发目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/demo/",
+    "description": "演示目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/beta/",
+    "description": "Beta 测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/alpha/",
+    "description": "Alpha 测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/qa/",
+    "description": "QA 测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/uat/",
+    "description": "UAT 测试目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/sandbox/",
+    "description": "沙箱目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/staging/",
+    "description": "预发布目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/stage/",
+    "description": "阶段目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/preview/",
+    "description": "预览目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/__health__",
+    "description": "健康检查端点",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/_ah/health",
+    "description": "App Engine 健康检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/_ah/start",
+    "description": "App Engine 启动",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/_ah/stop",
+    "description": "App Engine 停止",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/_ah/",
+    "description": "App Engine 内部",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/healthz",
+    "description": "Kubernetes 健康检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/healthcheck",
+    "description": "健康检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/health",
+    "description": "健康检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/readiness",
+    "description": "就绪检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/readinessprobe",
+    "description": "就绪探针",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/liveness",
+    "description": "存活检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/livenessprobe",
+    "description": "存活探针",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/acme-challenge/",
+    "description": "ACME 挑战目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/cgi-bin/",
+    "description": "CGI 目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/cgi-bin/printenv",
+    "description": "CGI 环境变量",
+    "indicator": "SERVER_NAME",
+    "severity": "high"
+  },
+  {
+    "path": "/cgi-bin/php",
+    "description": "CGI PHP",
+    "indicator": "phpinfo",
+    "severity": "high"
+  },
+  {
+    "path": "/scripts/",
+    "description": "脚本目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/bin/",
+    "description": "二进制目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/search.php",
+    "description": "搜索脚本",
+    "indicator": "<form",
+    "severity": "info"
+  },
+  {
+    "path": "/suggest",
+    "description": "建议端点",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/shell.php",
+    "description": "Web Shell",
+    "indicator": "<?php",
+    "severity": "critical"
+  },
+  {
+    "path": "/c99.php",
+    "description": "C99 Web Shell",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/r57.php",
+    "description": "R57 Web Shell",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/webshell.php",
+    "description": "Web Shell",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/cmd.php",
+    "description": "命令执行脚本",
+    "indicator": "<?php",
+    "severity": "critical"
+  },
+  {
+    "path": "/eval.php",
+    "description": "代码执行脚本",
+    "indicator": "<?php",
+    "severity": "critical"
+  },
+  {
+    "path": "/phpspy.php",
+    "description": "PHP Spy Shell",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/b374k.php",
+    "description": "b374k Web Shell",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/wso.php",
+    "description": "WSO Web Shell",
+    "indicator": "",
+    "severity": "critical"
+  },
+  {
+    "path": "/.well-known/nodeinfo",
+    "description": "NodeInfo 端点",
+    "indicator": "nodeinfo",
+    "severity": "info"
+  },
+  {
+    "path": "/nodeinfo",
+    "description": "NodeInfo 端点",
+    "indicator": "nodeinfo",
+    "severity": "info"
+  },
+  {
+    "path": "/api/v1/instance",
+    "description": "Mastodon 实例信息",
+    "indicator": "uri",
+    "severity": "info"
+  },
+  {
+    "path": "/api/nodeinfo",
+    "description": "NodeInfo API",
+    "indicator": "nodeinfo",
+    "severity": "info"
+  },
+  {
+    "path": "/.git/refs/heads/master",
+    "description": "Git master 分支引用",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/refs/heads/main",
+    "description": "Git main 分支引用",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/refs/stash",
+    "description": "Git stash 引用",
+    "indicator": "",
+    "severity": "high"
+  },
+  {
+    "path": "/.git/COMMIT_EDITMSG",
+    "description": "Git 提交信息",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.git/FETCH_HEAD",
+    "description": "Git fetch 记录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/.svn/text-base/index.php.svn-base",
+    "description": "SVN 基础文件",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/config/database.php",
+    "description": "CodeIgniter 数据库配置",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/system/config/database.php",
+    "description": "系统数据库配置",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/application/config/database.php",
+    "description": "应用数据库配置",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/application/config/config.php",
+    "description": "应用配置",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/app/config/database.php",
+    "description": "应用数据库配置",
+    "indicator": "<?php",
+    "severity": "high"
+  },
+  {
+    "path": "/app/config/parameters.yml",
+    "description": "Symfony 参数配置",
+    "indicator": "parameters",
+    "severity": "high"
+  },
+  {
+    "path": "/app/config/parameters.xml",
+    "description": "Symfony 参数 XML",
+    "indicator": "parameters",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.example",
+    "description": "环境变量示例",
+    "indicator": "=",
+    "severity": "medium"
+  },
+  {
+    "path": "/.env.sample",
+    "description": "环境变量样本",
+    "indicator": "=",
+    "severity": "medium"
+  },
+  {
+    "path": "/.env.dev",
+    "description": "开发环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.prod",
+    "description": "生产环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.staging",
+    "description": "预发布环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.test",
+    "description": "测试环境变量",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.backup",
+    "description": "环境变量备份",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.save",
+    "description": "环境变量保存",
+    "indicator": "=",
+    "severity": "high"
+  },
+  {
+    "path": "/.env.dist",
+    "description": "环境变量分发",
+    "indicator": "=",
+    "severity": "medium"
+  },
+  {
+    "path": "/.env.default",
+    "description": "环境变量默认",
+    "indicator": "=",
+    "severity": "medium"
+  },
+  {
+    "path": "/.ftpconfig",
+    "description": "FTP 配置文件",
+    "indicator": "{",
+    "severity": "high"
+  },
+  {
+    "path": "/.ftpquota",
+    "description": "FTP 配额文件",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/sftp-config.json",
+    "description": "SFTP 配置",
+    "indicator": "{",
+    "severity": "high"
+  },
+  {
+    "path": "/.sftpconfig",
+    "description": "SFTP 配置",
+    "indicator": "{",
+    "severity": "high"
+  },
+  {
+    "path": "/.htpasswd.bak",
+    "description": "Apache 密码备份",
+    "indicator": ":",
+    "severity": "high"
+  },
+  {
+    "path": "/credentials",
+    "description": "凭证文件",
+    "indicator": ":",
+    "severity": "high"
+  },
+  {
+    "path": "/.google.oauth",
+    "description": "Google OAuth 凭证",
+    "indicator": "{",
+    "severity": "high"
+  },
+  {
+    "path": "/oauth.js",
+    "description": "OAuth 脚本",
+    "indicator": "client_id",
+    "severity": "medium"
+  },
+  {
+    "path": "/tokens.json",
+    "description": "令牌文件",
+    "indicator": "token",
+    "severity": "high"
+  },
+  {
+    "path": "/token.json",
+    "description": "令牌文件",
+    "indicator": "token",
+    "severity": "high"
+  },
+  {
+    "path": "/.well-known/swagger.json",
+    "description": "标准 Swagger",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/api-docs/swagger",
+    "description": "Swagger 文档",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/spec/",
+    "description": "API 规范目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/spec.json",
+    "description": "API 规范",
+    "indicator": "openapi",
+    "severity": "medium"
+  },
+  {
+    "path": "/swagger/v1/swagger.json",
+    "description": ".NET Swagger",
+    "indicator": "swagger",
+    "severity": "medium"
+  },
+  {
+    "path": "/help",
+    "description": "帮助端点",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/help/",
+    "description": "帮助目录",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/faq",
+    "description": "常见问题",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/sitemap.txt",
+    "description": "文本站点地图",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/sitemap-news.xml",
+    "description": "新闻站点地图",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/sitemap-index.xml",
+    "description": "站点地图索引",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/sitemaps.xml",
+    "description": "站点地图",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/.well-known/sitemap.xml",
+    "description": "标准站点地图",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/feed",
+    "description": "RSS Feed",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/rss",
+    "description": "RSS Feed",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/rss.xml",
+    "description": "RSS XML",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/atom.xml",
+    "description": "Atom Feed",
+    "indicator": "<?xml",
+    "severity": "info"
+  },
+  {
+    "path": "/favicon.ico",
+    "description": "网站图标",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/apple-touch-icon.png",
+    "description": "Apple 触摸图标",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/apple-app-site-association",
+    "description": "iOS 应用关联",
+    "indicator": "appIDs",
+    "severity": "info"
+  },
+  {
+    "path": "/assetlinks.json",
+    "description": "Android 资产关联",
+    "indicator": "package_name",
+    "severity": "info"
+  },
+  {
+    "path": "/health/live",
+    "description": "存活检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/health/ready",
+    "description": "就绪检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/health/startup",
+    "description": "启动检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/internal/health",
+    "description": "内部健康检查",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/metrics/",
+    "description": "指标目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/internal/stats",
+    "description": "内部统计",
+    "indicator": "{",
+    "severity": "medium"
+  },
+  {
+    "path": "/_internal/",
+    "description": "内部目录",
+    "indicator": "",
+    "severity": "medium"
+  },
+  {
+    "path": "/server.php",
+    "description": "服务器脚本",
+    "indicator": "<?php",
+    "severity": "medium"
+  },
+  {
+    "path": "/info.json",
+    "description": "信息 JSON",
+    "indicator": "{",
+    "severity": "info"
+  },
+  {
+    "path": "/version",
+    "description": "版本信息",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/version.txt",
+    "description": "版本文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/VERSION",
+    "description": "版本文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/build.info",
+    "description": "构建信息",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/BUILD",
+    "description": "构建文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/COMMIT",
+    "description": "提交信息",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/REVISION",
+    "description": "修订信息",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/CHANGELOG",
+    "description": "变更日志",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/CHANGES",
+    "description": "变更记录",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/AUTHORS",
+    "description": "作者列表",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/CONTRIBUTORS",
+    "description": "贡献者列表",
+    "indicator": "",
+    "severity": "low"
+  },
+  {
+    "path": "/LICENSE",
+    "description": "许可证文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/NOTICE",
+    "description": "声明文件",
+    "indicator": "",
+    "severity": "info"
+  },
+  {
+    "path": "/TODO",
+    "description": "待办列表",
+    "indicator": "",
+    "severity": "low"
+  }
+]

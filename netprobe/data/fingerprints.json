@@ -1,0 +1,7233 @@
+[
+  {
+    "name": "WordPress",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "wp-content"},
+      {"type": "html", "pattern": "wp-includes"},
+      {"type": "meta", "pattern": "WordPress"},
+      {"type": "header", "pattern": "re:X-Powered-By.*WordPress"},
+      {"type": "html", "pattern": "/wp-json/"}
+    ]
+  },
+  {
+    "name": "Drupal",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Drupal"},
+      {"type": "header", "pattern": "X-Drupal-Cache"},
+      {"type": "header", "pattern": "X-Generator: Drupal"},
+      {"type": "html", "pattern": "Drupal.settings"},
+      {"type": "html", "pattern": "sites/default/files"}
+    ]
+  },
+  {
+    "name": "Joomla",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Joomla"},
+      {"type": "header", "pattern": "X-Content-Powered-By"}
+    ]
+  },
+  {
+    "name": "DedeCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "/templets/"},
+      {"type": "html", "pattern": "dedeajax"},
+      {"type": "meta", "pattern": "DedeCMS"}
+    ]
+  },
+  {
+    "name": "ThinkPHP",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: ThinkPHP"},
+      {"type": "cookie", "pattern": "think_var"},
+      {"type": "html", "pattern": "think\\"}
+    ]
+  },
+  {
+    "name": "Hexo",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Hexo"},
+      {"type": "html", "pattern": "hexo"}
+    ]
+  },
+  {
+    "name": "Hugo",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Hugo"},
+      {"type": "html", "pattern": "hugo"}
+    ]
+  },
+  {
+    "name": "React",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "react"},
+      {"type": "html", "pattern": "_reactRootContainer"},
+      {"type": "script_src", "pattern": "react"}
+    ]
+  },
+  {
+    "name": "Vue.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "v-"},
+      {"type": "html", "pattern": "vue"},
+      {"type": "script_src", "pattern": "vue"}
+    ]
+  },
+  {
+    "name": "Angular",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "ng-app"},
+      {"type": "html", "pattern": "ng-version"},
+      {"type": "script_src", "pattern": "angular"}
+    ]
+  },
+  {
+    "name": "Next.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "__next"},
+      {"type": "html", "pattern": "_next/static"},
+      {"type": "header", "pattern": "x-nextjs-cache"}
+    ]
+  },
+  {
+    "name": "Nuxt.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "__nuxt"},
+      {"type": "html", "pattern": "_nuxt/"}
+    ]
+  },
+  {
+    "name": "jQuery",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "jquery"},
+      {"type": "script_src", "pattern": "jquery"},
+      {"type": "html", "pattern": "jQuery v"}
+    ]
+  },
+  {
+    "name": "Bootstrap",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "bootstrap"},
+      {"type": "html", "pattern": "re:class=\"[^\"]*col-(?:xs|sm|md|lg)-"},
+      {"type": "script_src", "pattern": "bootstrap"}
+    ]
+  },
+  {
+    "name": "Tailwind CSS",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "script_src", "pattern": "tailwindcss"},
+      {"type": "html", "pattern": "re:class=\"[^\"]*(?:flex|grid|gap-|p-|m-|text-|bg-)[0-9]"},
+      {"type": "html", "pattern": "tailwind"}
+    ]
+  },
+  {
+    "name": "Laravel",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "laravel_session"},
+      {"type": "cookie", "pattern": "XSRF-TOKEN"},
+      {"type": "header", "pattern": "laravel"}
+    ]
+  },
+  {
+    "name": "Django",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "csrftoken"},
+      {"type": "cookie", "pattern": "sessionid"},
+      {"type": "header", "pattern": "re:X-Frame-Options.*DENY"},
+      {"type": "html", "pattern": "csrfmiddlewaretoken"}
+    ]
+  },
+  {
+    "name": "Flask",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "session"},
+      {"type": "header", "pattern": "Server: Werkzeug"}
+    ]
+  },
+  {
+    "name": "Express",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Express"},
+      {"type": "cookie", "pattern": "connect.sid"}
+    ]
+  },
+  {
+    "name": "Spring",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "JSESSIONID"},
+      {"type": "header", "pattern": "X-Application-Context"}
+    ]
+  },
+  {
+    "name": "ASP.NET",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-AspNet-Version"},
+      {"type": "header", "pattern": "X-Powered-By: ASP.NET"},
+      {"type": "cookie", "pattern": "ASP.NET_SessionId"},
+      {"type": "html", "pattern": "__VIEWSTATE"}
+    ]
+  },
+  {
+    "name": "Nginx",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: nginx"}
+    ]
+  },
+  {
+    "name": "Apache",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Apache"}
+    ]
+  },
+  {
+    "name": "IIS",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Microsoft-IIS"}
+    ]
+  },
+  {
+    "name": "Tomcat",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Apache-Coyote"},
+      {"type": "html", "pattern": "Apache Tomcat"}
+    ]
+  },
+  {
+    "name": "Caddy",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Caddy"}
+    ]
+  },
+  {
+    "name": "OpenResty",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: openresty"}
+    ]
+  },
+  {
+    "name": "Cloudflare",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "cf-ray"},
+      {"type": "header", "pattern": "cloudflare"},
+      {"type": "header", "pattern": "__cfduid"},
+      {"type": "header", "pattern": "cf-cache-status"}
+    ]
+  },
+  {
+    "name": "CloudFront",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-Amz-Cf-Id"},
+      {"type": "header", "pattern": "X-Cache: Hit from cloudfront"},
+      {"type": "header", "pattern": "Via:.*cloudfront"}
+    ]
+  },
+  {
+    "name": "Akamai",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-Akamai-Transformed"},
+      {"type": "header", "pattern": "AkamaiGHost"}
+    ]
+  },
+  {
+    "name": "Vercel",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-vercel-id"},
+      {"type": "header", "pattern": "x-vercel-cache"}
+    ]
+  },
+  {
+    "name": "ALIYUN OSS",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-oss-request-id"},
+      {"type": "header", "pattern": "AliyunOSS"}
+    ]
+  },
+  {
+    "name": "ModSecurity",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "Mod_Security"},
+      {"type": "header", "pattern": "NSFocus"}
+    ]
+  },
+  {
+    "name": "SafeLine",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "X-Safe-Line"}
+    ]
+  },
+  {
+    "name": "Safedog",
+    "category": "WAF",
+    "patterns": [
+      {"type": "cookie", "pattern": "safedog-flow"},
+      {"type": "header", "pattern": "Safedog"}
+    ]
+  },
+  {
+    "name": "Yundun",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "YUNDUN"}
+    ]
+  },
+  {
+    "name": "Huawei Cloud WAF",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "HWS"}
+    ]
+  },
+  {
+    "name": "Google Analytics",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "google-analytics.com"},
+      {"type": "html", "pattern": "gtag"},
+      {"type": "script_src", "pattern": "google-analytics"}
+    ]
+  },
+  {
+    "name": "Baidu Tongji",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "hm.baidu.com"},
+      {"type": "html", "pattern": "bdhm.baidu.com"},
+      {"type": "script_src", "pattern": "hm.baidu.com"}
+    ]
+  },
+  {
+    "name": "Google Tag Manager",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "googletagmanager.com"},
+      {"type": "script_src", "pattern": "googletagmanager"}
+    ]
+  },
+  {
+    "name": "Node.js",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Express"},
+      {"type": "header", "pattern": "X-Powered-By: Node.js"}
+    ]
+  },
+  {
+    "name": "PHP",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: PHP"},
+      {"type": "cookie", "pattern": "PHPSESSID"}
+    ]
+  },
+  {
+    "name": "Typecho",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Typecho"},
+      {"type": "html", "pattern": "usr/themes/"},
+      {"type": "html", "pattern": "var/Typecho"},
+      {"type": "script_src", "pattern": "typecho"}
+    ]
+  },
+  {
+    "name": "Ghost",
+    "category": "CMS",
+    "patterns": [
+      {"type": "header", "pattern": "X-Ghost-Cache-Status"},
+      {"type": "html", "pattern": "ghost-url"},
+      {"type": "html", "pattern": "/ghost/"},
+      {"type": "meta", "pattern": "Ghost"}
+    ]
+  },
+  {
+    "name": "Jekyll",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Jekyll"},
+      {"type": "html", "pattern": "jekyll"}
+    ]
+  },
+  {
+    "name": "Shopify",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "header", "pattern": "X-ShopId"},
+      {"type": "header", "pattern": "X-Shopify-Stage"},
+      {"type": "html", "pattern": "cdn.shopify.com"},
+      {"type": "cookie", "pattern": "shopify"}
+    ]
+  },
+  {
+    "name": "Discuz",
+    "category": "Forum",
+    "patterns": [
+      {"type": "meta", "pattern": "Discuz!"},
+      {"type": "html", "pattern": "discuz_uid"},
+      {"type": "html", "pattern": "forum.php?mod="},
+      {"type": "cookie", "pattern": "_saltkey"}
+    ]
+  },
+  {
+    "name": "phpBB",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "phpBB"},
+      {"type": "html", "pattern": "style/phpbb"},
+      {"type": "cookie", "pattern": "phpbb"}
+    ]
+  },
+  {
+    "name": "Z-Blog",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Z-BlogPHP"},
+      {"type": "html", "pattern": "zb_users/"},
+      {"type": "script_src", "pattern": "zblogphp"}
+    ]
+  },
+  {
+    "name": "EmpireCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "EmpireCMS"},
+      {"type": "html", "pattern": "e/data/"},
+      {"type": "html", "pattern": "phome.net"}
+    ]
+  },
+  {
+    "name": "PHPCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "PHPCMS"},
+      {"type": "html", "pattern": "phpcms"},
+      {"type": "html", "pattern": "caches/"}
+    ]
+  },
+  {
+    "name": "通达OA",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "通达OA"},
+      {"type": "html", "pattern": "tongda"},
+      {"type": "html", "pattern": "/general/"},
+      {"type": "html", "pattern": "MYOA"}
+    ]
+  },
+  {
+    "name": "泛微OA",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "wui/"},
+      {"type": "html", "pattern": "ecology"},
+      {"type": "html", "pattern": "weaver"},
+      {"type": "html", "pattern": "/mobile/plugin/"},
+      {"type": "cookie", "pattern": "ecology"}
+    ]
+  },
+  {
+    "name": "致远OA",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "seeyon"},
+      {"type": "html", "pattern": "A6"},
+      {"type": "html", "pattern": "A8"},
+      {"type": "cookie", "pattern": "JSESSIONID"},
+      {"type": "html", "pattern": "/seeyon/"}
+    ]
+  },
+  {
+    "name": "蓝凌OA",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "landray"},
+      {"type": "html", "pattern": "lanco"},
+      {"type": "html", "pattern": "/sys/ui/"},
+      {"type": "html", "pattern": "kmss"}
+    ]
+  },
+  {
+    "name": "用友NC",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "nc.yonyou"},
+      {"type": "html", "pattern": "/nc/"},
+      {"type": "html", "pattern": "yonyou"},
+      {"type": "header", "pattern": "yonyou"}
+    ]
+  },
+  {
+    "name": "金蝶EAS",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "kingdee"},
+      {"type": "html", "pattern": "eas"},
+      {"type": "html", "pattern": "/eas/"},
+      {"type": "cookie", "pattern": "kd"}
+    ]
+  },
+  {
+    "name": "万户OA",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "wanhu"},
+      {"type": "html", "pattern": "whoffice"},
+      {"type": "html", "pattern": "/default/office/"}
+    ]
+  },
+  {
+    "name": "华天OA",
+    "category": "OA",
+    "patterns": [
+      {"type": "html", "pattern": "huatian"},
+      {"type": "html", "pattern": "htoffice"},
+      {"type": "html", "pattern": "OA_jiantou"}
+    ]
+  },
+  {
+    "name": "Svelte",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "svelte-"},
+      {"type": "script_src", "pattern": "svelte"},
+      {"type": "html", "pattern": "__svelte"}
+    ]
+  },
+  {
+    "name": "Gin",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Gin"},
+      {"type": "cookie", "pattern": "gin_session"}
+    ]
+  },
+  {
+    "name": "FastAPI",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "FastAPI"},
+      {"type": "html", "pattern": "openapi.json"},
+      {"type": "header", "pattern": "re:Server.*uvicorn"}
+    ]
+  },
+  {
+    "name": "Ruby on Rails",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "_session"},
+      {"type": "header", "pattern": "X-Rack-Cache"},
+      {"type": "header", "pattern": "X-Runtime"},
+      {"type": "meta", "pattern": "csrf-param"},
+      {"type": "html", "pattern": "csrf-token"}
+    ]
+  },
+  {
+    "name": "ASP.NET MVC",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-AspNetMvc-Version"},
+      {"type": "html", "pattern": "__RequestVerificationToken"},
+      {"type": "html", "pattern": "asp.net mvc"}
+    ]
+  },
+  {
+    "name": "Lodash",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "lodash"},
+      {"type": "html", "pattern": "lodash"}
+    ]
+  },
+  {
+    "name": "Moment.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "moment"},
+      {"type": "html", "pattern": "moment-with-locales"}
+    ]
+  },
+  {
+    "name": "Day.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "dayjs"},
+      {"type": "html", "pattern": "dayjs"}
+    ]
+  },
+  {
+    "name": "ECharts",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "echarts"},
+      {"type": "html", "pattern": "echarts"},
+      {"type": "html", "pattern": "zrender"}
+    ]
+  },
+  {
+    "name": "D3.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "d3"},
+      {"type": "html", "pattern": "d3-select"},
+      {"type": "html", "pattern": "data-d3"}
+    ]
+  },
+  {
+    "name": "Three.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "three"},
+      {"type": "html", "pattern": "THREE."},
+      {"type": "html", "pattern": "three.js"}
+    ]
+  },
+  {
+    "name": "Ant Design",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "ant-btn"},
+      {"type": "html", "pattern": "ant-"},
+      {"type": "script_src", "pattern": "antd"}
+    ]
+  },
+  {
+    "name": "Element UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "el-button"},
+      {"type": "html", "pattern": "el-"},
+      {"type": "script_src", "pattern": "element-ui"}
+    ]
+  },
+  {
+    "name": "Jetty",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Jetty"},
+      {"type": "header", "pattern": "Jetty("}
+    ]
+  },
+  {
+    "name": "Traefik",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Traefik"}
+    ]
+  },
+  {
+    "name": "Envoy",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: envoy"},
+      {"type": "header", "pattern": "x-envoy-upstream-service-time"}
+    ]
+  },
+  {
+    "name": "Lighttpd",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: lighttpd"}
+    ]
+  },
+  {
+    "name": "Tengine",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Tengine"}
+    ]
+  },
+  {
+    "name": "phpMyAdmin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "phpmyadmin"},
+      {"type": "html", "pattern": "phpMyAdmin"},
+      {"type": "header", "pattern": "phpMyAdmin"}
+    ]
+  },
+  {
+    "name": "Adminer",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "adminer"},
+      {"type": "html", "pattern": "Adminer"},
+      {"type": "cookie", "pattern": "adminer"}
+    ]
+  },
+  {
+    "name": "pgAdmin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "pgadmin"},
+      {"type": "html", "pattern": "pgAdmin"},
+      {"type": "cookie", "pattern": "pga4_session"}
+    ]
+  },
+  {
+    "name": "Redis Commander",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "redis-commander"},
+      {"type": "html", "pattern": "Redis Commander"},
+      {"type": "header", "pattern": "redis-commander"}
+    ]
+  },
+  {
+    "name": "MongoDB Compass",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "mongodb-compass"},
+      {"type": "html", "pattern": "MongoDB Compass"}
+    ]
+  },
+  {
+    "name": "Solr Admin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "solr-admin"},
+      {"type": "html", "pattern": "Solr Admin"},
+      {"type": "html", "pattern": "/solr/"}
+    ]
+  },
+  {
+    "name": "Elasticsearch Head",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "elasticsearch-head"},
+      {"type": "html", "pattern": "elasticsearch"},
+      {"type": "header", "pattern": "elastic"}
+    ]
+  },
+  {
+    "name": "宝塔面板",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "宝塔"},
+      {"type": "html", "pattern": "bt-panel"},
+      {"type": "header", "pattern": "Bt-Panel"},
+      {"type": "html", "pattern": "/btpanel/"}
+    ]
+  },
+  {
+    "name": "1Panel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "1Panel"},
+      {"type": "header", "pattern": "1panel"},
+      {"type": "html", "pattern": "1panel"}
+    ]
+  },
+  {
+    "name": "Webmin",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "webmin"},
+      {"type": "html", "pattern": "Webmin"},
+      {"type": "header", "pattern": "MiniServ"}
+    ]
+  },
+  {
+    "name": "cPanel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "cpanel"},
+      {"type": "header", "pattern": "cPanel"},
+      {"type": "cookie", "pattern": "cpanel"}
+    ]
+  },
+  {
+    "name": "Plesk",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "plesk"},
+      {"type": "header", "pattern": "Plesk"},
+      {"type": "html", "pattern": "Plesk"}
+    ]
+  },
+  {
+    "name": "AMH",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "amh"},
+      {"type": "header", "pattern": "AMH"}
+    ]
+  },
+  {
+    "name": "Kangle",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "header", "pattern": "Server: kangle"},
+      {"type": "html", "pattern": "kangle"}
+    ]
+  },
+  {
+    "name": "AppNode",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "appnode"},
+      {"type": "header", "pattern": "AppNode"}
+    ]
+  },
+  {
+    "name": "腾讯云CDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-NWS-LOG-UUID"},
+      {"type": "header", "pattern": "x-cdn-list"},
+      {"type": "header", "pattern": "X-Cache-Lookup"}
+    ]
+  },
+  {
+    "name": "百度云加速",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "Server: yunjiasu"},
+      {"type": "header", "pattern": "x-cdn-provider: yunjiasu"}
+    ]
+  },
+  {
+    "name": "又拍云",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-Cache: HIT"},
+      {"type": "header", "pattern": "upyun"},
+      {"type": "header", "pattern": "Bucket"}
+    ]
+  },
+  {
+    "name": "七牛云",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-Qiniu"},
+      {"type": "header", "pattern": "qiniu"},
+      {"type": "header", "pattern": "X-Log: Q"}
+    ]
+  },
+  {
+    "name": "华为云CDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-HW-Trace-ID"},
+      {"type": "header", "pattern": "hwcdn"},
+      {"type": "header", "pattern": "HWS"}
+    ]
+  },
+  {
+    "name": "Fastly",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "Fastly"},
+      {"type": "header", "pattern": "x-served-by: cache"},
+      {"type": "header", "pattern": "x-fastly"}
+    ]
+  },
+  {
+    "name": "Imperva",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "X-Iinfo"},
+      {"type": "cookie", "pattern": "incap_ses"},
+      {"type": "cookie", "pattern": "visid_incap"}
+    ]
+  },
+  {
+    "name": "云锁",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "yunsuo"},
+      {"type": "cookie", "pattern": "yunsuo_session"}
+    ]
+  },
+  {
+    "name": "Grafana",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "grafana"},
+      {"type": "html", "pattern": "Grafana"},
+      {"type": "cookie", "pattern": "grafana_sess"},
+      {"type": "header", "pattern": "grafana"}
+    ]
+  },
+  {
+    "name": "Kibana",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "kibana"},
+      {"type": "html", "pattern": "Kibana"},
+      {"type": "cookie", "pattern": "kibana"},
+      {"type": "header", "pattern": "kbn"}
+    ]
+  },
+  {
+    "name": "Prometheus",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "prometheus"},
+      {"type": "html", "pattern": "Prometheus"},
+      {"type": "header", "pattern": "prometheus"}
+    ]
+  },
+  {
+    "name": "Zabbix",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "zabbix"},
+      {"type": "html", "pattern": "Zabbix"},
+      {"type": "cookie", "pattern": "zbx_session"},
+      {"type": "html", "pattern": "zbx_sessid"}
+    ]
+  },
+  {
+    "name": "Nagios",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "nagios"},
+      {"type": "html", "pattern": "Nagios"},
+      {"type": "html", "pattern": "nagioscore"}
+    ]
+  },
+  {
+    "name": "Datadog",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "x-datadog"},
+      {"type": "header", "pattern": "Datadog"},
+      {"type": "html", "pattern": "datadog"}
+    ]
+  },
+  {
+    "name": "Jenkins",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "X-Jenkins"},
+      {"type": "header", "pattern": "Jenkins-Version"},
+      {"type": "html", "pattern": "jenkins"},
+      {"type": "cookie", "pattern": "JSESSIONID"}
+    ]
+  },
+  {
+    "name": "GitLab",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "gitlab"},
+      {"type": "html", "pattern": "GitLab"},
+      {"type": "meta", "pattern": "gitlab"},
+      {"type": "header", "pattern": "X-Gitlab"}
+    ]
+  },
+  {
+    "name": "Gitea",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "gitea"},
+      {"type": "html", "pattern": "Gitea"},
+      {"type": "meta", "pattern": "Gitea"}
+    ]
+  },
+  {
+    "name": "Drone CI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "drone"},
+      {"type": "header", "pattern": "Drone"}
+    ]
+  },
+  {
+    "name": "SonarQube",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "sonarqube"},
+      {"type": "html", "pattern": "SonarQube"},
+      {"type": "header", "pattern": "sonar"}
+    ]
+  },
+  {
+    "name": "Swagger UI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "swagger-ui"},
+      {"type": "html", "pattern": "Swagger UI"},
+      {"type": "html", "pattern": "swagger"}
+    ]
+  },
+  {
+    "name": "Kubernetes Dashboard",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "kubernetes-dashboard"},
+      {"type": "html", "pattern": "Kubernetes Dashboard"},
+      {"type": "html", "pattern": "kd-app"}
+    ]
+  },
+  {
+    "name": "RabbitMQ Management",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "rabbitmq"},
+      {"type": "html", "pattern": "RabbitMQ"},
+      {"type": "header", "pattern": "rabbitmq"}
+    ]
+  },
+  {
+    "name": "Nacos",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "nacos"},
+      {"type": "html", "pattern": "Nacos"},
+      {"type": "header", "pattern": "Nacos"}
+    ]
+  },
+  {
+    "name": "Apollo",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "apollo"},
+      {"type": "html", "pattern": "Apollo"},
+      {"type": "header", "pattern": "apollo"}
+    ]
+  },
+  {
+    "name": "SkyWalking",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "skywalking"},
+      {"type": "html", "pattern": "SkyWalking"},
+      {"type": "header", "pattern": "skywalking"}
+    ]
+  },
+  {
+    "name": "Consul",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "consul"},
+      {"type": "html", "pattern": "Consul by HashiCorp"},
+      {"type": "header", "pattern": "consul"}
+    ]
+  },
+  {
+    "name": "etcd",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "etcd"},
+      {"type": "header", "pattern": "etcd"}
+    ]
+  },
+  {
+    "name": "Magento",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "Magento"},
+      {"type": "cookie", "pattern": "X-Magento-Vary"},
+      {"type": "html", "pattern": "mage/"},
+      {"type": "header", "pattern": "Magento"}
+    ]
+  },
+  {
+    "name": "WooCommerce",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "woocommerce"},
+      {"type": "meta", "pattern": "WooCommerce"},
+      {"type": "script_src", "pattern": "woocommerce"}
+    ]
+  },
+  {
+    "name": "PrestaShop",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "prestashop"},
+      {"type": "meta", "pattern": "PrestaShop"},
+      {"type": "cookie", "pattern": "PrestaShop"}
+    ]
+  },
+  {
+    "name": "OpenCart",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "opencart"},
+      {"type": "html", "pattern": "OpenCart"},
+      {"type": "cookie", "pattern": "OCSESSID"}
+    ]
+  },
+  {
+    "name": "Shopee",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "shopee"},
+      {"type": "header", "pattern": "shopee"}
+    ]
+  },
+  {
+    "name": "NodeBB",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "nodebb"},
+      {"type": "html", "pattern": "NodeBB"},
+      {"type": "cookie", "pattern": "express.sid"}
+    ]
+  },
+  {
+    "name": "Discourse",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "discourse"},
+      {"type": "html", "pattern": "Discourse"},
+      {"type": "meta", "pattern": "discourse"}
+    ]
+  },
+  {
+    "name": "Flarum",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "flarum"},
+      {"type": "html", "pattern": "Flarum"},
+      {"type": "meta", "pattern": "flarum"}
+    ]
+  },
+  {
+    "name": "织梦CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "dedecms"},
+      {"type": "html", "pattern": "DedeCMS"},
+      {"type": "meta", "pattern": "织梦"}
+    ]
+  },
+  {
+    "name": "帝国CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "帝国CMS"},
+      {"type": "html", "pattern": "phome"},
+      {"type": "html", "pattern": "/e/admin/"}
+    ]
+  },
+  {
+    "name": "PHPWind",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "phpwind"},
+      {"type": "meta", "pattern": "phpwind"}
+    ]
+  },
+  {
+    "name": "JetBrains TeamCity",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "TeamCity"},
+      {"type": "html", "pattern": "teamcity"}
+    ]
+  },
+  {
+    "name": "Bamboo",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "bamboo"},
+      {"type": "header", "pattern": "Bamboo"}
+    ]
+  },
+  {
+    "name": "Nexus Repository",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "nexus"},
+      {"type": "header", "pattern": "Nexus"},
+      {"type": "html", "pattern": "Sonatype Nexus"}
+    ]
+  },
+  {
+    "name": "Harbor",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "harbor"},
+      {"type": "header", "pattern": "Harbor"},
+      {"type": "html", "pattern": "Harbor"}
+    ]
+  },
+  {
+    "name": "Portainer",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "portainer"},
+      {"type": "header", "pattern": "Portainer"}
+    ]
+  },
+  {
+    "name": "MinIO Console",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "minio"},
+      {"type": "header", "pattern": "MinIO"},
+      {"type": "html", "pattern": "MinIO Console"}
+    ]
+  },
+  {
+    "name": "Rocket.Chat",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "rocket.chat"},
+      {"type": "html", "pattern": "Rocket.Chat"},
+      {"type": "header", "pattern": "rocket.chat"}
+    ]
+  },
+  {
+    "name": "WordPress.com",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "wp.com"},
+      {"type": "header", "pattern": "hosted by wordpress.com"},
+      {"type": "html", "pattern": "wordpress.com"}
+    ]
+  },
+  {
+    "name": "Strapi",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "strapi"},
+      {"type": "header", "pattern": "strapi"},
+      {"type": "html", "pattern": "Strapi"}
+    ]
+  },
+  {
+    "name": "Craft CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "cookie", "pattern": "CraftSessionId"},
+      {"type": "cookie", "pattern": "csrf"},
+      {"type": "html", "pattern": "Craft CMS"}
+    ]
+  },
+  {
+    "name": "SilverStripe",
+    "category": "CMS",
+    "patterns": [
+      {"type": "cookie", "pattern": "PHPSESSID"},
+      {"type": "html", "pattern": "silverstripe"},
+      {"type": "header", "pattern": "SilverStripe"}
+    ]
+  },
+  {
+    "name": "Textpattern",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Textpattern"},
+      {"type": "html", "pattern": "textpattern"}
+    ]
+  },
+  {
+    "name": "Umbraco",
+    "category": "CMS",
+    "patterns": [
+      {"type": "header", "pattern": "X-Umb-"},
+      {"type": "html", "pattern": "umbraco"},
+      {"type": "cookie", "pattern": "UMB_UCONTEXT"}
+    ]
+  },
+  {
+    "name": "Concrete5",
+    "category": "CMS",
+    "patterns": [
+      {"type": "cookie", "pattern": "CONCRETE5"},
+      {"type": "html", "pattern": "concrete5"},
+      {"type": "meta", "pattern": "concrete5"}
+    ]
+  },
+  {
+    "name": "Contao",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "contao"},
+      {"type": "meta", "pattern": "Contao"}
+    ]
+  },
+  {
+    "name": "MODX",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "modx"},
+      {"type": "meta", "pattern": "MODX"}
+    ]
+  },
+  {
+    "name": "TYPO3",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "typo3"},
+      {"type": "meta", "pattern": "TYPO3"}
+    ]
+  },
+  {
+    "name": "Sitecore",
+    "category": "CMS",
+    "patterns": [
+      {"type": "cookie", "pattern": "SC_ANALYTICS"},
+      {"type": "html", "pattern": "sitecore"}
+    ]
+  },
+  {
+    "name": "Liferay",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "liferay"},
+      {"type": "cookie", "pattern": "JSESSIONID"},
+      {"type": "header", "pattern": "Liferay"}
+    ]
+  },
+  {
+    "name": "Adobe Experience Manager",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "/etc/clientlibs/"},
+      {"type": "html", "pattern": "cq-"},
+      {"type": "html", "pattern": "adobe"}
+    ]
+  },
+  {
+    "name": "Ember.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "ember"},
+      {"type": "html", "pattern": "ember-application"},
+      {"type": "html", "pattern": "Ember"}
+    ]
+  },
+  {
+    "name": "Backbone.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "backbone"},
+      {"type": "html", "pattern": "Backbone"}
+    ]
+  },
+  {
+    "name": "Knockout.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "knockout"},
+      {"type": "html", "pattern": "data-bind"}
+    ]
+  },
+  {
+    "name": "Meteor",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "__meteor_runtime_config__"},
+      {"type": "script_src", "pattern": "meteor"}
+    ]
+  },
+  {
+    "name": "Aurelia",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "aurelia-app"},
+      {"type": "script_src", "pattern": "aurelia"}
+    ]
+  },
+  {
+    "name": "Polymer",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "polymer-element"},
+      {"type": "script_src", "pattern": "polymer"}
+    ]
+  },
+  {
+    "name": "CodeIgniter",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "ci_session"},
+      {"type": "header", "pattern": "CodeIgniter"}
+    ]
+  },
+  {
+    "name": "Symfony",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "Symfony"},
+      {"type": "header", "pattern": "symfony"}
+    ]
+  },
+  {
+    "name": "CakePHP",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "cakephp"},
+      {"type": "header", "pattern": "CakePHP"}
+    ]
+  },
+  {
+    "name": "Yii",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "yii_csrf"},
+      {"type": "header", "pattern": "Yii"}
+    ]
+  },
+  {
+    "name": "Ruby Sinatra",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server:thin"},
+      {"type": "header", "pattern": "X-Rack-Cache"}
+    ]
+  },
+  {
+    "name": "Phoenix",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "_phx_key"},
+      {"type": "header", "pattern": "Phoenix"}
+    ]
+  },
+  {
+    "name": "Phoenix LiveView",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "data-phx-"},
+      {"type": "html", "pattern": "phx-session"}
+    ]
+  },
+  {
+    "name": "Play Framework",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "play-"},
+      {"type": "cookie", "pattern": "PLAY_SESSION"}
+    ]
+  },
+  {
+    "name": "Koa",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Koa"},
+      {"type": "header", "pattern": "koa"}
+    ]
+  },
+  {
+    "name": "NestJS",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: NestJS"},
+      {"type": "html", "pattern": "nestjs"}
+    ]
+  },
+  {
+    "name": "Tornado",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: TornadoServer"},
+      {"type": "cookie", "pattern": "_xsrf"}
+    ]
+  },
+  {
+    "name": "Bottle",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Bottle"}
+    ]
+  },
+  {
+    "name": "Rocket.Chat",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "rocket.chat"}
+    ]
+  },
+  {
+    "name": "Echo",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Echo-"},
+      {"type": "cookie", "pattern": "echo_session"}
+    ]
+  },
+  {
+    "name": "Beego",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Beego"},
+      {"type": "cookie", "pattern": "beego"}
+    ]
+  },
+  {
+    "name": "Gatsby",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "gatsby-"},
+      {"type": "script_src", "pattern": "gatsby"}
+    ]
+  },
+  {
+    "name": "Docusaurus",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "docusaurus"},
+      {"type": "script_src", "pattern": "docusaurus"}
+    ]
+  },
+  {
+    "name": "VitePress",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "vitepress"},
+      {"type": "script_src", "pattern": "vitepress"}
+    ]
+  },
+  {
+    "name": "Astro",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "astro-"},
+      {"type": "html", "pattern": "astro:"}
+    ]
+  },
+  {
+    "name": "Remix",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "__remix"},
+      {"type": "html", "pattern": "remix"}
+    ]
+  },
+  {
+    "name": "SolidJS",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "solid-js"},
+      {"type": "script_src", "pattern": "solid"}
+    ]
+  },
+  {
+    "name": "Preact",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "preact"},
+      {"type": "script_src", "pattern": "preact"}
+    ]
+  },
+  {
+    "name": "Stimulus",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "data-controller"},
+      {"type": "script_src", "pattern": "stimulus"}
+    ]
+  },
+  {
+    "name": "Alpine.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "x-data"},
+      {"type": "html", "pattern": "alpinejs"},
+      {"type": "script_src", "pattern": "alpine"}
+    ]
+  },
+  {
+    "name": "htmx",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "hx-get"},
+      {"type": "html", "pattern": "hx-post"},
+      {"type": "script_src", "pattern": "htmx"}
+    ]
+  },
+  {
+    "name": "Axios",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "axios"},
+      {"type": "html", "pattern": "axios"}
+    ]
+  },
+  {
+    "name": "Zepto.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "zepto"},
+      {"type": "html", "pattern": "Zepto"}
+    ]
+  },
+  {
+    "name": "Prototype",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "prototype"},
+      {"type": "html", "pattern": "Prototype"}
+    ]
+  },
+  {
+    "name": "MooTools",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "mootools"},
+      {"type": "html", "pattern": "MooTools"}
+    ]
+  },
+  {
+    "name": "YUI",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "yui"},
+      {"type": "html", "pattern": "yahoo-ui"}
+    ]
+  },
+  {
+    "name": "Ext JS",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "ext-all"},
+      {"type": "html", "pattern": "extjs"}
+    ]
+  },
+  {
+    "name": "Dojo",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "dojo"},
+      {"type": "html", "pattern": "djConfig"}
+    ]
+  },
+  {
+    "name": "RequireJS",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "requirejs"},
+      {"type": "html", "pattern": "data-main"}
+    ]
+  },
+  {
+    "name": "Webpack",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "webpack"},
+      {"type": "script_src", "pattern": "app.js"}
+    ]
+  },
+  {
+    "name": "Vite",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "/@vite/"},
+      {"type": "script_src", "pattern": "/@vite/"}
+    ]
+  },
+  {
+    "name": "Rollup",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "rollup"}
+    ]
+  },
+  {
+    "name": "Parcel",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "parcel"}
+    ]
+  },
+  {
+    "name": "Bulma",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "bulma"},
+      {"type": "html", "pattern": "is-primary"}
+    ]
+  },
+  {
+    "name": "Materialize CSS",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "materialize"},
+      {"type": "script_src", "pattern": "materialize"}
+    ]
+  },
+  {
+    "name": "Foundation",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "foundation"},
+      {"type": "script_src", "pattern": "foundation"}
+    ]
+  },
+  {
+    "name": "Material Design Lite",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "mdl-"},
+      {"type": "script_src", "pattern": "material-design-lite"}
+    ]
+  },
+  {
+    "name": "Vuetify",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "vuetify"},
+      {"type": "html", "pattern": "v-application"}
+    ]
+  },
+  {
+    "name": "iView",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "ivu-"},
+      {"type": "script_src", "pattern": "iview"}
+    ]
+  },
+  {
+    "name": "MUI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "mui-"},
+      {"type": "script_src", "pattern": "mui"}
+    ]
+  },
+  {
+    "name": "Arco Design",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "arco-"},
+      {"type": "script_src", "pattern": "arco-design"}
+    ]
+  },
+  {
+    "name": "Naive UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "n-"},
+      {"type": "script_src", "pattern": "naive-ui"}
+    ]
+  },
+  {
+    "name": "Sass",
+    "category": "构建",
+    "patterns": [
+      {"type": "script_src", "pattern": "sass"},
+      {"type": "html", "pattern": "sass"}
+    ]
+  },
+  {
+    "name": "Less",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "script_src", "pattern": "less.js"},
+      {"type": "html", "pattern": "rel=\"stylesheet/less\""}
+    ]
+  },
+  {
+    "name": "Stylus",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "stylus"}
+    ]
+  },
+  {
+    "name": "Boomerang",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "boomerang"},
+      {"type": "html", "pattern": "BOOMR"}
+    ]
+  },
+  {
+    "name": "Sentry",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "sentry"},
+      {"type": "html", "pattern": "sentry"},
+      {"type": "header", "pattern": "sentry-trace"}
+    ]
+  },
+  {
+    "name": "Plausible",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "plausible"},
+      {"type": "html", "pattern": "plausible"}
+    ]
+  },
+  {
+    "name": "Matomo",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "matomo"},
+      {"type": "html", "pattern": "_paq"},
+      {"type": "script_src", "pattern": "matomo"}
+    ]
+  },
+  {
+    "name": "Mixpanel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "mixpanel"},
+      {"type": "html", "pattern": "mixpanel"}
+    ]
+  },
+  {
+    "name": "Segment",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "analytics.js"},
+      {"type": "html", "pattern": "cdn.segment.com"}
+    ]
+  },
+  {
+    "name": "Hotjar",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "hotjar"},
+      {"type": "html", "pattern": "static.hotjar.com"}
+    ]
+  },
+  {
+    "name": "CNZZ",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "cnzz.com"},
+      {"type": "script_src", "pattern": "cnzz"}
+    ]
+  },
+  {
+    "name": "51.la",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "51.la"},
+      {"type": "script_src", "pattern": "51.la"}
+    ]
+  },
+  {
+    "name": "Java",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Apache-Coyote"},
+      {"type": "cookie", "pattern": "JSESSIONID"}
+    ]
+  },
+  {
+    "name": "Python",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: gunicorn"},
+      {"type": "header", "pattern": "Server: Werkzeug"},
+      {"type": "header", "pattern": "re:X-Powered-By.*Python"}
+    ]
+  },
+  {
+    "name": "Ruby",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Ruby"},
+      {"type": "header", "pattern": "re:X-Powered-By.*Ruby"}
+    ]
+  },
+  {
+    "name": "Go",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Go"},
+      {"type": "header", "pattern": "re:Server.*Go-IP-"}
+    ]
+  },
+  {
+    "name": ".NET",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: ASP.NET"},
+      {"type": "header", "pattern": "X-AspNet-Version"}
+    ]
+  },
+  {
+    "name": "Node.js Express",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Express"}
+    ]
+  },
+  {
+    "name": "Phusion Passenger",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Phusion Passenger"}
+    ]
+  },
+  {
+    "name": "Gunicorn",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: gunicorn"}
+    ]
+  },
+  {
+    "name": "uWSGI",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: uWSGI"}
+    ]
+  },
+  {
+    "name": "Puma",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Puma"}
+    ]
+  },
+  {
+    "name": "Unicorn",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: nginx"},
+      {"type": "header", "pattern": "Server: Unicorn"}
+    ]
+  },
+  {
+    "name": "WebLogic",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: WebLogic"},
+      {"type": "html", "pattern": "WebLogic"}
+    ]
+  },
+  {
+    "name": "WildFly",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: WildFly"},
+      {"type": "html", "pattern": "WildFly"}
+    ]
+  },
+  {
+    "name": "IBM WebSphere",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: WebSphere"},
+      {"type": "html", "pattern": "WebSphere"}
+    ]
+  },
+  {
+    "name": "Cherokee",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Cherokee"}
+    ]
+  },
+  {
+    "name": "Hiawatha",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Hiawatha"}
+    ]
+  },
+  {
+    "name": "LiteSpeed",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: LiteSpeed"}
+    ]
+  },
+  {
+    "name": "AWS ELB",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "ELB-HealthChecker"}
+    ]
+  },
+  {
+    "name": "Reflow",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Reflow"}
+    ]
+  },
+  {
+    "name": "StackPath",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-SP-"},
+      {"type": "header", "pattern": "stackpath"}
+    ]
+  },
+  {
+    "name": "Edgecast",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-EC-"},
+      {"type": "header", "pattern": "EdgeCast"}
+    ]
+  },
+  {
+    "name": "MaxCDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-CDN: MaxCDN"}
+    ]
+  },
+  {
+    "name": "KeyCDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-CDN: KeyCDN"},
+      {"type": "header", "pattern": "HIT from KeyCDN"}
+    ]
+  },
+  {
+    "name": "BunnyCDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "Server: BunnyCDN"},
+      {"type": "header", "pattern": "bunnycdn"}
+    ]
+  },
+  {
+    "name": "CDN77",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-CDN77"},
+      {"type": "header", "pattern": "CDN77"}
+    ]
+  },
+  {
+    "name": "CDNetworks",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "CDNetworks"}
+    ]
+  },
+  {
+    "name": "CacheFly",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "CacheFly"}
+    ]
+  },
+  {
+    "name": "F5 BIG-IP",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: BigIP"},
+      {"type": "cookie", "pattern": "BIGipServer"}
+    ]
+  },
+  {
+    "name": "Citrix NetScaler",
+    "category": "Server",
+    "patterns": [
+      {"type": "cookie", "pattern": "NSC_"},
+      {"type": "header", "pattern": "Citrix"}
+    ]
+  },
+  {
+    "name": "AWS CloudFront",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-Amz-Cf-Id"},
+      {"type": "header", "pattern": "Via: 1.1.cloudfront.net"},
+      {"type": "header", "pattern": "X-Cache:"}
+    ]
+  },
+  {
+    "name": "Google Cloud CDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "Via: 1.1 google"}
+    ]
+  },
+  {
+    "name": "Google Cloud Storage",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-guploader"},
+      {"type": "header", "pattern": "application/xml"},
+      {"type": "header", "pattern": "GCS"}
+    ]
+  },
+  {
+    "name": "Microsoft Azure CDN",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-azure-ref"},
+      {"type": "header", "pattern": "X-Cache:"}
+    ]
+  },
+  {
+    "name": "Azure Blob Storage",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-ms-version"},
+      {"type": "header", "pattern": "blob.core.windows.net"}
+    ]
+  },
+  {
+    "name": "Firebase Hosting",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "Via: 1.1 firebase"},
+      {"type": "header", "pattern": "firebase"}
+    ]
+  },
+  {
+    "name": "Netlify",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-NF-Request-ID"},
+      {"type": "header", "pattern": "netlify"}
+    ]
+  },
+  {
+    "name": "Surge.sh",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "Surge"},
+      {"type": "header", "pattern": "X-Surge"}
+    ]
+  },
+  {
+    "name": "Bitbucket",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "X-Static-Version"},
+      {"type": "html", "pattern": "bitbucket"}
+    ]
+  },
+  {
+    "name": "GitHub Pages",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "Server: GitHub.com"}
+    ]
+  },
+  {
+    "name": "Docker Registry",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "Docker-Distribution-Api-Version"},
+      {"type": "header", "pattern": "X-Docker"}
+    ]
+  },
+  {
+    "name": "Traefik Proxy",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Traefik"}
+    ]
+  },
+  {
+    "name": "Envoy Proxy",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "envoy"}
+    ]
+  },
+  {
+    "name": "HAProxy",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Via: HAProxy"},
+      {"type": "header", "pattern": "X-Haproxy"}
+    ]
+  },
+  {
+    "name": "Varnish",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Via: varnish"},
+      {"type": "header", "pattern": "X-Varnish"}
+    ]
+  },
+  {
+    "name": "Squid",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: squid"},
+      {"type": "header", "pattern": "X-Squid-Error"}
+    ]
+  },
+  {
+    "name": "AWS Lambda",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "x-amzn-RequestId"},
+      {"type": "header", "pattern": "x-amz-cf"}
+    ]
+  },
+  {
+    "name": "Cloudflare Workers",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "cf-worker"},
+      {"type": "header", "pattern": "cf-ray"}
+    ]
+  },
+  {
+    "name": "Deno",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: deno"}
+    ]
+  },
+  {
+    "name": "Bun",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: bun"}
+    ]
+  },
+  {
+    "name": "Cloudflare Pages",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "cf-ray"},
+      {"type": "header", "pattern": "cloudflare-pages"}
+    ]
+  },
+  {
+    "name": "Render",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "render"}
+    ]
+  },
+  {
+    "name": "Fly.io",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "fly.io"},
+      {"type": "header", "pattern": "fly-request-id"}
+    ]
+  },
+  {
+    "name": "Railway",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "railway"}
+    ]
+  },
+  {
+    "name": "Heroku",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "via: 1.1 vegur"},
+      {"type": "header", "pattern": "X-Heroku"}
+    ]
+  },
+  {
+    "name": "Pantheon",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-pantheon"},
+      {"type": "header", "pattern": "pantheon"}
+    ]
+  },
+  {
+    "name": "WP Engine",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-wpe"},
+      {"type": "header", "pattern": "wpengine"}
+    ]
+  },
+  {
+    "name": "Kinsta",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-kinsta"},
+      {"type": "header", "pattern": "kinsta"}
+    ]
+  },
+  {
+    "name": "Akamai Bot Manager",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "x-akamai-bm-te"},
+      {"type": "cookie", "pattern": "_abck"}
+    ]
+  },
+  {
+    "name": "F5 ASM",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "TSimismo"},
+      {"type": "cookie", "pattern": "TShdwb"}
+    ]
+  },
+  {
+    "name": "Wordfence",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "Re:.*wf_"},
+      {"type": "html", "pattern": "wordfence"}
+    ]
+  },
+  {
+    "name": "Sucuri",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Sucuri"},
+      {"type": "header", "pattern": "x-sucuri-cache"}
+    ]
+  },
+  {
+    "name": "StackPath WAF",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "X-SP-Status"},
+      {"type": "header", "pattern": "stackpath"}
+    ]
+  },
+  {
+    "name": "Edgecast WAF",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "X-EC-Debug"}
+    ]
+  },
+  {
+    "name": "腾讯云WAF",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "WAF"},
+      {"type": "cookie", "pattern": "qcloud"}
+    ]
+  },
+  {
+    "name": "Topsec WAF",
+    "category": "WAF",
+    "patterns": [
+      {"type": "cookie", "pattern": "topsec"}
+    ]
+  },
+  {
+    "name": "Anquanbao",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By-Anquanbao"}
+    ]
+  },
+  {
+    "name": "Baidu Yundun",
+    "category": "WAF",
+    "patterns": [
+      {"type": "header", "pattern": "Server: yundun"},
+      {"type": "header", "pattern": "x-yundun"}
+    ]
+  },
+  {
+    "name": "BigTree",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "BigTree"},
+      {"type": "html", "pattern": "bigtree"}
+    ]
+  },
+  {
+    "name": "Grav",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "grav"},
+      {"type": "meta", "pattern": "Grav"}
+    ]
+  },
+  {
+    "name": "Kirby",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "kirby"},
+      {"type": "meta", "pattern": "Kirby"}
+    ]
+  },
+  {
+    "name": "Statamic",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "statamic"},
+      {"type": "cookie", "pattern": "statamic"}
+    ]
+  },
+  {
+    "name": "Perch",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "perch"},
+      {"type": "meta", "pattern": "Perch"}
+    ]
+  },
+  {
+    "name": "Wolf CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "Wolf CMS"},
+      {"type": "html", "pattern": "wolfcms"}
+    ]
+  },
+  {
+    "name": "Anchor CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "Anchor CMS"}
+    ]
+  },
+  {
+    "name": "Pagekit",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "pagekit"},
+      {"type": "meta", "pattern": "Pagekit"}
+    ]
+  },
+  {
+    "name": "PyroCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "pyrocms"},
+      {"type": "meta", "pattern": "PyroCMS"}
+    ]
+  },
+  {
+    "name": "Bolt",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "bolt"},
+      {"type": "cookie", "pattern": "bolt_session"}
+    ]
+  },
+  {
+    "name": "October CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "october"},
+      {"type": "cookie", "pattern": "october_session"}
+    ]
+  },
+  {
+    "name": "ExpressionEngine",
+    "category": "CMS",
+    "patterns": [
+      {"type": "cookie", "pattern": "exp_"},
+      {"type": "html", "pattern": "expressionengine"}
+    ]
+  },
+  {
+    "name": "Magento 2",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "/static/version"},
+      {"type": "cookie", "pattern": "X-Magento-Vary"}
+    ]
+  },
+  {
+    "name": "Shopware",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "shopware"},
+      {"type": "cookie", "pattern": "shopware"}
+    ]
+  },
+  {
+    "name": "Spree Commerce",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "spree"},
+      {"type": "cookie", "pattern": "guest_token"}
+    ]
+  },
+  {
+    "name": "Saleor",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "saleor"}
+    ]
+  },
+  {
+    "name": "Sylius",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "sylius"},
+      {"type": "cookie", "pattern": "_sylius"}
+    ]
+  },
+  {
+    "name": "VirtueMart",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "virtuemart"},
+      {"type": "html", "pattern": "com_virtuemart"}
+    ]
+  },
+  {
+    "name": "BigCommerce",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "header", "pattern": "X-BC"},
+      {"type": "html", "pattern": "bigcommerce"}
+    ]
+  },
+  {
+    "name": "Salesforce Commerce Cloud",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "cookie", "pattern": "dwsession"},
+      {"type": "cookie", "pattern": "dwanonymous"},
+      {"type": "html", "pattern": "demandware"}
+    ]
+  },
+  {
+    "name": "SAP Hybris",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "cookie", "pattern": "__cquuid"},
+      {"type": "html", "pattern": "hybris"}
+    ]
+  },
+  {
+    "name": "Oracle Commerce",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "cookie", "pattern": "ATG_SESSION_ID"},
+      {"type": "html", "pattern": "oraclecommerce"}
+    ]
+  },
+  {
+    "name": "Vanilla Forums",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "vanilla"},
+      {"type": "cookie", "pattern": "Vanilla"}
+    ]
+  },
+  {
+    "name": "Simple Machines Forum",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "smf"},
+      {"type": "html", "pattern": "Simple Machines"}
+    ]
+  },
+  {
+    "name": "MyBB",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "mybb"},
+      {"type": "cookie", "pattern": "mybb"}
+    ]
+  },
+  {
+    "name": "vBulletin",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "vbulletin"},
+      {"type": "cookie", "pattern": "bbsessionhash"}
+    ]
+  },
+  {
+    "name": "XenForo",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "xenforo"},
+      {"type": "cookie", "pattern": "xf_session"}
+    ]
+  },
+  {
+    "name": "FluxBB",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "fluxbb"},
+      {"type": "cookie", "pattern": "fluxbb"}
+    ]
+  },
+  {
+    "name": "phpFox",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "phpfox"}
+    ]
+  },
+  {
+    "name": "Elgg",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "elgg"},
+      {"type": "cookie", "pattern": "Elgg"}
+    ]
+  },
+  {
+    "name": "HumHub",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "humhub"},
+      {"type": "cookie", "pattern": "humhub"}
+    ]
+  },
+  {
+    "name": "Mattermost",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "mattermost"}
+    ]
+  },
+  {
+    "name": "Zulip",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "zulip"}
+    ]
+  },
+  {
+    "name": "WordPress Multisite",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "wp-content"},
+      {"type": "html", "pattern": "/wp-admin/network/"}
+    ]
+  },
+  {
+    "name": "Gatsby Cloud",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-gatsby"}
+    ]
+  },
+  {
+    "name": "Squarespace",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "squarespace"},
+      {"type": "html", "pattern": "static1.squarespace.com"}
+    ]
+  },
+  {
+    "name": "Wix",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "wix.com"},
+      {"type": "header", "pattern": "X-Wix"}
+    ]
+  },
+  {
+    "name": "Weebly",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "weebly"}
+    ]
+  },
+  {
+    "name": "Webflow",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "webflow"},
+      {"type": "header", "pattern": "X-Webflow"}
+    ]
+  },
+  {
+    "name": "Carrd",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "carrd.co"}
+    ]
+  },
+  {
+    "name": "Tilda",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "tilda"},
+      {"type": "script_src", "pattern": "tilda.cc"}
+    ]
+  },
+  {
+    "name": "Duda",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "duda"},
+      {"type": "header", "pattern": "X-Duda"}
+    ]
+  },
+  {
+    "name": "SiteGround",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-sg"}
+    ]
+  },
+  {
+    "name": "Bluehost",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-bluehost"}
+    ]
+  },
+  {
+    "name": "GoDaddy",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-Served-By: cache-"},
+      {"type": "header", "pattern": "godaddy"}
+    ]
+  },
+  {
+    "name": "DreamHost",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "X-DH"}
+    ]
+  },
+  {
+    "name": "Tencent COS",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-cos-request-id"},
+      {"type": "header", "pattern": "cos.myqcloud.com"}
+    ]
+  },
+  {
+    "name": "Huawei OBS",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-obs-id"},
+      {"type": "header", "pattern": "myhuaweicloud.com"}
+    ]
+  },
+  {
+    "name": "JD Cloud OSS",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-jss"}
+    ]
+  },
+  {
+    "name": "Meituan MCS",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-mss"}
+    ]
+  },
+  {
+    "name": "Upyun OSS",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-upyun"}
+    ]
+  },
+  {
+    "name": "CodeIgniter 4",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "ci_session"},
+      {"type": "header", "pattern": "CodeIgniter"}
+    ]
+  },
+  {
+    "name": "Lumen",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "laravel_session"},
+      {"type": "header", "pattern": "Lumen"}
+    ]
+  },
+  {
+    "name": "Slim",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "slim_session"}
+    ]
+  },
+  {
+    "name": "FuelPHP",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "fuelcid"}
+    ]
+  },
+  {
+    "name": "Phalcon",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Phalcon"}
+    ]
+  },
+  {
+    "name": "Silex",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "silex"}
+    ]
+  },
+  {
+    "name": "Padrino",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Padrino"}
+    ]
+  },
+  {
+    "name": "Cuba",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Cuba"}
+    ]
+  },
+  {
+    "name": "Grails",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "JSESSIONID"},
+      {"type": "header", "pattern": "Grails"}
+    ]
+  },
+  {
+    "name": "Vaadin",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "vaadin"},
+      {"type": "cookie", "pattern": "JSESSIONID"}
+    ]
+  },
+  {
+    "name": "JSF",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "javax.faces"},
+      {"type": "html", "pattern": "jsf"}
+    ]
+  },
+  {
+    "name": "Apache Wicket",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "wicket:"},
+      {"type": "cookie", "pattern": "JSESSIONID"}
+    ]
+  },
+  {
+    "name": "Struts",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "struts"},
+      {"type": "cookie", "pattern": "JSESSIONID"}
+    ]
+  },
+  {
+    "name": "Seam",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "JSESSIONID"},
+      {"type": "html", "pattern": "seam"}
+    ]
+  },
+  {
+    "name": "Piwik",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "piwik"},
+      {"type": "script_src", "pattern": "piwik"}
+    ]
+  },
+  {
+    "name": "Clicky",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "clicky"},
+      {"type": "html", "pattern": "getclicky"}
+    ]
+  },
+  {
+    "name": "StatCounter",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "statcounter"},
+      {"type": "html", "pattern": "statcounter"}
+    ]
+  },
+  {
+    "name": "Chartbeat",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "chartbeat"},
+      {"type": "html", "pattern": "chartbeat"}
+    ]
+  },
+  {
+    "name": "Quantcast",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "quantserve"},
+      {"type": "html", "pattern": "quantcast"}
+    ]
+  },
+  {
+    "name": "Comscore",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "scorecardresearch"},
+      {"type": "html", "pattern": "comscore"}
+    ]
+  },
+  {
+    "name": "Alexa",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "alexa"},
+      {"type": "html", "pattern": "_atrk_opts"}
+    ]
+  },
+  {
+    "name": "New Relic",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "X-NewRelic-App-Data"},
+      {"type": "script_src", "pattern": "newrelic"}
+    ]
+  },
+  {
+    "name": "AppDynamics",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "appdynamics"},
+      {"type": "html", "pattern": "ADRUM"}
+    ]
+  },
+  {
+    "name": "Splunk",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "splunk"},
+      {"type": "header", "pattern": "splunk"}
+    ]
+  },
+  {
+    "name": "Elastic APM",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "elastic-apm"},
+      {"type": "script_src", "pattern": "elastic-apm"}
+    ]
+  },
+  {
+    "name": "Jaeger",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "jaeger"},
+      {"type": "header", "pattern": "jaeger"}
+    ]
+  },
+  {
+    "name": "Zipkin",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "zipkin"}
+    ]
+  },
+  {
+    "name": "OpenTelemetry",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "traceparent"},
+      {"type": "header", "pattern": "tracestate"}
+    ]
+  },
+  {
+    "name": "Cockpit CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "cockpit"}
+    ]
+  },
+  {
+    "name": "Directus",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "directus"},
+      {"type": "header", "pattern": "directus"}
+    ]
+  },
+  {
+    "name": "Payload CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "payload"},
+      {"type": "header", "pattern": "payload"}
+    ]
+  },
+  {
+    "name": "Sanity",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "sanity"},
+      {"type": "html", "pattern": "sanity.io"}
+    ]
+  },
+  {
+    "name": "Contentful",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "contentful"},
+      {"type": "html", "pattern": "contentful"}
+    ]
+  },
+  {
+    "name": "Storyblok",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "storyblok"},
+      {"type": "html", "pattern": "storyblok"}
+    ]
+  },
+  {
+    "name": "Prismic",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "prismic"},
+      {"type": "html", "pattern": "prismic.io"}
+    ]
+  },
+  {
+    "name": "Builder.io",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "builder.io"},
+      {"type": "html", "pattern": "builder.io"}
+    ]
+  },
+  {
+    "name": "ButterCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "buttercms"}
+    ]
+  },
+  {
+    "name": "Cosmic JS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "script_src", "pattern": "cosmic"}
+    ]
+  },
+  {
+    "name": "Strapi Headless",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "strapi"}
+    ]
+  },
+  {
+    "name": "Koa.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Koa"}
+    ]
+  },
+  {
+    "name": "Hexo Theme Next",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "hexo-theme-next"}
+    ]
+  },
+  {
+    "name": "Hexo Theme Material",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "hexo-theme-material"}
+    ]
+  },
+  {
+    "name": "Docusaurus 2",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "docusaurus_version"}
+    ]
+  },
+  {
+    "name": "MkDocs",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "mkdocs"},
+      {"type": "script_src", "pattern": "mkdocs"}
+    ]
+  },
+  {
+    "name": "Sphinx",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "sphinx"},
+      {"type": "html", "pattern": "documentation"}
+    ]
+  },
+  {
+    "name": "Read the Docs",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "readthedocs"}
+    ]
+  },
+  {
+    "name": "GitBook",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "gitbook"},
+      {"type": "script_src", "pattern": "gitbook"}
+    ]
+  },
+  {
+    "name": "Docsify",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "docsify"},
+      {"type": "script_src", "pattern": "docsify"}
+    ]
+  },
+  {
+    "name": "Hexo NexT",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "NexT"}
+    ]
+  },
+  {
+    "name": "WordPress Theme Avada",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "Avada"}
+    ]
+  },
+  {
+    "name": "WordPress Theme Divi",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "et_builder"},
+      {"type": "html", "pattern": "Divi"}
+    ]
+  },
+  {
+    "name": "WordPress Theme Elementor",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "elementor"},
+      {"type": "html", "pattern": "elementor-default"}
+    ]
+  },
+  {
+    "name": "WordPress Theme Beaver Builder",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "fl-builder"},
+      {"type": "html", "pattern": "Beaver Builder"}
+    ]
+  },
+  {
+    "name": "WPBakery",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "wpb-js-composer"},
+      {"type": "html", "pattern": "js_composer"}
+    ]
+  },
+  {
+    "name": "WordPress Theme Astra",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "astra-theme"}
+    ]
+  },
+  {
+    "name": "WordPress Theme OceanWP",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "oceanwp"}
+    ]
+  },
+  {
+    "name": "WordPress Theme GeneratePress",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "generatepress"}
+    ]
+  },
+  {
+    "name": "AWS Application Load Balancer",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "ALB"}
+    ]
+  },
+  {
+    "name": "Cloudflare Bot Management",
+    "category": "WAF",
+    "patterns": [
+      {"type": "cookie", "pattern": "__cf_bm"},
+      {"type": "header", "pattern": "cf-mitigated"}
+    ]
+  },
+  {
+    "name": "Tengine Module",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Tengine"}
+    ]
+  },
+  {
+    "name": "OpenBSD httpd",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: OpenBSD"}
+    ]
+  },
+  {
+    "name": "Nginx Unit",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Unit"}
+    ]
+  },
+  {
+    "name": "lighttpd mod_secdownload",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: lighttpd"}
+    ]
+  },
+  {
+    "name": "Resin",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Resin"}
+    ]
+  },
+  {
+    "name": "GlassFish",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: GlassFish"},
+      {"type": "html", "pattern": "GlassFish"}
+    ]
+  },
+  {
+    "name": "Payara",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Payara"}
+    ]
+  },
+  {
+    "name": "Nginx Plus",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: nginx plus"}
+    ]
+  },
+  {
+    "name": "ALB",
+    "category": "Server",
+    "patterns": [
+      {"type": "cookie", "pattern": "AWSALB"}
+    ]
+  },
+  {
+    "name": "Cloud Foundry",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "X-CF-"},
+      {"type": "header", "pattern": "vcap"}
+    ]
+  },
+  {
+    "name": "OpenShift",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "openshift"}
+    ]
+  },
+  {
+    "name": "Rancher",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "rancher"},
+      {"type": "header", "pattern": "rancher"}
+    ]
+  },
+  {
+    "name": "Nomad",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "Nomad"}
+    ]
+  },
+  {
+    "name": "Vault",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "Vault"},
+      {"type": "html", "pattern": "vault"}
+    ]
+  },
+  {
+    "name": "Terraform Enterprise",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "terraform"}
+    ]
+  },
+  {
+    "name": "Packer",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "packer"}
+    ]
+  },
+  {
+    "name": "Consul by HashiCorp",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "Consul by HashiCorp"}
+    ]
+  },
+  {
+    "name": "Nomad by HashiCorp",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "Nomad by HashiCorp"}
+    ]
+  },
+  {
+    "name": "ArgoCD",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "argocd"},
+      {"type": "header", "pattern": "argocd"}
+    ]
+  },
+  {
+    "name": "Tekton",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "tekton"}
+    ]
+  },
+  {
+    "name": "Argo Workflows",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "argo-workflows"}
+    ]
+  },
+  {
+    "name": "Spinnaker",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "spinnaker"}
+    ]
+  },
+  {
+    "name": "Octopus Deploy",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "octopus"}
+    ]
+  },
+  {
+    "name": "AWS CodePipeline",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "x-amz-codesequence"}
+    ]
+  },
+  {
+    "name": "Google Cloud Build",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "cloudbuild"}
+    ]
+  },
+  {
+    "name": "CircleCI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "circleci"}
+    ]
+  },
+  {
+    "name": "Travis CI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "travis-ci"}
+    ]
+  },
+  {
+    "name": "Buildkite",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "buildkite"}
+    ]
+  },
+  {
+    "name": "GoCD",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "GoCD"}
+    ]
+  },
+  {
+    "name": "Concourse CI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "concourse"}
+    ]
+  },
+  {
+    "name": "Wercker",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "wercker"}
+    ]
+  },
+  {
+    "name": "Screwdriver",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "screwdriver"}
+    ]
+  },
+  {
+    "name": "PHP-FPM",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: PHP"}
+    ]
+  },
+  {
+    "name": "HHVM",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: HHVM"}
+    ]
+  },
+  {
+    "name": "Hack",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: HHVM"}
+    ]
+  },
+  {
+    "name": "Clojure",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Jetty"},
+      {"type": "header", "pattern": "Immutant"}
+    ]
+  },
+  {
+    "name": "Erlang",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Cowboy"},
+      {"type": "header", "pattern": "Yaws"}
+    ]
+  },
+  {
+    "name": "Elixir",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Cowboy"}
+    ]
+  },
+  {
+    "name": "Cowboy",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Cowboy"}
+    ]
+  },
+  {
+    "name": "Yaws",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Yaws"}
+    ]
+  },
+  {
+    "name": "Mochiweb",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: mochiweb"}
+    ]
+  },
+  {
+    "name": "Gunicorn sync worker",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: gunicorn"}
+    ]
+  },
+  {
+    "name": "Waitress",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: waitress"}
+    ]
+  },
+  {
+    "name": "Meinheld",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: meinheld"}
+    ]
+  },
+  {
+    "name": "CherryPy",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: CherryPy"}
+    ]
+  },
+  {
+    "name": "Tornado server",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: TornadoServer"}
+    ]
+  },
+  {
+    "name": "Sanic",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: sanic"}
+    ]
+  },
+  {
+    "name": "aiohttp",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Python/aiohttp"},
+      {"type": "header", "pattern": "Server: aiohttp"}
+    ]
+  },
+  {
+    "name": "Starlette",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: uvicorn"}
+    ]
+  },
+  {
+    "name": "Quart",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "quart"}
+    ]
+  },
+  {
+    "name": "Litestar",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: litestar"}
+    ]
+  },
+  {
+    "name": "Hapi",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: hapi"}
+    ]
+  },
+  {
+    "name": "Fastify",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Fastify"}
+    ]
+  },
+  {
+    "name": "Restify",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Restify"}
+    ]
+  },
+  {
+    "name": "Sails.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Sails"}
+    ]
+  },
+  {
+    "name": "Total.js",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "X-Powered-By: Total.js"}
+    ]
+  },
+  {
+    "name": "Haxe",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "haxe"}
+    ]
+  },
+  {
+    "name": "OpenUI5",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "sap-ui"},
+      {"type": "script_src", "pattern": "openui5"}
+    ]
+  },
+  {
+    "name": "SAP UI5",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "data-sap-ui"},
+      {"type": "script_src", "pattern": "sap-ui-core"}
+    ]
+  },
+  {
+    "name": "ExtJS",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "ext-all.js"}
+    ]
+  },
+  {
+    "name": "Qooxdoo",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "qooxdoo"}
+    ]
+  },
+  {
+    "name": "SproutCore",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "sproutcore"}
+    ]
+  },
+  {
+    "name": "Cappuccino",
+    "category": "Framework",
+    "patterns": [
+      {"type": "script_src", "pattern": "cappuccino"}
+    ]
+  },
+  {
+    "name": "Gleam",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "gleam"}
+    ]
+  },
+  {
+    "name": "Zig",
+    "category": "Runtime",
+    "patterns": [
+      {"type": "header", "pattern": "Server: zap"}
+    ]
+  },
+  {
+    "name": "Rust Actix",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Actix"}
+    ]
+  },
+  {
+    "name": "Rust Rocket",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Rocket"}
+    ]
+  },
+  {
+    "name": "Rust Axum",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Axum"}
+    ]
+  },
+  {
+    "name": "Akka HTTP",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: akka-http"}
+    ]
+  },
+  {
+    "name": "Finagle",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: Finagle"}
+    ]
+  },
+  {
+    "name": "Http4k",
+    "category": "Framework",
+    "patterns": [
+      {"type": "header", "pattern": "Server: http4k"}
+    ]
+  },
+  {
+    "name": "Cloud Run",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "x-cloud-trace-context"}
+    ]
+  },
+  {
+    "name": "AWS API Gateway",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "x-amzn-RequestId"},
+      {"type": "header", "pattern": "x-amz-apigw-id"}
+    ]
+  },
+  {
+    "name": "AWS ALB",
+    "category": "Server",
+    "patterns": [
+      {"type": "cookie", "pattern": "AWSALB"}
+    ]
+  },
+  {
+    "name": "Google App Engine",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "Server: gsc"}
+    ]
+  },
+  {
+    "name": "Dokku",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "x-dokku"}
+    ]
+  },
+  {
+    "name": "CapRover",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "caprover"}
+    ]
+  },
+  {
+    "name": "Coolify",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "coolify"}
+    ]
+  },
+  {
+    "name": "EasyPanel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "easypanel"}
+    ]
+  },
+  {
+    "name": "CloudPanel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "cloudpanel"}
+    ]
+  },
+  {
+    "name": "CyberPanel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "cyberpanel"}
+    ]
+  },
+  {
+    "name": "aaPanel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "aapanel"}
+    ]
+  },
+  {
+    "name": "Froxlor",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "froxlor"}
+    ]
+  },
+  {
+    "name": "ISPConfig",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "ispconfig"}
+    ]
+  },
+  {
+    "name": "DirectAdmin",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "DirectAdmin"},
+      {"type": "header", "pattern": "DirectAdmin"}
+    ]
+  },
+  {
+    "name": "Virtualmin",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "virtualmin"}
+    ]
+  },
+  {
+    "name": "Ajenti",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "ajenti"}
+    ]
+  },
+  {
+    "name": "VestaCP",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "vestacp"}
+    ]
+  },
+  {
+    "name": "FastPanel",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "fastpanel"}
+    ]
+  },
+  {
+    "name": "HestiaCP",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "hestia"}
+    ]
+  },
+  {
+    "name": "Plesk Obsidian",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "plesk"}
+    ]
+  },
+  {
+    "name": "Apache Solr",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "solr"},
+      {"type": "header", "pattern": "solr"}
+    ]
+  },
+  {
+    "name": "Apache Druid",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "druid"}
+    ]
+  },
+  {
+    "name": "Apache Kafka UI",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "kafka-ui"}
+    ]
+  },
+  {
+    "name": "Kafka Manager",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "kafka-manager"}
+    ]
+  },
+  {
+    "name": "Memcached Admin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "memcached"}
+    ]
+  },
+  {
+    "name": "CouchDB Fauxton",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "fauxton"},
+      {"type": "html", "pattern": "couchdb"}
+    ]
+  },
+  {
+    "name": "Cassandra Web",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "cassandra"}
+    ]
+  },
+  {
+    "name": "InfluxDB Chronograf",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "chronograf"}
+    ]
+  },
+  {
+    "name": "ClickHouse Tabix",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "tabix"}
+    ]
+  },
+  {
+    "name": "Neo4j Browser",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "neo4j"}
+    ]
+  },
+  {
+    "name": "ArangoDB",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "arangodb"}
+    ]
+  },
+  {
+    "name": "OrientDB Studio",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "orientdb"}
+    ]
+  },
+  {
+    "name": "CrateDB Admin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "cratedb"}
+    ]
+  },
+  {
+    "name": "TDengine",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "tdengine"}
+    ]
+  },
+  {
+    "name": "TDengine TAOS Keeper",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "header", "pattern": "taos"}
+    ]
+  },
+  {
+    "name": "DBeaver Web",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "dbeaver"}
+    ]
+  },
+  {
+    "name": "Sequel Pro",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "sequel pro"}
+    ]
+  },
+  {
+    "name": "Bytebase",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "bytebase"}
+    ]
+  },
+  {
+    "name": "Yearning",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "yearning"}
+    ]
+  },
+  {
+    "name": "Archery",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "archery"}
+    ]
+  },
+  {
+    "name": "CloudBeaver",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "cloudbeaver"}
+    ]
+  },
+  {
+    "name": "Chatwoot",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "chatwoot"}
+    ]
+  },
+  {
+    "name": "Mastodon",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "mastodon"}
+    ]
+  },
+  {
+    "name": "Pleroma",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "pleroma"}
+    ]
+  },
+  {
+    "name": "Misskey",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "misskey"}
+    ]
+  },
+  {
+    "name": "Friendica",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "friendica"}
+    ]
+  },
+  {
+    "name": "Peertube",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "peertube"}
+    ]
+  },
+  {
+    "name": "Lemmy",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "lemmy"}
+    ]
+  },
+  {
+    "name": "BookStack",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "bookstack"}
+    ]
+  },
+  {
+    "name": "Outline",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "outline"}
+    ]
+  },
+  {
+    "name": "Notion",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "notion"}
+    ]
+  },
+  {
+    "name": "Confluence",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "confluence"},
+      {"type": "header", "pattern": "X-Confluence"}
+    ]
+  },
+  {
+    "name": "Jira",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "jira"},
+      {"type": "header", "pattern": "X-Atlassian"}
+    ]
+  },
+  {
+    "name": "Redmine",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "redmine"},
+      {"type": "meta", "pattern": "Redmine"}
+    ]
+  },
+  {
+    "name": "Bugzilla",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "bugzilla"}
+    ]
+  },
+  {
+    "name": "MantisBT",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "mantis"}
+    ]
+  },
+  {
+    "name": "Trac",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "trac"},
+      {"type": "cookie", "pattern": "trac_session"}
+    ]
+  },
+  {
+    "name": "YouTrack",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "youtrack"}
+    ]
+  },
+  {
+    "name": "Azure DevOps",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "azure devops"}
+    ]
+  },
+  {
+    "name": "Phabricator",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "phabricator"}
+    ]
+  },
+  {
+    "name": "TFS",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "Team Foundation Server"}
+    ]
+  },
+  {
+    "name": "Gerrit",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "gerrit"}
+    ]
+  },
+  {
+    "name": "Coding.net",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "coding.net"}
+    ]
+  },
+  {
+    "name": "Gitee",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "gitee"}
+    ]
+  },
+  {
+    "name": "PingCode",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "pingcode"}
+    ]
+  },
+  {
+    "name": "Tower",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "tower.im"}
+    ]
+  },
+  {
+    "name": "Teambition",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "teambition"}
+    ]
+  },
+  {
+    "name": "TAPD",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "tapd"}
+    ]
+  },
+  {
+    "name": "ZenTao",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "zentao"}
+    ]
+  },
+  {
+    "name": "禅道",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "zentao"},
+      {"type": "html", "pattern": "禅道"}
+    ]
+  },
+  {
+    "name": "Worktile",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "worktile"}
+    ]
+  },
+  {
+    "name": "Pingdom",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "pingdom"},
+      {"type": "header", "pattern": "pingdom"}
+    ]
+  },
+  {
+    "name": "Uptime Robot",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "uptimerobot"},
+      {"type": "header", "pattern": "uptimerobot"}
+    ]
+  },
+  {
+    "name": "StatusCake",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "statuscake"}
+    ]
+  },
+  {
+    "name": "StatusPage",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "statuspage"},
+      {"type": "html", "pattern": "statuspage.io"}
+    ]
+  },
+  {
+    "name": "Cachet",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "cachet"}
+    ]
+  },
+  {
+    "name": "Staytus",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "staytus"}
+    ]
+  },
+  {
+    "name": "Monitoror",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "monitoror"}
+    ]
+  },
+  {
+    "name": "Uptime Kuma",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "uptime-kuma"}
+    ]
+  },
+  {
+    "name": "Cabot",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "cabot"}
+    ]
+  },
+  {
+    "name": "Alerta",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "alerta"}
+    ]
+  },
+  {
+    "name": "Cabot",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "cabot"}
+    ]
+  },
+  {
+    "name": "Icinga",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "icinga"}
+    ]
+  },
+  {
+    "name": "Checkmk",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "checkmk"}
+    ]
+  },
+  {
+    "name": "LibreNMS",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "librenms"}
+    ]
+  },
+  {
+    "name": "Observium",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "observium"}
+    ]
+  },
+  {
+    "name": "Cacti",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "cacti"}
+    ]
+  },
+  {
+    "name": "PRTG",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "prtg"}
+    ]
+  },
+  {
+    "name": "NetData",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "netdata"}
+    ]
+  },
+  {
+    "name": "Sensu",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "sensu"}
+    ]
+  },
+  {
+    "name": "Riemann",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "riemann"}
+    ]
+  },
+  {
+    "name": "Bosun",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "bosun"}
+    ]
+  },
+  {
+    "name": "Thruk",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "thruk"}
+    ]
+  },
+  {
+    "name": "Naemon",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "naemon"}
+    ]
+  },
+  {
+    "name": "Shinken",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "shinken"}
+    ]
+  },
+  {
+    "name": "Opsview",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "opsview"}
+    ]
+  },
+  {
+    "name": "OpenNMS",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "opennms"}
+    ]
+  },
+  {
+    "name": "Zenko",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "zenko"}
+    ]
+  },
+  {
+    "name": "Hawtio",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "hawtio"}
+    ]
+  },
+  {
+    "name": "Spring Boot Admin",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "Spring Boot Admin"}
+    ]
+  },
+  {
+    "name": "Pinpoint",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "pinpoint"}
+    ]
+  },
+  {
+    "name": "Zipkin Server",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "zipkin"}
+    ]
+  },
+  {
+    "name": "Elastic APM JS",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "elastic-apm-js-base"}
+    ]
+  },
+  {
+    "name": "Raygun",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "raygun"}
+    ]
+  },
+  {
+    "name": "Rollbar",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "rollbar"}
+    ]
+  },
+  {
+    "name": "Bugsnag",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "bugsnag"}
+    ]
+  },
+  {
+    "name": "Glimpse",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "X-Glimpse"}
+    ]
+  },
+  {
+    "name": "Dynatrace",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "dynatrace"}
+    ]
+  },
+  {
+    "name": "Ruxit",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "ruxit"}
+    ]
+  },
+  {
+    "name": "Instana",
+    "category": "监控",
+    "patterns": [
+      {"type": "script_src", "pattern": "instana"}
+    ]
+  },
+  {
+    "name": "Scouter",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "scouter"}
+    ]
+  },
+  {
+    "name": "Pinpoint APM",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "pinpoint"}
+    ]
+  },
+  {
+    "name": "Apache SkyWalking",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "skywalking"}
+    ]
+  },
+  {
+    "name": "CAT",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "cat-server"}
+    ]
+  },
+  {
+    "name": "Moebius",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "moebius"}
+    ]
+  },
+  {
+    "name": "Cloudflare Web Analytics",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "cloudflareinsights"},
+      {"type": "html", "pattern": "cloudflareinsights"}
+    ]
+  },
+  {
+    "name": "Fathom",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "fathom"}
+    ]
+  },
+  {
+    "name": "Umami",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "umami"}
+    ]
+  },
+  {
+    "name": "Pirsch",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "pirsch"}
+    ]
+  },
+  {
+    "name": "Counter",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "counter.dev"}
+    ]
+  },
+  {
+    "name": "Koko Analytics",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "koko-analytics"}
+    ]
+  },
+  {
+    "name": "Independent Analytics",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "html", "pattern": "independent-analytics"}
+    ]
+  },
+  {
+    "name": "Wekan",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "wekan"}
+    ]
+  },
+  {
+    "name": "Taiga",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "taiga"}
+    ]
+  },
+  {
+    "name": "OpenProject",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "openproject"}
+    ]
+  },
+  {
+    "name": "Kanboard",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "kanboard"}
+    ]
+  },
+  {
+    "name": "Focalboard",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "focalboard"}
+    ]
+  },
+  {
+    "name": "Restyaboard",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "restyaboard"}
+    ]
+  },
+  {
+    "name": "Nextcloud",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "nextcloud"}
+    ]
+  },
+  {
+    "name": "ownCloud",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "owncloud"}
+    ]
+  },
+  {
+    "name": "Seafile",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "seafile"}
+    ]
+  },
+  {
+    "name": "MinIO",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "minio"},
+      {"type": "header", "pattern": "MinIO"}
+    ]
+  },
+  {
+    "name": "Etcd Keeper",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "etcdkeeper"}
+    ]
+  },
+  {
+    "name": "ZooNavigator",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "zoonavigator"}
+    ]
+  },
+  {
+    "name": "Exhibitor",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "exhibitor"}
+    ]
+  },
+  {
+    "name": "Traefik Dashboard",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "traefik"},
+      {"type": "header", "pattern": "Traefik"}
+    ]
+  },
+  {
+    "name": "Envoy Admin",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "envoy admin"}
+    ]
+  },
+  {
+    "name": "HAProxy Stats",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "html", "pattern": "HAProxy"},
+      {"type": "html", "pattern": "Statistics Report"}
+    ]
+  },
+  {
+    "name": "Nginx Amplify",
+    "category": "Web服务器面板",
+    "patterns": [
+      {"type": "header", "pattern": "amplify"}
+    ]
+  },
+  {
+    "name": "Netlify CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "netlify-cms"}
+    ]
+  },
+  {
+    "name": "Decap CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "decap-cms"}
+    ]
+  },
+  {
+    "name": "TinaCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "tinacms"}
+    ]
+  },
+  {
+    "name": "Wagtail",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "wagtail"},
+      {"type": "cookie", "pattern": "sessionid"}
+    ]
+  },
+  {
+    "name": "Mezzanine",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "mezzanine"}
+    ]
+  },
+  {
+    "name": "Django CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "django-cms"},
+      {"type": "html", "pattern": "cms/"}
+    ]
+  },
+  {
+    "name": "FeinCMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "feincms"}
+    ]
+  },
+  {
+    "name": "Kotti",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "kotti"}
+    ]
+  },
+  {
+    "name": "Plone",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "plone"},
+      {"type": "header", "pattern": "Plone"}
+    ]
+  },
+  {
+    "name": "Maxsite CMS",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "maxsite"}
+    ]
+  },
+  {
+    "name": "Textpattern 4",
+    "category": "CMS",
+    "patterns": [
+      {"type": "meta", "pattern": "Textpattern"}
+    ]
+  },
+  {
+    "name": "WordPress VIP",
+    "category": "CMS",
+    "patterns": [
+      {"type": "header", "pattern": "X-hacker"},
+      {"type": "html", "pattern": "wp.com"}
+    ]
+  },
+  {
+    "name": "WordPress.com VIP",
+    "category": "CMS",
+    "patterns": [
+      {"type": "header", "pattern": "X-hacker"}
+    ]
+  },
+  {
+    "name": "Tilda Free",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "tilda.cc"}
+    ]
+  },
+  {
+    "name": "Cloudflare R2",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "r2.dev"}
+    ]
+  },
+  {
+    "name": "AWS S3",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "x-amz-request-id"},
+      {"type": "header", "pattern": "amazonaws.com"}
+    ]
+  },
+  {
+    "name": "Google Storage",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "storage.googleapis.com"}
+    ]
+  },
+  {
+    "name": "Bunny",
+    "category": "CDN",
+    "patterns": [
+      {"type": "header", "pattern": "bunny.net"}
+    ]
+  },
+  {
+    "name": "Cdnjs",
+    "category": "CDN",
+    "patterns": [
+      {"type": "script_src", "pattern": "cdnjs.cloudflare.com"}
+    ]
+  },
+  {
+    "name": "jsDelivr",
+    "category": "CDN",
+    "patterns": [
+      {"type": "script_src", "pattern": "jsdelivr.net"}
+    ]
+  },
+  {
+    "name": "unpkg",
+    "category": "CDN",
+    "patterns": [
+      {"type": "script_src", "pattern": "unpkg.com"}
+    ]
+  },
+  {
+    "name": "esm.sh",
+    "category": "CDN",
+    "patterns": [
+      {"type": "script_src", "pattern": "esm.sh"}
+    ]
+  },
+  {
+    "name": "Skypack",
+    "category": "CDN",
+    "patterns": [
+      {"type": "script_src", "pattern": "skypack.dev"}
+    ]
+  },
+  {
+    "name": "BrowserStack",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "browserstack"}
+    ]
+  },
+  {
+    "name": "Sauce Labs",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "saucelabs"}
+    ]
+  },
+  {
+    "name": "CodeSandbox",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "codesandbox"}
+    ]
+  },
+  {
+    "name": "StackBlitz",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "stackblitz"}
+    ]
+  },
+  {
+    "name": "Replit",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "replit"},
+      {"type": "header", "pattern": "replit"}
+    ]
+  },
+  {
+    "name": "Gitpod",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "gitpod"}
+    ]
+  },
+  {
+    "name": "Theia",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "theia"}
+    ]
+  },
+  {
+    "name": "Eclipse Che",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "eclipse che"}
+    ]
+  },
+  {
+    "name": "JupyterHub",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "jupyterhub"},
+      {"type": "html", "pattern": "jupyter"}
+    ]
+  },
+  {
+    "name": "Jupyter Notebook",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "jupyter"}
+    ]
+  },
+  {
+    "name": "Zeppelin",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "zeppelin"}
+    ]
+  },
+  {
+    "name": "Apache Airflow",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "airflow"},
+      {"type": "header", "pattern": "airflow"}
+    ]
+  },
+  {
+    "name": "Apache NiFi",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "nifi"}
+    ]
+  },
+  {
+    "name": "Apache Airflow UI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "Airflow"}
+    ]
+  },
+  {
+    "name": "Apache Superset",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "superset"}
+    ]
+  },
+  {
+    "name": "Metabase",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "metabase"}
+    ]
+  },
+  {
+    "name": "Redash",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "redash"}
+    ]
+  },
+  {
+    "name": "Apache Zeppelin",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "zeppelin"}
+    ]
+  },
+  {
+    "name": "Jupyter Enterprise Gateway",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "enterprise gateway"}
+    ]
+  },
+  {
+    "name": "dbt Docs",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "dbt"}
+    ]
+  },
+  {
+    "name": "Apache Ranger",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "ranger"}
+    ]
+  },
+  {
+    "name": "Apache Atlas",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "atlas"}
+    ]
+  },
+  {
+    "name": "Elasticsearch Kibana",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "kibana"}
+    ]
+  },
+  {
+    "name": "Elasticsearch Marvel",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "marvel"}
+    ]
+  },
+  {
+    "name": "OpenSearch Dashboards",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "opensearch dashboards"}
+    ]
+  },
+  {
+    "name": "Graylog",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "graylog"}
+    ]
+  },
+  {
+    "name": "Loki Grafana",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "loki"}
+    ]
+  },
+  {
+    "name": "Tempo",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "tempo"}
+    ]
+  },
+  {
+    "name": "Mimir",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "mimir"}
+    ]
+  },
+  {
+    "name": "Cortex",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "cortex"}
+    ]
+  },
+  {
+    "name": "Thanos",
+    "category": "监控",
+    "patterns": [
+      {"type": "html", "pattern": "thanos"}
+    ]
+  },
+  {
+    "name": "VictoriaMetrics",
+    "category": "监控",
+    "patterns": [
+      {"type": "header", "pattern": "victoriametrics"}
+    ]
+  },
+  {
+    "name": "InfluxDB",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "header", "pattern": "InfluxDB"},
+      {"type": "header", "pattern": "X-Influxdb-Version"}
+    ]
+  },
+  {
+    "name": "TimescaleDB",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "timescale"}
+    ]
+  },
+  {
+    "name": "QuestDB",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "header", "pattern": "QuestDB"}
+    ]
+  },
+  {
+    "name": "PrestoDB",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "presto"}
+    ]
+  },
+  {
+    "name": "Trino",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "trino"}
+    ]
+  },
+  {
+    "name": "Dremio",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "dremio"}
+    ]
+  },
+  {
+    "name": "StarRocks",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "starrocks"}
+    ]
+  },
+  {
+    "name": "Doris",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "doris"}
+    ]
+  },
+  {
+    "name": "DolphinScheduler",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "dolphinscheduler"}
+    ]
+  },
+  {
+    "name": "Dagster",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "dagster"}
+    ]
+  },
+  {
+    "name": "Prefect",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "prefect"}
+    ]
+  },
+  {
+    "name": "KubeFlow",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "kubeflow"}
+    ]
+  },
+  {
+    "name": "MLflow",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "mlflow"}
+    ]
+  },
+  {
+    "name": "Kubeflow Pipelines",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "kubeflow pipelines"}
+    ]
+  },
+  {
+    "name": "Apache Flink Web",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "flink"}
+    ]
+  },
+  {
+    "name": "Apache Spark Web UI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "Spark"}
+    ]
+  },
+  {
+    "name": "Apache Hadoop YARN",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "hadoop"}
+    ]
+  },
+  {
+    "name": "Apache HBase",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "hbase"}
+    ]
+  },
+  {
+    "name": "Alluxio",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "alluxio"}
+    ]
+  },
+  {
+    "name": "Apache Hue",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "hue"}
+    ]
+  },
+  {
+    "name": "Apache Oozie",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "oozie"}
+    ]
+  },
+  {
+    "name": "Apache Knox",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "knox"}
+    ]
+  },
+  {
+    "name": "Livy",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "livy"}
+    ]
+  },
+  {
+    "name": "Zeppelin Notebook",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "zeppelin"}
+    ]
+  },
+  {
+    "name": "Cloudera Manager",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "cloudera"}
+    ]
+  },
+  {
+    "name": "Ambari",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "ambari"}
+    ]
+  },
+  {
+    "name": "Apache Atlas Lineage",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "atlas"}
+    ]
+  },
+  {
+    "name": "Ranger Admin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "ranger"}
+    ]
+  },
+  {
+    "name": "Apache Drill",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "drill"}
+    ]
+  },
+  {
+    "name": "Apache Trafodion",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "trafodion"}
+    ]
+  },
+  {
+    "name": "Apache Phoenix",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "phoenix"}
+    ]
+  },
+  {
+    "name": "Apache Kylin",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "kylin"}
+    ]
+  },
+  {
+    "name": "Apache Ignite",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "ignite"}
+    ]
+  },
+  {
+    "name": "Apache Geode",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "geode"}
+    ]
+  },
+  {
+    "name": "Apache Pulsar",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "pulsar"}
+    ]
+  },
+  {
+    "name": "Apache BookKeeper",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "bookkeeper"}
+    ]
+  },
+  {
+    "name": "Apache ZooInspector",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "zookeeper"}
+    ]
+  },
+  {
+    "name": "Apache Curator",
+    "category": "Database面板",
+    "patterns": [
+      {"type": "html", "pattern": "curator"}
+    ]
+  },
+  {
+    "name": "Apache Mesos",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "mesos"}
+    ]
+  },
+  {
+    "name": "Apache Aurora",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "aurora"}
+    ]
+  },
+  {
+    "name": "Apache Marathon",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "marathon"}
+    ]
+  },
+  {
+    "name": "Apache Chronos",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "chronos"}
+    ]
+  },
+  {
+    "name": "Apache Brooklyn",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "brooklyn"}
+    ]
+  },
+  {
+    "name": "Apache jUDDI",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "juddi"}
+    ]
+  },
+  {
+    "name": "Apache Synapse",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "synapse"}
+    ]
+  },
+  {
+    "name": "Apache Axis2",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "axis2"}
+    ]
+  },
+  {
+    "name": "Apache CXF",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "cxf"}
+    ]
+  },
+  {
+    "name": "Apache Axis",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "axis"}
+    ]
+  },
+  {
+    "name": "Jenkins X",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "jenkins-x"}
+    ]
+  },
+  {
+    "name": "GoCD Yaml",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "GoCD"}
+    ]
+  },
+  {
+    "name": "BuildBot",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "buildbot"}
+    ]
+  },
+  {
+    "name": "CDS",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "ovh cds"}
+    ]
+  },
+  {
+    "name": "Hygieia",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "hygieia"}
+    ]
+  },
+  {
+    "name": "Netflix Spinnaker",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "spinnaker"}
+    ]
+  },
+  {
+    "name": "JFrog Artifactory",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "artifactory"},
+      {"type": "header", "pattern": "Artifactory"}
+    ]
+  },
+  {
+    "name": "ProGet",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "proget"}
+    ]
+  },
+  {
+    "name": "NuGet Server",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "nuget"}
+    ]
+  },
+  {
+    "name": "BaasBox",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "baasbox"}
+    ]
+  },
+  {
+    "name": "Appwrite",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "appwrite"}
+    ]
+  },
+  {
+    "name": "Supabase",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "supabase"}
+    ]
+  },
+  {
+    "name": "Firebase",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "firebase"},
+      {"type": "script_src", "pattern": "firebase"}
+    ]
+  },
+  {
+    "name": "AWS Amplify",
+    "category": "构建",
+    "patterns": [
+      {"type": "script_src", "pattern": "amplify"}
+    ]
+  },
+  {
+    "name": "AWS Cognito",
+    "category": "构建",
+    "patterns": [
+      {"type": "script_src", "pattern": "amazon-cognito"}
+    ]
+  },
+  {
+    "name": "Auth0",
+    "category": "构建",
+    "patterns": [
+      {"type": "script_src", "pattern": "auth0"},
+      {"type": "html", "pattern": "auth0"}
+    ]
+  },
+  {
+    "name": "Okta",
+    "category": "构建",
+    "patterns": [
+      {"type": "script_src", "pattern": "okta"}
+    ]
+  },
+  {
+    "name": "Keycloak",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "keycloak"},
+      {"type": "header", "pattern": "keycloak"}
+    ]
+  },
+  {
+    "name": "Casdoor",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "casdoor"}
+    ]
+  },
+  {
+    "name": "Casbin",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "casbin"}
+    ]
+  },
+  {
+    "name": "Gluu",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "gluu"}
+    ]
+  },
+  {
+    "name": "WSO2",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "wso2"}
+    ]
+  },
+  {
+    "name": "Apache Shiro",
+    "category": "Framework",
+    "patterns": [
+      {"type": "cookie", "pattern": "rememberMe"},
+      {"type": "cookie", "pattern": "JSESSIONID"}
+    ]
+  },
+  {
+    "name": "Apache Shindig",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "shindig"}
+    ]
+  },
+  {
+    "name": "Apache Wicket 9",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "wicket:"}
+    ]
+  },
+  {
+    "name": "Apache Tiles",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "tiles"}
+    ]
+  },
+  {
+    "name": "Apache MyFaces",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "myfaces"}
+    ]
+  },
+  {
+    "name": "Apache PrimeFaces",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "primefaces"}
+    ]
+  },
+  {
+    "name": "Apache Bootstrap",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "bootstrap"}
+    ]
+  },
+  {
+    "name": "Bootsfaces",
+    "category": "Framework",
+    "patterns": [
+      {"type": "html", "pattern": "bootsfaces"}
+    ]
+  },
+  {
+    "name": "Bower",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "bower_components"}
+    ]
+  },
+  {
+    "name": "Yarn Pkg",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "yarn"}
+    ]
+  },
+  {
+    "name": "pnpm",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "pnpm"}
+    ]
+  },
+  {
+    "name": "Browserify",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "browserify"}
+    ]
+  },
+  {
+    "name": "SystemJS",
+    "category": "构建",
+    "patterns": [
+      {"type": "html", "pattern": "systemjs"}
+    ]
+  },
+  {
+    "name": "ESBuild",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "esbuild"}
+    ]
+  },
+  {
+    "name": "SWC",
+    "category": "构建",
+    "patterns": [
+      {"type": "header", "pattern": "swc"}
+    ]
+  },
+  {
+    "name": "Babel",
+    "category": "构建",
+    "patterns": [
+      {"type": "script_src", "pattern": "babel"}
+    ]
+  },
+  {
+    "name": "TypeScript",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "typescript"}
+    ]
+  },
+  {
+    "name": "CoffeeScript",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "coffeescript"}
+    ]
+  },
+  {
+    "name": "PureScript",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "purescript"}
+    ]
+  },
+  {
+    "name": "Elm",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "elm"}
+    ]
+  },
+  {
+    "name": "ReasonML",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "reason"}
+    ]
+  },
+  {
+    "name": "Ramda",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "ramda"}
+    ]
+  },
+  {
+    "name": "Underscore.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "underscore"}
+    ]
+  },
+  {
+    "name": "Async.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "async.js"}
+    ]
+  },
+  {
+    "name": "Q",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "q.js"}
+    ]
+  },
+  {
+    "name": "Bluebird",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "bluebird"}
+    ]
+  },
+  {
+    "name": "GSAP",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "gsap"}
+    ]
+  },
+  {
+    "name": "anime.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "animejs"}
+    ]
+  },
+  {
+    "name": "Velocity.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "velocity"}
+    ]
+  },
+  {
+    "name": "AOS",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "data-aos"}
+    ]
+  },
+  {
+    "name": "Swiper",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "swiper"},
+      {"type": "script_src", "pattern": "swiper"}
+    ]
+  },
+  {
+    "name": "Slick Slider",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "slick-slider"},
+      {"type": "script_src", "pattern": "slick"}
+    ]
+  },
+  {
+    "name": "Owl Carousel",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "owl-carousel"}
+    ]
+  },
+  {
+    "name": "Flickity",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "flickity"}
+    ]
+  },
+  {
+    "name": "Glide.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "glide"}
+    ]
+  },
+  {
+    "name": "Embla Carousel",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "embla"}
+    ]
+  },
+  {
+    "name": "Lightbox2",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "lightbox"}
+    ]
+  },
+  {
+    "name": "Fancybox",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "fancybox"}
+    ]
+  },
+  {
+    "name": "Magnific Popup",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "magnific-popup"}
+    ]
+  },
+  {
+    "name": "Parsley",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "data-parsley"}
+    ]
+  },
+  {
+    "name": "Validate.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "validate"}
+    ]
+  },
+  {
+    "name": "FormValidation",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "data-fv"}
+    ]
+  },
+  {
+    "name": "Dropzone.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "dropzone"},
+      {"type": "script_src", "pattern": "dropzone"}
+    ]
+  },
+  {
+    "name": "FilePond",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "filepond"}
+    ]
+  },
+  {
+    "name": "Uppy",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "uppy"}
+    ]
+  },
+  {
+    "name": "Fine Uploader",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "fine-uploader"}
+    ]
+  },
+  {
+    "name": "Plyr",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "plyr"}
+    ]
+  },
+  {
+    "name": "Video.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "video-js"}
+    ]
+  },
+  {
+    "name": "JW Player",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "jwplayer"}
+    ]
+  },
+  {
+    "name": "Flowplayer",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "flowplayer"}
+    ]
+  },
+  {
+    "name": "MediaElement.js",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "mediaelement"}
+    ]
+  },
+  {
+    "name": "Polaris",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "Polaris"}
+    ]
+  },
+  {
+    "name": "Chakra UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "chakra"}
+    ]
+  },
+  {
+    "name": "Theme UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "theme-ui"}
+    ]
+  },
+  {
+    "name": "Emotion",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "css-"}
+    ]
+  },
+  {
+    "name": "Styled Components",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "sc-"}
+    ]
+  },
+  {
+    "name": "Radium",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "radium"}
+    ]
+  },
+  {
+    "name": "JSS",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "jss"}
+    ]
+  },
+  {
+    "name": "Tachyons",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "tachyons"}
+    ]
+  },
+  {
+    "name": "Basscss",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "basscss"}
+    ]
+  },
+  {
+    "name": "Picnic CSS",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "picnic"}
+    ]
+  },
+  {
+    "name": "Spectre.css",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "spectre"}
+    ]
+  },
+  {
+    "name": "Pure CSS",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "pure-"}
+    ]
+  },
+  {
+    "name": "Skeleton",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "script_src", "pattern": "skeleton"}
+    ]
+  },
+  {
+    "name": "Milligram",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "milligram"}
+    ]
+  },
+  {
+    "name": "SUI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "sui-"}
+    ]
+  },
+  {
+    "name": "Semantic UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "ui container"},
+      {"type": "script_src", "pattern": "semantic"}
+    ]
+  },
+  {
+    "name": "Fomantic UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "fomantic"}
+    ]
+  },
+  {
+    "name": "Pico CSS",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "pico"}
+    ]
+  },
+  {
+    "name": "Water.css",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "script_src", "pattern": "water.css"}
+    ]
+  },
+  {
+    "name": "Chocolate",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "chocolate"}
+    ]
+  },
+  {
+    "name": "UIKit",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "uk-"},
+      {"type": "script_src", "pattern": "uikit"}
+    ]
+  },
+  {
+    "name": "PrimeUI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "ui-"}
+    ]
+  },
+  {
+    "name": "Onsen UI",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "ons-"}
+    ]
+  },
+  {
+    "name": "Quasar",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "q-"},
+      {"type": "script_src", "pattern": "quasar"}
+    ]
+  },
+  {
+    "name": "Framework7",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "framework7"}
+    ]
+  },
+  {
+    "name": "Ionic",
+    "category": "CSS框架",
+    "patterns": [
+      {"type": "html", "pattern": "ion-"},
+      {"type": "script_src", "pattern": "ionic"}
+    ]
+  },
+  {
+    "name": "AWS Lightsail",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "lightsail"}
+    ]
+  },
+  {
+    "name": "Linode",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "linode"}
+    ]
+  },
+  {
+    "name": "DigitalOcean",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "digitalocean"}
+    ]
+  },
+  {
+    "name": "Vultr",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "vultr"}
+    ]
+  },
+  {
+    "name": "Hetzner",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "hetzner"}
+    ]
+  },
+  {
+    "name": "OVH",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "ovh"}
+    ]
+  },
+  {
+    "name": "Scaleway",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "scaleway"}
+    ]
+  },
+  {
+    "name": "Contabo",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "contabo"}
+    ]
+  },
+  {
+    "name": "UpCloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "upcloud"}
+    ]
+  },
+  {
+    "name": "Kamatera",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "kamatera"}
+    ]
+  },
+  {
+    "name": "AWS EC2",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "amazonaws"}
+    ]
+  },
+  {
+    "name": "Google Compute Engine",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "google compute"}
+    ]
+  },
+  {
+    "name": "Azure VM",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "azure"}
+    ]
+  },
+  {
+    "name": "Alibaba Cloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "aliyun"}
+    ]
+  },
+  {
+    "name": "腾讯云",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "tencent"},
+      {"type": "header", "pattern": "qcloud"}
+    ]
+  },
+  {
+    "name": "UCloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "ucloud"}
+    ]
+  },
+  {
+    "name": "Baidu Cloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "bce"}
+    ]
+  },
+  {
+    "name": "JD Cloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "jcloud"}
+    ]
+  },
+  {
+    "name": "Meituan Cloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "mws"}
+    ]
+  },
+  {
+    "name": "Kingsoft Cloud",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "ksyun"}
+    ]
+  },
+  {
+    "name": "Qiniu",
+    "category": "Server",
+    "patterns": [
+      {"type": "header", "pattern": "qiniu"}
+    ]
+  },
+  {
+    "name": "WordPress REST API",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "/wp-json/wp/v2/"}
+    ]
+  },
+  {
+    "name": "WordPress Jetpack",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "jetpack"}
+    ]
+  },
+  {
+    "name": "WooCommerce Stripe",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "wc-stripe"}
+    ]
+  },
+  {
+    "name": "WooCommerce PayPal",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "woocommerce_paypal"}
+    ]
+  },
+  {
+    "name": "WordPress Yoast SEO",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "yoast"}
+    ]
+  },
+  {
+    "name": "WordPress All in One SEO",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "all-in-one-seo"}
+    ]
+  },
+  {
+    "name": "WordPress Rank Math",
+    "category": "CMS",
+    "patterns": [
+      {"type": "html", "pattern": "rank-math"}
+    ]
+  },
+  {
+    "name": "Google AdSense",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "adsbygoogle"},
+      {"type": "html", "pattern": "google_ads"}
+    ]
+  },
+  {
+    "name": "Google DoubleClick",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "doubleclick"}
+    ]
+  },
+  {
+    "name": "Facebook Pixel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "fbevents"},
+      {"type": "html", "pattern": "fbq"}
+    ]
+  },
+  {
+    "name": "TikTok Pixel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "tiktok"}
+    ]
+  },
+  {
+    "name": "LinkedIn Insight",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "linkedin"}
+    ]
+  },
+  {
+    "name": "Twitter Pixel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "twitter"}
+    ]
+  },
+  {
+    "name": "Snap Pixel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "snapchat"}
+    ]
+  },
+  {
+    "name": "Pinterest Tag",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "pinterest"}
+    ]
+  },
+  {
+    "name": "Reddit Pixel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "reddit"}
+    ]
+  },
+  {
+    "name": "Quora Pixel",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "quora"}
+    ]
+  },
+  {
+    "name": "Bing UET",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "bat.bing"}
+    ]
+  },
+  {
+    "name": "Yandex Metrica",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "mc.yandex"}
+    ]
+  },
+  {
+    "name": "Cloudflare Insights",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "cloudflareinsights"}
+    ]
+  },
+  {
+    "name": "Crazy Egg",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "crazyegg"}
+    ]
+  },
+  {
+    "name": "Optimizely",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "optimizely"}
+    ]
+  },
+  {
+    "name": "VWO",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "vwo"}
+    ]
+  },
+  {
+    "name": "AB Tasty",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "abtasty"}
+    ]
+  },
+  {
+    "name": "Adobe Analytics",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "omtrdc"},
+      {"type": "script_src", "pattern": "adobedtm"}
+    ]
+  },
+  {
+    "name": "AT Internet",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "xiti"}
+    ]
+  },
+  {
+    "name": "Webtrends",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "webtrends"}
+    ]
+  },
+  {
+    "name": "IBM Digital Analytics",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "coremetrics"}
+    ]
+  },
+  {
+    "name": "Etracker",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "etracker"}
+    ]
+  },
+  {
+    "name": "Ezoic",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "ezoic"}
+    ]
+  },
+  {
+    "name": "Mediavine",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "mediavine"}
+    ]
+  },
+  {
+    "name": "Sovrn",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "sovrn"}
+    ]
+  },
+  {
+    "name": "Moat",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "moatads"}
+    ]
+  },
+  {
+    "name": "Integral Ad Science",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "adsafeprotected"}
+    ]
+  },
+  {
+    "name": "DoubleVerify",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "doubleverify"}
+    ]
+  },
+  {
+    "name": "Chartboost",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "chartboost"}
+    ]
+  },
+  {
+    "name": "Unity Ads",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "unityads"}
+    ]
+  },
+  {
+    "name": "AppNexus",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "appnexus"}
+    ]
+  },
+  {
+    "name": "PubMatic",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "pubmatic"}
+    ]
+  },
+  {
+    "name": "Rubicon Project",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "rubiconproject"}
+    ]
+  },
+  {
+    "name": "OpenX",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "openx"}
+    ]
+  },
+  {
+    "name": "Index Exchange",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "casalemedia"}
+    ]
+  },
+  {
+    "name": "Criteo",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "criteo"}
+    ]
+  },
+  {
+    "name": "Taboola",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "taboola"}
+    ]
+  },
+  {
+    "name": "Outbrain",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "outbrain"}
+    ]
+  },
+  {
+    "name": "RevContent",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "revcontent"}
+    ]
+  },
+  {
+    "name": "MGID",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "mgid"}
+    ]
+  },
+  {
+    "name": "BuySellAds",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "buysellads"}
+    ]
+  },
+  {
+    "name": "Carbon Ads",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "carbonads"}
+    ]
+  },
+  {
+    "name": "EthicalAds",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "ethicalads"}
+    ]
+  },
+  {
+    "name": "CoinHive",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "coinhive"}
+    ]
+  },
+  {
+    "name": "CoinImp",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "coinimp"}
+    ]
+  },
+  {
+    "name": "CryptoLoot",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "cryptoloot"}
+    ]
+  },
+  {
+    "name": "Webmine",
+    "category": "Analytics",
+    "patterns": [
+      {"type": "script_src", "pattern": "webmine"}
+    ]
+  },
+  {
+    "name": "Hcaptcha",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "h-captcha"},
+      {"type": "script_src", "pattern": "hcaptcha"}
+    ]
+  },
+  {
+    "name": "Recaptcha",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "g-recaptcha"},
+      {"type": "script_src", "pattern": "recaptcha"}
+    ]
+  },
+  {
+    "name": "Turnstile",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "cf-turnstile"}
+    ]
+  },
+  {
+    "name": "Geetest",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "geetest"}
+    ]
+  },
+  {
+    "name": "Friendly Captcha",
+    "category": "JS库",
+    "patterns": [
+      {"type": "html", "pattern": "frc-captcha"}
+    ]
+  },
+  {
+    "name": "Arkose Labs",
+    "category": "JS库",
+    "patterns": [
+      {"type": "script_src", "pattern": "arkoselabs"}
+    ]
+  },
+  {
+    "name": "Stripe",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "js.stripe.com"},
+      {"type": "html", "pattern": "stripe"}
+    ]
+  },
+  {
+    "name": "PayPal",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "paypal.com"}
+    ]
+  },
+  {
+    "name": "Square",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "square"}
+    ]
+  },
+  {
+    "name": "Adyen",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "adyen"}
+    ]
+  },
+  {
+    "name": "Braintree",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "braintree"}
+    ]
+  },
+  {
+    "name": "Alipay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "alipay"}
+    ]
+  },
+  {
+    "name": "WeChat Pay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "wxpay"}
+    ]
+  },
+  {
+    "name": "Union Pay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "unionpay"}
+    ]
+  },
+  {
+    "name": "Klarna",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "klarna"}
+    ]
+  },
+  {
+    "name": "Afterpay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "afterpay"}
+    ]
+  },
+  {
+    "name": "Affirm",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "affirm"}
+    ]
+  },
+  {
+    "name": "Sezzle",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "sezzle"}
+    ]
+  },
+  {
+    "name": "Razorpay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "razorpay"}
+    ]
+  },
+  {
+    "name": "Paystack",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "paystack"}
+    ]
+  },
+  {
+    "name": "Flutterwave",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "flutterwave"}
+    ]
+  },
+  {
+    "name": "Mpesa",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "mpesa"}
+    ]
+  },
+  {
+    "name": "Mercado Pago",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "mercadopago"}
+    ]
+  },
+  {
+    "name": "iDEAL",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "ideal"}
+    ]
+  },
+  {
+    "name": "Sofort",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "sofort"}
+    ]
+  },
+  {
+    "name": "Giropay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "giropay"}
+    ]
+  },
+  {
+    "name": "Bancontact",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "bancontact"}
+    ]
+  },
+  {
+    "name": "Przelewy24",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "przelewy24"}
+    ]
+  },
+  {
+    "name": "BLIK",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "blik"}
+    ]
+  },
+  {
+    "name": "Multisafepay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "multisafepay"}
+    ]
+  },
+  {
+    "name": "Mollie",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "mollie"}
+    ]
+  },
+  {
+    "name": "2Checkout",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "2checkout"}
+    ]
+  },
+  {
+    "name": "CC Avenue",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "ccavenue"}
+    ]
+  },
+  {
+    "name": "Worldpay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "worldpay"}
+    ]
+  },
+  {
+    "name": "Skrill",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "skrill"}
+    ]
+  },
+  {
+    "name": "Neteller",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "neteller"}
+    ]
+  },
+  {
+    "name": "EcoPayz",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "ecopayz"}
+    ]
+  },
+  {
+    "name": "Paysafecard",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "paysafecard"}
+    ]
+  },
+  {
+    "name": "Trustly",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "script_src", "pattern": "trustly"}
+    ]
+  },
+  {
+    "name": "Apple Pay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "apple-pay"}
+    ]
+  },
+  {
+    "name": "Google Pay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "google-pay"}
+    ]
+  },
+  {
+    "name": "Samsung Pay",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "samsung-pay"}
+    ]
+  },
+  {
+    "name": "Visa Checkout",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "visa-checkout"}
+    ]
+  },
+  {
+    "name": "Masterpass",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "masterpass"}
+    ]
+  },
+  {
+    "name": "Amex Express Checkout",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "amex"}
+    ]
+  },
+  {
+    "name": "Discover Global Network",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "discover"}
+    ]
+  },
+  {
+    "name": "Alibaba",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "alibaba"}
+    ]
+  },
+  {
+    "name": "AliExpress",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "aliexpress"}
+    ]
+  },
+  {
+    "name": "Taobao",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "taobao"}
+    ]
+  },
+  {
+    "name": "Tmall",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "tmall"}
+    ]
+  },
+  {
+    "name": "JD",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "jd.com"}
+    ]
+  },
+  {
+    "name": "1688",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "1688.com"}
+    ]
+  },
+  {
+    "name": "Suning",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "suning"}
+    ]
+  },
+  {
+    "name": "Vipshop",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "vipshop"}
+    ]
+  },
+  {
+    "name": "Pinduoduo",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "pinduoduo"}
+    ]
+  },
+  {
+    "name": "Dangdang",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "dangdang"}
+    ]
+  },
+  {
+    "name": "Gome",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "gome"}
+    ]
+  },
+  {
+    "name": "Yhd",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "yhd"}
+    ]
+  },
+  {
+    "name": "Meituan",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "meituan"}
+    ]
+  },
+  {
+    "name": "Dianping",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "dianping"}
+    ]
+  },
+  {
+    "name": "Eleme",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "ele.me"}
+    ]
+  },
+  {
+    "name": "Ctrip",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "ctrip"}
+    ]
+  },
+  {
+    "name": "Qunar",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "qunar"}
+    ]
+  },
+  {
+    "name": "Fliggy",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "fliggy"}
+    ]
+  },
+  {
+    "name": "Tuniu",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "tuniu"}
+    ]
+  },
+  {
+    "name": "Lvmama",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "lvmama"}
+    ]
+  },
+  {
+    "name": "Mafengwo",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "mafengwo"}
+    ]
+  },
+  {
+    "name": "Qyer",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "qyer"}
+    ]
+  },
+  {
+    "name": "Douyin",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "douyin"}
+    ]
+  },
+  {
+    "name": "Kuaishou",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "kuaishou"}
+    ]
+  },
+  {
+    "name": "Xiaohongshu",
+    "category": "Ecommerce",
+    "patterns": [
+      {"type": "html", "pattern": "xiaohongshu"}
+    ]
+  },
+  {
+    "name": "Zhihu",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "zhihu"}
+    ]
+  },
+  {
+    "name": "Bilibili",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "bilibili"}
+    ]
+  },
+  {
+    "name": "Tieba",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "tieba"}
+    ]
+  },
+  {
+    "name": "Tianya",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "tianya"}
+    ]
+  },
+  {
+    "name": "Douban",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "douban"}
+    ]
+  },
+  {
+    "name": "Hupu",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "hupu"}
+    ]
+  },
+  {
+    "name": "V2EX",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "v2ex"}
+    ]
+  },
+  {
+    "name": "Oschina",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "oschina"}
+    ]
+  },
+  {
+    "name": "Cnblogs",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "cnblogs"}
+    ]
+  },
+  {
+    "name": "Juejin",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "juejin"}
+    ]
+  },
+  {
+    "name": "SegmentFault",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "segmentfault"}
+    ]
+  },
+  {
+    "name": "CSDN",
+    "category": "Forum",
+    "patterns": [
+      {"type": "html", "pattern": "csdn"}
+    ]
+  }
+]

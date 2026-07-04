@@ -1,0 +1,674 @@
+[
+  {
+    "service": "GitHub Pages",
+    "cname_pattern": ".github.io",
+    "http_indicator": "There isn't a GitHub Pages site here",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Heroku",
+    "cname_pattern": ".herokuapp.com",
+    "http_indicator": "No such app",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Azure Web Apps",
+    "cname_pattern": ".azurewebsites.net",
+    "http_indicator": "404 Web Site not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "AWS S3 Bucket",
+    "cname_pattern": ".s3.amazonaws.com",
+    "http_indicator": "The specified bucket does not exist",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "AWS S3 Bucket (region)",
+    "cname_pattern": "s3-website",
+    "http_indicator": "The specified bucket does not exist",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Shopify",
+    "cname_pattern": ".myshopify.com",
+    "http_indicator": "Sorry, this shop is currently unavailable",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Tumblr",
+    "cname_pattern": ".tumblr.com",
+    "http_indicator": "Whatever you were looking for doesn't currently exist",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Pantheon",
+    "cname_pattern": ".pantheonsite.io",
+    "http_indicator": "The gods are wise",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Ghost",
+    "cname_pattern": ".ghost.io",
+    "http_indicator": "The thing you were looking for is no longer here",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Tilda",
+    "cname_pattern": ".tilda.ws",
+    "http_indicator": "Please go to Tilda",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Strikingly",
+    "cname_pattern": ".strikinglydns.com",
+    "http_indicator": "page not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "WordPress.com",
+    "cname_pattern": ".wordpress.com",
+    "http_indicator": "Do you want to register",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Netlify",
+    "cname_pattern": "netlify.app",
+    "http_indicator": "Not Found - Request ID",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Vercel",
+    "cname_pattern": ".vercel.app",
+    "http_indicator": "The deployment could not be found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Surge.sh",
+    "cname_pattern": ".surge.sh",
+    "http_indicator": "project not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Bitbucket",
+    "cname_pattern": "bitbucket.io",
+    "http_indicator": "Repository not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Fastly",
+    "cname_pattern": ".fastly.net",
+    "http_indicator": "Fastly error: unknown domain",
+    "http_status": 500,
+    "severity": "high"
+  },
+  {
+    "service": "Unbounce",
+    "cname_pattern": "unbouncepages.com",
+    "http_indicator": "The requested URL was not found on this server",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Webflow",
+    "cname_pattern": ".webflow.io",
+    "http_indicator": "The page you are looking for doesn't exist",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Feedpress",
+    "cname_pattern": ".feedpress.me",
+    "http_indicator": "The feed has not been found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Freshdesk",
+    "cname_pattern": ".freshdesk.com",
+    "http_indicator": "The page you requested is not available",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Help Scout",
+    "cname_pattern": ".helpscoutdocs.com",
+    "http_indicator": "No settings were found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Cargo",
+    "cname_pattern": ".cargocollective.com",
+    "http_indicator": "404 Not Found",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "StatusPage",
+    "cname_pattern": ".statuspage.io",
+    "http_indicator": "You are being redirected",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Acquia",
+    "cname_pattern": ".acquia-sites.com",
+    "http_indicator": "Web Site Not Found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Proposify",
+    "cname_pattern": ".proposify.biz",
+    "http_indicator": "You've followed an out of date link",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Simplebooklet",
+    "cname_pattern": ".simplebooklet.com",
+    "http_indicator": "We can't find the page you're looking for",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Getresponse",
+    "cname_pattern": ".landing.getresponse.com",
+    "http_indicator": "With GetResponse Landing Pages",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Vend",
+    "cname_pattern": ".vendecommerce.com",
+    "http_indicator": "Looks like you've traveled too far",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Short.io",
+    "cname_pattern": ".short.io",
+    "http_indicator": "Link does not exist",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Uptimerobot",
+    "cname_pattern": ".stats.uptimerobot.com",
+    "http_indicator": "The page you are looking for does not exist",
+    "http_status": 403,
+    "severity": "medium"
+  },
+  {
+    "service": "Wufoo",
+    "cname_pattern": ".wufoo.com",
+    "http_indicator": "We can't find the page",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Mashery",
+    "cname_pattern": ".mashery.com",
+    "http_indicator": "Unrecognized domain",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Aftership",
+    "cname_pattern": ".aftership.com",
+    "http_indicator": "Oops... We couldn't find that page",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Aha",
+    "cname_pattern": ".ideas.aha.io",
+    "http_indicator": "There is no portal here",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Brightcove",
+    "cname_pattern": ".bcvp0rtal.com",
+    "http_indicator": "<p class=\"bc-description\">This domain is not configured</p>",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Bigcartel",
+    "cname_pattern": ".bigcartel.com",
+    "http_indicator": "Page not found",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Activecampaign",
+    "cname_pattern": ".activehosted.com",
+    "http_indicator": "Could not find a domain for",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Campaignmonitor",
+    "cname_pattern": ".createsend.com",
+    "http_indicator": "Trying to access your account",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Smugmug",
+    "cname_pattern": ".smugmug.com",
+    "http_indicator": "System Error",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Surge",
+    "cname_pattern": ".surge.sh",
+    "http_indicator": "project not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Readme.io",
+    "cname_pattern": ".readme.io",
+    "http_indicator": "Project doesnt exist",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Pingdom",
+    "cname_pattern": ".stats.pingdom.com",
+    "http_indicator": "Royal Pingdom",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Modulus",
+    "cname_pattern": ".modulus.io",
+    "http_indicator": "no such app",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Flexbe",
+    "cname_pattern": ".flexbe.com",
+    "http_indicator": "Site is in development",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Outsmart",
+    "cname_pattern": ".outsmart.digital",
+    "http_indicator": "Looks like we're having some server issues",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Smartjobboard",
+    "cname_pattern": ".smartjobboard.com",
+    "http_indicator": "This job board website is either expired",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Smartling",
+    "cname_pattern": ".smartling.com",
+    "http_indicator": "Domain is not served by this Smartling translator",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Squarespace",
+    "cname_pattern": ".squarespace.com",
+    "http_indicator": "No Such Account",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Webflow (custom domain)",
+    "cname_pattern": "proxy-ssl.webflow.com",
+    "http_indicator": "The site you are looking for is not currently available",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Canny",
+    "cname_pattern": ".canny.io",
+    "http_indicator": "Company not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "HatenaBlog",
+    "cname_pattern": ".hatenablog.com",
+    "http_indicator": "404 Blog is not found",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Kinsta",
+    "cname_pattern": ".kinsta.com",
+    "http_indicator": "No Site For Domain",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Launchrock",
+    "cname_pattern": ".launchrock.com",
+    "http_indicator": "Unfortunately, this site is not available",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Nationbuilder",
+    "cname_pattern": ".nationbuilder.com",
+    "http_indicator": "We couldn't locate the page you requested",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Netlify (custom)",
+    "cname_pattern": "netlifyglobalcdn.com",
+    "http_indicator": "Not Found - Request ID",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "NGINX",
+    "cname_pattern": "ngrok.io",
+    "http_indicator": "Tunnel ",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Pagewiz",
+    "cname_pattern": ".pagewiz.com",
+    "http_indicator": "You may have typed the URL incorrectly",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Pendike",
+    "cname_pattern": ".pendiko.com",
+    "http_indicator": "Page not found",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Pexels",
+    "cname_pattern": ".pexels.com",
+    "http_indicator": "The page you were looking for",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Pinterest",
+    "cname_pattern": ".pinimg.com",
+    "http_indicator": "Not Found",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Playstation",
+    "cname_pattern": ".playstation.com",
+    "http_indicator": "The page you are looking for doesn't exist",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Pressable",
+    "cname_pattern": ".pressable.com",
+    "http_indicator": "The site you were looking for",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Readme",
+    "cname_pattern": "-readme.readme.io",
+    "http_indicator": "We can't find that page",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Sabia",
+    "cname_pattern": ".sabia.com",
+    "http_indicator": "Page not found",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Shopify (custom)",
+    "cname_pattern": ".shops.myshopify.com",
+    "http_indicator": "Sorry, this shop is currently unavailable",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Shoptet",
+    "cname_pattern": ".shoptet.cz",
+    "http_indicator": "This e-shop doesn't exist",
+    "http_status": 410,
+    "severity": "medium"
+  },
+  {
+    "service": "Simplebooklet (custom)",
+    "cname_pattern": ".simplebooklet.com",
+    "http_indicator": "We can't find the page you're looking for",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Siteleaf",
+    "cname_pattern": ".siteleaf.net",
+    "http_indicator": "Domain not configured",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Smartevents",
+    "cname_pattern": ".smartevents.com",
+    "http_indicator": "Domain is not configured",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Snipt",
+    "cname_pattern": ".snipt.net",
+    "http_indicator": "Page not found",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Strikingly (custom)",
+    "cname_pattern": ".strikinglydns.com",
+    "http_indicator": "Do you want to register",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Tave",
+    "cname_pattern": ".client.tave.com",
+    "http_indicator": "Sorry, we couldn't find the page you were looking for",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Teamwork",
+    "cname_pattern": ".teamwork.com",
+    "http_indicator": "Oops - We didn't find your site",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Tictail",
+    "cname_pattern": ".tictail.com",
+    "http_indicator": "Building a brand of your own",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Tilda (custom)",
+    "cname_pattern": ".tilda.ws",
+    "http_indicator": "Domain has been assigned",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Tumbler",
+    "cname_pattern": ".tumblr.com",
+    "http_indicator": "Whatever you were looking for doesn't currently exist",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Uberflip",
+    "cname_pattern": ".uberflip.com",
+    "http_indicator": "We couldn't locate the page you requested",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Unbounce (custom)",
+    "cname_pattern": ".unbouncepages.com",
+    "http_indicator": "The requested URL was not found on this server",
+    "http_status": 404,
+    "severity": "low"
+  },
+  {
+    "service": "Userreport",
+    "cname_pattern": ".userreport.com",
+    "http_indicator": "This domain is not configured",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Uservoice",
+    "cname_pattern": ".uservoice.com",
+    "http_indicator": "The page you requested is not available",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Vercel (custom)",
+    "cname_pattern": ".vercel.app",
+    "http_indicator": "The deployment could not be found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Viadaria",
+    "cname_pattern": ".viajarpraiaserfeliz.com",
+    "http_indicator": "Domain does not exist",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Virb",
+    "cname_pattern": ".virb.com",
+    "http_indicator": "Looking for a Virb website",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Voog",
+    "cname_pattern": ".voog.com",
+    "http_indicator": "Domain is not configured",
+    "http_status": 403,
+    "severity": "medium"
+  },
+  {
+    "service": "Webflow (legacy)",
+    "cname_pattern": ".webflow.io",
+    "http_indicator": "The page you are looking for doesn't exist",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Webnode",
+    "cname_pattern": ".webnode.com",
+    "http_indicator": "This domain has been registered",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Wix",
+    "cname_pattern": ".wix.com",
+    "http_indicator": "Looks like this domain isn't connected",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Wishpond",
+    "cname_pattern": ".wishpond.com",
+    "http_indicator": "Page not found",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Wordpress (custom)",
+    "cname_pattern": ".wordpress.com",
+    "http_indicator": "Do you want to register",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Wpengine",
+    "cname_pattern": ".wpengine.com",
+    "http_indicator": "The site you were looking for",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Zapier",
+    "cname_pattern": ".zapier.com",
+    "http_indicator": "Zapier couldn't find this page",
+    "http_status": 404,
+    "severity": "medium"
+  },
+  {
+    "service": "Zendesk",
+    "cname_pattern": ".zendesk.com",
+    "http_indicator": "Help Center Closed",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Zeit",
+    "cname_pattern": ".zeit.co",
+    "http_indicator": "The deployment could not be found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Surge.sh (www)",
+    "cname_pattern": "surge.sh",
+    "http_indicator": "project not found",
+    "http_status": 404,
+    "severity": "high"
+  },
+  {
+    "service": "Cargo Collective",
+    "cname_pattern": "cargocollective.com",
+    "http_indicator": "404 Not Found",
+    "http_status": 404,
+    "severity": "medium"
+  }
+]
