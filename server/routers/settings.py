@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from ..config import DATA_DIR
+from ..services.notify_service import send_notification
 
 router = APIRouter(tags=["settings"])
 
@@ -27,6 +28,30 @@ _DEFAULTS = {
         "webhook": {
             "url": "",
             "headers": {},
+        },
+        "dingtalk": {
+            "access_token": "",  # 钉钉群机器人的 access_token
+            "secret": "",        # 加签密钥（可选，启用签名校验）
+        },
+        "wecom": {
+            "key": "",  # 企业微信群机器人 key
+        },
+        "feishu": {
+            "webhook": "",  # 飞书群机器人完整 webhook 地址
+            "secret": "",    # 签名校验密钥（可选）
+        },
+        "telegram": {
+            "bot_token": "",  # Telegram Bot API token
+            "chat_id": "",    # 目标 chat id（群/频道/用户）
+        },
+        "email": {
+            "smtp_host": "",
+            "smtp_port": 465,
+            "username": "",
+            "password": "",
+            "from_addr": "",
+            "to_addrs": [],  # 收件人列表
+            "use_ssl": True,
         },
     },
 }
@@ -70,3 +95,15 @@ def update_settings(body: SettingsUpdate):
     data.update(updates)
     _save(data)
     return data
+
+
+@router.post("/settings/test-notification")
+def test_notification():
+    """发送测试通知，验证通知渠道配置是否正确。"""
+    result = send_notification(
+        title="NetProbe 测试通知",
+        message="这是一条来自 NetProbe 的测试通知。如果你收到了，说明通知渠道配置正确。",
+        details={"type": "test"},
+    )
+    return result
+

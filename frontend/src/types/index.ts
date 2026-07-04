@@ -174,6 +174,7 @@ export interface Settings {
   layout: 'sidebar' | 'topnav'
   theme: 'light' | 'dark'
   api_keys: Record<string, string>
+  notifications?: Record<string, any>
 }
 
 /** 任务信息 */

@@ -60,6 +60,20 @@ def build_parser() -> argparse.ArgumentParser:
     )
     _add_common_scan_args(ci_parser)
 
+    # 指纹更新模式
+    fp_parser = subparsers.add_parser(
+        'update-fingerprints',
+        help='从 Wappalyzer 拉取最新指纹库并合并到本地（需联网）',
+    )
+    fp_parser.add_argument(
+        '--url', default=None,
+        help='自定义数据源 URL（默认: projectdiscovery 镜像 + Wappalyzer 官方）',
+    )
+    fp_parser.add_argument(
+        '--dry-run', action='store_true',
+        help='只统计不写入',
+    )
+
     return parser
 
 
@@ -231,6 +245,21 @@ def main() -> None:
 
         exit_code = _run_ci(args, options, emit)
         sys.exit(exit_code)
+
+    elif args.command == 'update-fingerprints':
+        # 调用 Wappalyzer 导入器更新本地指纹库
+        import runpy
+        import os
+        script = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scripts', 'import_wappalyzer.py')
+        if not os.path.isfile(script):
+            print('[!] 未找到 scripts/import_wappalyzer.py')
+            sys.exit(1)
+        sys.argv = ['import_wappalyzer.py']
+        if getattr(args, 'url', None):
+            sys.argv += ['--url', args.url]
+        if getattr(args, 'dry_run', False):
+            sys.argv += ['--dry-run']
+        runpy.run_path(script, run_name='__main__')
 
 
 if __name__ == '__main__':
