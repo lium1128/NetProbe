@@ -159,7 +159,7 @@ def get_asset_detail(hostname: str, ip: str) -> dict | None:
             "vulnerabilities": vulnerabilities,
             "banners": banners,
             "sensitive": sensitive,
-            "tech_stack": sorted(all_tech),
+            "tech_stack": sorted(all_tech, key=lambda x: x.get("name", "")),
             "timeline": timeline,
             "port_count": len(ports),
             "web_count": len(web_info),
