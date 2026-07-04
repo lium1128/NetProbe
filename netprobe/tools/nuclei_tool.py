@@ -54,13 +54,22 @@ def run_nuclei(
         '-l', url_file,
         '-j', '-silent',
         '-severity', severity,
-        '-rate-limit', str(rate_limit),
-        '-c', str(concurrency),
+        '-rl', str(rate_limit),
+        '-bs', str(concurrency),
         '-timeout', str(timeout),
-        '-max-time', str(max_time),
         '-retries', '1',
         '-no-color',
+        '-duc',
     ]
+    # 模板范围（控制扫描时长，6287 全量模板太慢）
+    if templates:
+        cmd.extend(['-t', templates])
+    else:
+        # 默认只跑高价值类别，避免 6000+ 全量模板超时
+        cmd.extend(['-tags', 'cve,vuln,misconfig,exposure,detect,tech,fuzz'])
+    if max_time and max_time < 300:
+        # nuclei 无 -max-time，用 -timeout 间接控制；短超时减少等待
+        cmd.extend(['-timeout', str(min(timeout, 3))])
     if templates:
         cmd.extend(['-t', templates])
 
@@ -99,7 +108,23 @@ def run_nuclei(
         stderr_thread = threading.Thread(target=_read_stderr, args=(proc,), daemon=True)
         stderr_thread.start()
 
-        # 主线程逐行读 stdout（JSONL）
+        # 主线程逐行读 stdout（JSONL），用后台计时线程在超时后 kill 进程
+        import time
+        max_time_val = max_time or 300
+
+        def _timeout_killer():
+            time.sleep(max_time_val)
+            if proc.poll() is None:
+                try:
+                    proc.kill()
+                    if on_progress:
+                        on_progress('    [nuclei] 达到最大扫描时间，终止')
+                except Exception:
+                    pass
+
+        killer_thread = threading.Thread(target=_timeout_killer, daemon=True)
+        killer_thread.start()
+
         for line in proc.stdout:
             line = line.strip()
             if not line:
@@ -117,7 +142,7 @@ def run_nuclei(
                     name = vuln.get('name', '')[:60]
                     on_progress(f'    [{sev}] {name}')
 
-        proc.wait(timeout=10)
+        proc.wait(timeout=15)
 
     except (subprocess.TimeoutExpired, FileNotFoundError) as e:
         try:
