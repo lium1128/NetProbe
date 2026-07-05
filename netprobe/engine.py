@@ -970,6 +970,29 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         except Exception as e:
             emit('progress', text=f'  CORS 检测失败（不影响主流程）: {e}')
 
+        # ── 端口弱口令爆破（SSH/MySQL/Redis/FTP/PostgreSQL，复用 vuln 开关）──
+        try:
+            from .brute_force import brute_force_for_hosts
+            emit('progress', text='  · 端口弱口令爆破 (SSH/MySQL/Redis/FTP/PG) ...')
+            t0 = time.time()
+            brute_force_for_hosts(all_hosts, options)
+            brute_total = sum(len(h.get('_brute_findings', [])) for h in all_hosts)
+            elapsed = time.time() - t0
+            if brute_total:
+                sev_counts = {'high': 0, 'medium': 0}
+                for h in all_hosts:
+                    for v in h.get('vulnerabilities', []):
+                        if v.get('type') == 'weak_password':
+                            sev_counts[v.get('severity', 'high')] = \
+                                sev_counts.get(v.get('severity', 'high'), 0) + 1
+                emit('progress', text=f'    ✓ 弱口令爆破完成: {brute_total} 个命中 '
+                      f'(high:{sev_counts.get("high", 0)} medium:{sev_counts.get("medium", 0)}) '
+                      f'({elapsed:.1f}s)')
+            else:
+                emit('progress', text=f'    ✓ 弱口令爆破完成: 无发现 ({elapsed:.1f}s)')
+        except Exception as e:
+            emit('progress', text=f'  弱口令爆破失败（不影响主流程）: {e}')
+
     # ── Banner 抓取 ──
     if _stage_enabled(options, 'banner'):
         emit('progress', text=ph('Banner 抓取 ...'))
@@ -1078,6 +1101,35 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         emit('progress', text=f'  ✓ DNS 记录收集完成: {dns_count} 个域名 ({elapsed:.1f}s)')
     else:
         emit('progress', text=f'  ✓ DNS 记录收集完成: 无结果 ({elapsed:.1f}s)')
+
+    # ── CDN 真实 IP 发现（WHOIS/DNS 阶段后，复用 vuln 开关）──
+    if _stage_enabled(options, 'vuln'):
+        emit('progress', text=ph('CDN 真实 IP 发现 ...'))
+        t0 = time.time()
+        try:
+            from .origin_ip import find_origin_for_hosts
+            find_origin_for_hosts(all_hosts)
+            origin_hosts = sum(1 for h in all_hosts if h.get('_origin_ips', {}).get('candidates'))
+            total_candidates = sum(
+                len(h.get('_origin_ips', {}).get('candidates', [])) for h in all_hosts
+            )
+            elapsed = time.time() - t0
+            if total_candidates:
+                # 找出高置信度的源站候选
+                high_conf = []
+                for h in all_hosts:
+                    oi = h.get('_origin_ips', {})
+                    if oi.get('confidence') == 'high':
+                        for c in oi.get('candidates', [])[:3]:
+                            high_conf.append(f'{h.get("hostname", "")}→{c["ip"]}')
+                emit('progress', text=f'  ✓ 真实 IP 发现完成: {total_candidates} 个候选 '
+                      f'({origin_hosts} 站点) ({elapsed:.1f}s)')
+                for line in high_conf[:5]:
+                    emit('progress', text=f'    🎯 [high] {line}')
+            else:
+                emit('progress', text=f'  ✓ 真实 IP 发现完成: 无候选 ({elapsed:.1f}s)')
+        except Exception as e:
+            emit('progress', text=f'  真实 IP 发现失败（不影响主流程）: {e}')
 
     # ── 风险评分（综合敏感路径/高危端口/CVE/SSL/威胁情报）──
     emit('progress', text=ph('风险评分 ...'))

@@ -23,6 +23,7 @@ _DEFAULTS = {
         "hunter_key": "",
         "censys_id": "",
         "censys_secret": "",
+        "github_token": "",
     },
     "notifications": {
         "webhook": {

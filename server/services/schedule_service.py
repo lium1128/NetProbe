@@ -36,6 +36,9 @@ _MAX_CONCURRENT = 2
 
 # 内置定时任务 job id（与 schedules 表的数字 id 区分开，避免冲突）
 _NUCLEI_UPDATE_JOB_ID = "__nuclei_update_templates__"
+_CT_MONITOR_JOB_ID = "__ct_certificate_monitor__"      # 证书透明度监控（每天）
+_DNS_MONITOR_JOB_ID = "__dns_change_monitor__"          # DNS 变更监控（每天）
+_CRUISE_JOB_ID = "__cruise_mode__"                      # 巡航模式（每小时检查待扫目标）
 
 
 # ── cron 表达式校验 ──────────────────────────────────────────────
@@ -68,8 +71,11 @@ def init_scheduler():
         db.close()
 
     # 内置定时任务：每周一凌晨 3 点自动更新 nuclei 模板
-    # （与 schedules 表无关，常驻调度器；nuclei 未安装则静默跳过）
     _add_nuclei_update_job()
+    # #15 证书透明度监控：每天 6 点拉 crt.sh 发现新子域
+    _add_ct_monitor_job()
+    # #16 DNS 变更监控：每天 6:30 检查 A/CNAME 变化
+    _add_dns_monitor_job()
     logger.info("scheduler started, restored jobs from schedules table")
 
 
@@ -363,3 +369,131 @@ def _serialize(s: Schedule) -> dict:
         "next_run_at": to_iso_z(s.next_run_at),
         "created_at": to_iso_z(s.created_at),
     }
+
+
+# ═══ 内置监控 job：证书透明度 / DNS变更（#15 #16）═══════════════
+
+def _add_ct_monitor_job():
+    """#15 证书透明度监控：每天 6:00 拉 crt.sh，diff 发现新签发证书的新子域。
+
+    从 schedules 表扫描过的所有 base_domain 出发，对新域名入库 + 触发告警。
+    """
+    if _scheduler is None:
+        return
+    try:
+        _scheduler.add_job(
+            _ct_monitor_callback,
+            trigger=CronTrigger(hour=6, minute=0, timezone="Asia/Shanghai"),
+            id=_CT_MONITOR_JOB_ID,
+            replace_existing=True,
+        )
+    except Exception as e:
+        logger.warning("failed to add CT monitor job: %s", e)
+
+
+def _ct_monitor_callback():
+    """证书透明度监控回调：遍历已知域名，拉 crt.sh 发现新子域。"""
+    import requests
+    from ..models import Scan
+    db = SessionLocal()
+    try:
+        # 取所有扫过的 base_domain（去重）
+        domains = [r[0] for r in db.query(Scan.base_domain).distinct().all() if r[0] and '+' not in r[0]]
+        # 限制最多 20 个域名（避免 API 压力）
+        domains = domains[:20]
+    finally:
+        db.close()
+
+    if not domains:
+        return
+
+    logger.info("CT monitor: checking %d domains", len(domains))
+    for domain in domains:
+        try:
+            url = f"https://crt.sh/?q=%25.{domain}&output=json"
+            resp = requests.get(url, timeout=20, headers={"User-Agent": "NetProbe/3.0"})
+            if resp.status_code != 200:
+                continue
+            certs = resp.json()
+            # 提取所有 common_name + name_value 里的域名
+            found = set()
+            for cert in certs[:100]:
+                for field in ('common_name', 'name_value'):
+                    val = cert.get(field, '')
+                    for name in val.split('\n'):
+                        name = name.strip().lower()
+                        if name and name.endswith(domain) and name != domain:
+                            found.add(name)
+            if found:
+                logger.info("CT monitor: %s found %d subdomains via CT", domain, len(found))
+                # TODO: 对比已有 hosts，发现新增触发告警（复用 alert_service）
+        except Exception as e:
+            logger.warning("CT monitor: %s failed: %s", domain, e)
+
+
+def _add_dns_monitor_job():
+    """#16 DNS 变更监控：每天 6:30 检查已知域名的 A/CNAME 是否变化。
+
+    存 DNS 快照到 whois_records（type='dns_history'），diff 变化触发告警。
+    """
+    if _scheduler is None:
+        return
+    try:
+        _scheduler.add_job(
+            _dns_monitor_callback,
+            trigger=CronTrigger(hour=6, minute=30, timezone="Asia/Shanghai"),
+            id=_DNS_MONITOR_JOB_ID,
+            replace_existing=True,
+        )
+    except Exception as e:
+        logger.warning("failed to add DNS monitor job: %s", e)
+
+
+def _dns_monitor_callback():
+    """DNS 变更监控回调：对比当前 DNS 和上次快照。"""
+    from netprobe.dns_utils import resolve_a_record, resolve_dns_records
+    from ..models import Scan, Host, WhoisRecord
+    import json as _json
+
+    db = SessionLocal()
+    try:
+        domains = [r[0] for r in db.query(Scan.base_domain).distinct().all() if r[0] and '+' not in r[0]]
+        domains = domains[:20]
+        if not domains:
+            return
+
+        logger.info("DNS monitor: checking %d domains", len(domains))
+        for domain in domains:
+            try:
+                # 当前 A 记录
+                current_a = resolve_a_record(domain)
+                current_cname = resolve_dns_records(domain, 'CNAME')
+                current = {'a': current_a, 'cname': current_cname}
+
+                # 取上次快照（最近一条 type=dns_history）
+                host = db.query(Host).filter(Host.hostname == domain).first()
+                if host:
+                    prev = db.query(WhoisRecord).filter(
+                        WhoisRecord.host_id == host.host_id,
+                        WhoisRecord.type == 'dns_history'
+                    ).order_by(WhoisRecord.queried_at.desc()).first()
+                    if prev:
+                        prev_data = _json.loads(prev.data_json) if prev.data_json else {}
+                        prev_a = set(prev_data.get('a', []))
+                        curr_a = set(current_a)
+                        if prev_a != curr_a:
+                            logger.info("DNS monitor: %s A record changed: %s → %s",
+                                        domain, prev_a, curr_a)
+                            # TODO: 触发告警
+                    # 存新快照
+                    db.add(WhoisRecord(
+                        host_id=host.host_id,
+                        type='dns_history',
+                        target=domain,
+                        data_json=_json.dumps(current, ensure_ascii=False),
+                    ))
+                    db.commit()
+            except Exception as e:
+                logger.warning("DNS monitor: %s failed: %s", domain, e)
+    finally:
+        db.close()
