@@ -20,13 +20,34 @@ def create_scan(req: ScanRequest):
 
 @router.get("/stream/{task_id}")
 def stream_task(task_id: str):
-    """SSE 实时进度流。"""
+    """SSE 实时进度流。
+
+    - 任务在内存：先推 DB 历史日志（解决刷新丢失），再接实时队列
+    - 任务不在内存（重启/旧任务）：推 DB 历史日志后结束，不报 404
+    """
+    from ..services.scan_service import get_progress_log
     task = get_task(task_id)
-    if not task:
-        raise HTTPException(404, "task not found")
+    historical_log = get_progress_log(task_id)
 
     def event_generator():
+        # 1. 先推送历史日志（刷新/重连时补齐已发生的进度）
+        if historical_log:
+            for line in historical_log.split("\n"):
+                if line.strip():
+                    yield f"data: {json.dumps({'event': 'progress', 'text': line}, ensure_ascii=False)}\n\n"
+
+        # 2. 任务不在内存（已结束/重启）：推完历史就结束
+        if not task:
+            yield f"data: {json.dumps({'event': 'done', 'text': '历史日志回放完成'}, ensure_ascii=False)}\n\n"
+            return
+
+        # 3. 任务在内存：继续实时推送
         q = task["queue"]
+        # 如果任务已结束，补发结束事件
+        if task.get("status") in ("done", "error", "cancelled"):
+            yield f"data: {json.dumps({'event': task['status'], 'text': '扫描已结束'}, ensure_ascii=False)}\n\n"
+            return
+
         while True:
             try:
                 data = q.get(timeout=25)

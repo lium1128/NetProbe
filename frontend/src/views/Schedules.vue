@@ -20,7 +20,7 @@
         <div class="np-skeleton" style="height: 44px" />
       </div>
       <div class="np-table-wrapper" v-else-if="items.length">
-        <el-table :data="items" style="width: 100%">
+        <el-table :data="pagedItems" style="width: 100%">
           <el-table-column :label="t('schedules.name')" min-width="140">
             <template #default="{ row }">
               <strong>{{ row.name || '—' }}</strong>
@@ -57,6 +57,11 @@
             </template>
           </el-table-column>
         </el-table>
+        <div class="np-pagination" v-if="items.length">
+          <el-pagination v-model:current-page="page" v-model:page-size="perPage"
+            :total="items.length" :page-sizes="[5, 10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper" background />
+        </div>
       </div>
       <el-empty v-else :description="t('schedules.noSchedules')" />
     </el-card>
@@ -130,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
@@ -138,10 +143,17 @@ import {
   deleteSchedule, toggleSchedule, runScheduleNow,
 } from '../api/scan'
 import type { ScheduleTask } from '../types'
+import { usePageSize } from '../composables/usePageSetting'
 
 const { t } = useI18n()
 
 const items = ref<ScheduleTask[]>([])
+const page = ref(1)
+const perPage = usePageSize()
+const pagedItems = computed(() => {
+  const s = (page.value - 1) * perPage.value
+  return items.value.slice(s, s + perPage.value)
+})
 const loading = ref(true)
 const showForm = ref(false)
 const submitting = ref(false)

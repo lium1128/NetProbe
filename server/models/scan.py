@@ -20,6 +20,7 @@ class Scan(Base):
     web_count = Column(Integer, default=0)
     sensitive_count = Column(Integer, default=0)
     error_msg = Column(Text, default="")
+    progress_log = Column(Text, default="")  # 扫描进度日志（每行一条），持久化供刷新/历史查看
     started_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     finished_at = Column(DateTime, nullable=True)
     duration_secs = Column(Integer, nullable=True)

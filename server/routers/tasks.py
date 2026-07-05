@@ -118,6 +118,17 @@ def get_task_detail(task_id: str):
         db.close()
 
 
+@router.get("/tasks/{task_id}/logs")
+def get_task_logs(task_id: str):
+    """获取任务的历史扫描日志（持久化在 DB progress_log）。
+
+    解决：刷新页面/重启服务后 SSE 日志丢失，历史任务日志查看。
+    """
+    from ..services.scan_service import get_progress_log
+    log_text = get_progress_log(task_id)
+    return {"scan_id": task_id, "lines": log_text.split("\n") if log_text else []}
+
+
 @router.post("/tasks/{task_id}/cancel")
 def cancel_scan(task_id: str):
     """取消运行中的扫描任务。"""

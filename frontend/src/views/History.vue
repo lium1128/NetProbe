@@ -64,13 +64,17 @@
         </el-table>
       </div>
 
-      <div class="pagination">
+      <div class="pagination" v-if="total > 0">
         <el-pagination
           v-model:current-page="page"
-          :page-size="perPage"
+          v-model:page-size="perPage"
           :total="total"
-          layout="prev, pager, next"
+          :page-sizes="[5, 10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+         
+          background
           @current-change="loadData"
+          @size-change="onSizeChange"
         />
       </div>
     </el-card>
@@ -82,13 +86,15 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { getHistory, deleteHistory } from '../api/scan'
+import { usePageSize } from '../composables/usePageSetting'
 import type { HistoryItem } from '../types'
 
 const { t } = useI18n()
 const items = ref<HistoryItem[]>([])
 const total = ref(0)
 const page = ref(1)
-const perPage = 20
+const perPage = usePageSize()
+function onSizeChange() { page.value = 1; loadData() }
 const query = ref('')
 const statusFilter = ref('')
 const loading = ref(false)
@@ -106,7 +112,7 @@ function formatDate(d: string) {
 async function loadData() {
   loading.value = true
   try {
-    const res = await getHistory({ page: page.value, per_page: perPage, q: query.value, status: statusFilter.value })
+    const res = await getHistory({ page: page.value, per_page: perPage.value, q: query.value, status: statusFilter.value })
     items.value = res.items
     total.value = res.total
   } catch (e: any) {

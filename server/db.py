@@ -55,3 +55,5 @@ def ensure_schema():
     _add_column("hosts", "risk_factors_json", "TEXT", "'{}'")
     # v2.4: ports cpe
     _add_column("ports", "cpe", "VARCHAR(255)", "''")
+    # v3.0: scans progress_log（扫描日志持久化）
+    _add_column("scans", "progress_log", "TEXT", "''")

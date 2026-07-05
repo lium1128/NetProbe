@@ -22,84 +22,116 @@
         <el-button type="primary" @click="loadData">{{ t('common.search') }}</el-button>
       </div>
 
-      <!-- 资产行列表（FOFA 风格全宽行卡片） -->
-      <div class="asset-list" v-loading="loading">
-        <div
-          v-for="row in items"
-          :key="row.rowKey"
-          class="asset-row"
-          :class="riskBorderClass(row.risk_score || 0)"
-          @click="openDetail(row)"
-        >
-          <!-- 头部行：IP:端口 + 标签 / 域名 / 风险徽章 -->
-          <div class="row-head">
-            <div class="row-id">
-              <span class="row-ip mono">
-                {{ row.ip }}<template v-if="row._preview?.primary">:{{ row._preview.primary.port }}</template>
-              </span>
-              <span class="row-port-chip mono" v-if="row._preview?.primary">{{ row._preview.primary.port }}</span>
-              <span class="row-proto-chip mono" v-if="row._preview?.primary">{{ row._preview.primary.proto }}</span>
-            </div>
-            <span class="risk-badge" :class="riskClass(row.risk_score || 0)">
-              {{ riskLabel(row.risk_score || 0) }} {{ row.risk_score || 0 }}
-            </span>
-          </div>
-          <!-- 域名（与 IP 不同时显示） -->
-          <div class="row-host mono" v-if="row.hostname && row.hostname !== row.ip">{{ row.hostname }}</div>
-
-          <!-- 中间 Banner 区（有 Web 站点时） -->
-          <div class="row-banner" v-if="row._preview?.firstSite">
-            <div class="banner-line">
-              <span class="banner-title" v-if="row._preview.firstSite.title">“{{ row._preview.firstSite.title }}”</span>
-              <el-tag v-if="row._preview.firstSite.status" :type="statusTagType(row._preview.firstSite.status)" size="small" effect="dark" class="status-tag">
-                {{ row._preview.firstSite.status }}
-              </el-tag>
-              <span class="banner-server mono" v-if="row._preview.firstSite.server">Server: {{ row._preview.firstSite.server }}</span>
-            </div>
-            <a :href="row._preview.firstSite.url" target="_blank" rel="noopener" class="banner-url mono" @click.stop>
-              {{ row._preview.firstSite.url }}
-            </a>
-            <div class="tech-tags" v-if="row._preview.firstSite.tech?.length">
+      <!-- 资产表格（全宽，行业惯例布局，支持排序） -->
+      <el-table
+        :data="pagedItems"
+        v-loading="loading"
+        size="small"
+        stripe
+        @row-click="openDetail"
+        :default-sort="{ prop: 'risk_score', order: 'descending' }"
+        style="width: 100%"
+        class="asset-table"
+      >
+        <!-- IP:端口（主键，左固定） -->
+        <el-table-column prop="ip" label="IP:端口" min-width="160" fixed="left" sortable>
+          <template #default="{ row }">
+            <span class="cell-ip mono">{{ row.ip }}<template v-if="row._preview?.primary">:{{ row._preview.primary.port }}</template></span>
+          </template>
+        </el-table-column>
+        <!-- 域名 -->
+        <el-table-column label="域名" min-width="140" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span class="cell-host mono" v-if="row.hostname && row.hostname !== row.ip">{{ row.hostname }}</span>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- 站点标题 -->
+        <el-table-column label="站点标题" min-width="160" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span v-if="row._preview?.firstSite?.title" class="cell-title">{{ row._preview.firstSite.title }}</span>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- 状态码 -->
+        <el-table-column label="状态码" width="70" align="center">
+          <template #default="{ row }">
+            <el-tag v-if="row._preview?.firstSite?.status" :type="statusTagType(row._preview.firstSite.status)" size="small" effect="dark">{{ row._preview.firstSite.status }}</el-tag>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- Server -->
+        <el-table-column label="Server" min-width="110" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span v-if="row._preview?.firstSite?.server" class="cell-server mono">{{ row._preview.firstSite.server }}</span>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- 技术栈 -->
+        <el-table-column label="技术栈" min-width="200">
+          <template #default="{ row }">
+            <div class="cell-tech" v-if="row._preview?.firstSite?.tech?.length">
               <el-tooltip
-                v-for="(tech, ti) in row._preview.firstSite.tech.slice(0, 5)"
+                v-for="(tech, ti) in row._preview.firstSite.tech.slice(0, 4)"
                 :key="ti"
                 :content="techTooltip(tech)"
                 :disabled="!techTooltip(tech)"
                 placement="top"
               >
-                <el-tag
-                  size="small"
-                  :type="techTagType(tech)"
-                  class="tech-tag"
-                >{{ techLabel(tech) }}</el-tag>
+                <el-tag size="small" :type="techTagType(tech)">{{ techLabel(tech) }}</el-tag>
               </el-tooltip>
+              <span v-if="row._preview.firstSite.tech.length > 4" class="tech-more">+{{ row._preview.firstSite.tech.length - 4 }}</span>
             </div>
-          </div>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- 端口 -->
+        <el-table-column label="端口" min-width="120">
+          <template #default="{ row }">
+            <span v-if="row._preview?.ports?.length" class="cell-ports mono">
+              {{ row._preview.ports.slice(0, 5).map((p: any) => p.port).join(', ') }}<template v-if="row._preview.ports.length > 5">+{{ row._preview.ports.length - 5 }}</template>
+            </span>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- 扫描次数 -->
+        <el-table-column prop="scan_count" label="扫描" width="60" align="center" sortable>
+          <template #default="{ row }">{{ row.scan_count }}</template>
+        </el-table-column>
+        <!-- 漏洞数 -->
+        <el-table-column label="漏洞" width="60" align="center" sortable :sort-method="(a: any, b: any) => (a._preview?.vulnCount || 0) - (b._preview?.vulnCount || 0)">
+          <template #default="{ row }">
+            <span v-if="(row._preview?.vulnCount || 0) > 0" class="cell-vuln">{{ row._preview.vulnCount }}</span>
+            <span v-else class="cell-dash">—</span>
+          </template>
+        </el-table-column>
+        <!-- 风险分（右固定） -->
+        <el-table-column prop="risk_score" label="风险" width="70" align="center" fixed="right" sortable>
+          <template #default="{ row }">
+            <span class="cell-risk" :class="riskClass(row.risk_score || 0)">{{ row.risk_score || 0 }}</span>
+          </template>
+        </el-table-column>
 
-          <!-- 底部信息条：端口列表 / 扫描次数 / 漏洞数 -->
-          <div class="row-foot">
-            <span class="foot-ports mono" v-if="row._preview?.ports?.length">
-              <span class="foot-port" v-for="(p, i) in row._preview.ports.slice(0, 10)" :key="i">{{ p.port }}/{{ p.proto }}</span>
-              <span class="foot-port-sep" v-if="row._preview.ports.length > 10">+{{ row._preview.ports.length - 10 }}</span>
-            </span>
-            <span class="foot-sep" v-if="row._preview?.ports?.length && row.scan_count">·</span>
-            <span class="foot-meta">
-              <el-icon><Aim /></el-icon>
-              {{ t('assets.scans') }} {{ row.scan_count }}
-            </span>
-            <span class="foot-sep" v-if="(row._preview?.vulnCount || 0) > 0">·</span>
-            <span class="foot-meta foot-vuln" v-if="(row._preview?.vulnCount || 0) > 0">
-              <el-icon><Warning /></el-icon>
-              {{ row._preview?.vulnCount }} {{ t('assets.detail.vulns') }}
-            </span>
+        <!-- 空状态 -->
+        <template #empty>
+          <div class="np-empty">
+            <el-icon :size="36" color="var(--np-text-disabled)"><Grid /></el-icon>
+            <p>{{ t('assets.empty') }}</p>
           </div>
-        </div>
-      </div>
+        </template>
+      </el-table>
 
-      <!-- 空状态 -->
-      <div v-if="!loading && items.length === 0" class="np-empty">
-        <el-icon :size="36" color="var(--np-text-disabled)"><Grid /></el-icon>
-        <p>{{ t('assets.empty') }}</p>
+      <!-- 分页 -->
+      <div class="np-pagination" v-if="items.length">
+        <el-pagination
+          v-model:current-page="page"
+          v-model:page-size="perPage"
+          :total="items.length"
+          :page-sizes="[5, 10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+         
+          background
+        />
       </div>
     </el-card>
 
@@ -434,6 +466,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getAssets, getAssetDetail } from '../api/scan'
+import { usePageSize } from '../composables/usePageSetting'
 import type { AssetSummary } from '../types'
 import VChart from 'vue-echarts'
 import { use } from 'echarts/core'
@@ -474,6 +507,13 @@ const items = ref<AssetRow[]>([])
 const loading = ref(false)
 const query = ref('')
 const sortBy = ref('hostname')
+/** 分页 */
+const page = ref(1)
+const perPage = usePageSize()
+const pagedItems = computed(() => {
+  const start = (page.value - 1) * perPage.value
+  return items.value.slice(start, start + perPage.value)
+})
 
 /** 抽屉态 */
 const drawerVisible = ref(false)
@@ -488,6 +528,7 @@ const drawerTitle = computed(() =>
 
 async function loadData() {
   loading.value = true
+  page.value = 1  // 重新搜索/排序后回到第一页
   try {
     const res = await getAssets(query.value, sortBy.value)
     items.value = (res.items || []).map(it => ({
@@ -661,19 +702,6 @@ function riskClass(score: number): string {
   return 'risk-low'
 }
 
-/** 卡片左侧色条（按风险着色，强化视觉分级） */
-function riskBorderClass(score: number): string {
-  if (score >= 70) return 'border-risk-high'
-  if (score >= 40) return 'border-risk-medium'
-  return 'border-risk-low'
-}
-
-function riskLabel(score: number): string {
-  if (score >= 70) return t('assets.riskHigh')
-  if (score >= 40) return t('assets.riskMedium')
-  return t('assets.riskLow')
-}
-
 /** HTTP 状态码 → el-tag 类型 */
 function statusTagType(status: number) {
   if (status >= 200 && status < 300) return 'success'
@@ -790,202 +818,63 @@ onMounted(loadData)
   
 }
 
-/* ═══ 风险徽章 ═══ */
-.risk-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: 600;
-  font-size: 12px;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.risk-high {
-  background: var(--np-danger-bg);
-  color: var(--np-danger);
-}
-.risk-medium {
-  background: var(--np-warning-bg);
-  color: var(--np-warning);
-}
-.risk-low {
-  background: var(--np-success-bg);
-  color: var(--np-success);
-}
-
-/* ═══ 资产行列表（FOFA 风格全宽行） ═══ */
-.asset-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.asset-row {
-  position: relative;
-  width: 100%;
-  background: var(--np-bg-surface);
-  border: 1px solid var(--np-border);
-  border-radius: var(--np-radius-lg);
-  padding: 14px 16px 14px 19px;
+/* ═══ 资产表格 ═══ */
+.asset-table {
   cursor: pointer;
-  transition: box-shadow 0.2s, border-color 0.2s;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
-/* 左侧风险色条（3px border-left） */
-.asset-row.border-risk-high { border-left: 3px solid var(--np-danger); }
-.asset-row.border-risk-medium { border-left: 3px solid var(--np-warning); }
-.asset-row.border-risk-low { border-left: 3px solid var(--np-success); }
-
-.asset-row:hover {
-  border-color: var(--np-blue-400);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.asset-table :deep(.el-table__row:hover > td) {
+  background: var(--np-info-bg) !important;
 }
-
-/* ── 头部行：IP:端口 + 标签 / 风险徽章 ── */
-.row-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.row-id {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-.row-ip {
+/* 单元格通用 */
+.cell-ip {
   font-weight: 700;
-  font-size: 16px;
   color: var(--np-blue-500);
-  letter-spacing: 0.2px;
-  word-break: break-all;
-  line-height: 1.3;
-}
-.row-port-chip,
-.row-proto-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 6px;
-  border-radius: var(--np-radius-sm);
-  font-size: 11px;
-  font-weight: 600;
   white-space: nowrap;
 }
-.row-port-chip {
-  background: var(--np-info-bg);
-  color: var(--np-blue-500);
-}
-.row-proto-chip {
-  background: var(--np-bg-elevated);
-  color: var(--np-text-secondary);
-}
-
-/* 域名（灰） */
-.row-host {
-  font-size: 12px;
+.cell-host {
   color: var(--np-text-muted);
-  word-break: break-all;
-  margin-top: -2px;
+  font-size: 12px;
 }
-
-/* ── 中间 Banner 区 ── */
-.row-banner {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 9px 12px;
-  background: var(--np-bg-app);
-  border-radius: var(--np-radius-md);
-}
-.banner-line {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.banner-title {
-  font-size: 13px;
-  font-weight: 600;
+.cell-title {
   color: var(--np-text-primary);
-  word-break: break-all;
 }
-.banner-server {
-  font-size: 12px;
+.cell-server {
   color: var(--np-text-muted);
-}
-.banner-url {
   font-size: 12px;
-  color: var(--np-blue-500);
-  word-break: break-all;
 }
-.banner-url:hover {
-  color: var(--np-blue-600);
-  text-decoration: underline;
-}
-.status-tag {
-  flex-shrink: 0;
-}
-.tech-tags {
-  display: flex;
+.cell-tech {
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 2px;
+  gap: 3px;
+  align-items: center;
 }
-.tech-tag {
+.cell-tech .el-tag {
   font-family: var(--np-font-mono);
+}
+.tech-more {
   font-size: 11px;
-}
-
-/* ── 底部信息条 ── */
-.row-foot {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding-top: 8px;
-  border-top: 1px solid var(--np-border);
-  font-size: 12px;
   color: var(--np-text-muted);
+  margin-left: 2px;
 }
-.foot-ports {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.foot-port {
+.cell-ports {
   color: var(--np-text-secondary);
+  font-size: 12px;
 }
-/* 端口之间用 · 分隔（最后一个不加） */
-.foot-port + .foot-port::before {
-  content: '·';
-  margin-right: 6px;
-  color: var(--np-text-disabled);
-}
-.foot-port-sep {
-  color: var(--np-text-disabled);
-  font-weight: 600;
-  margin-left: 6px;
-}
-.foot-sep {
-  color: var(--np-text-disabled);
-}
-.foot-meta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  white-space: nowrap;
-}
-.foot-vuln {
+.cell-vuln {
   color: var(--np-danger);
-  font-weight: 600;
+  font-weight: 700;
 }
+.cell-dash {
+  color: var(--np-text-disabled);
+}
+.cell-risk {
+  font-weight: 700;
+  font-family: var(--np-font-mono);
+}
+.cell-risk.risk-high { color: var(--np-danger); }
+.cell-risk.risk-medium { color: var(--np-warning); }
+.cell-risk.risk-low { color: var(--np-success); }
+
 
 /* ═══ 详情弹窗（居中大窗，固定高度，内容少也不缩） ═══ */
 /* ═══ 详情弹窗（固定 88vh，内容再多也在内部滚动，绝不溢出） ═══ */

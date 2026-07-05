@@ -247,11 +247,11 @@ async function testNotification() {
     // 先保存再测试，确保用最新配置
     syncEmailTo()
     await updateSettings({ notifications: JSON.parse(JSON.stringify(notify)) })
-    const res = await api.post('/api/settings/test-notification')
-    if (res.data.success) {
-      ElMessage.success(`测试通知发送成功（渠道：${res.data.channel}）`)
+    const res: any = await api.post('/settings/test-notification')
+    if (res.success) {
+      ElMessage.success(`测试通知发送成功（渠道：${res.channel}）`)
     } else {
-      ElMessage.error(`发送失败：${res.data.error || '未知错误'}`)
+      ElMessage.error(`发送失败：${res.error || '未知错误'}`)
     }
   } catch (e: any) {
     ElMessage.error(e?.response?.data?.detail || e.message)

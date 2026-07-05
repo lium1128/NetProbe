@@ -210,6 +210,7 @@ watch(() => route.path, () => {
   gap: 10px;
   border-bottom: 1px solid var(--np-border);
   flex-shrink: 0;
+  background: var(--np-gradient-sidebar);
 }
 
 .admin-sidebar.collapsed .sidebar-brand {
@@ -220,19 +221,21 @@ watch(() => route.path, () => {
 .brand-icon {
   width: 32px;
   height: 32px;
-  background: var(--np-blue-600);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--np-radius-md);
   flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .brand-text {
   font-size: 16px;
   font-weight: 700;
-  color: var(--np-text-primary);
+  color: #fff;
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
@@ -269,19 +272,20 @@ watch(() => route.path, () => {
 }
 
 .nav-item:hover {
-  background: var(--np-bg-surface);
-  color: var(--np-text-primary);
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--np-blue-600);
   text-decoration: none;
 }
 
 .nav-item.active {
-  background: var(--np-info-bg);
-  color: var(--np-blue-500);
+  background: var(--np-gradient-brand);
+  color: #fff;
   font-weight: 600;
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
 }
 
 .nav-item.active .el-icon {
-  color: var(--np-blue-400);
+  color: #fff;
 }
 
 .nav-label {

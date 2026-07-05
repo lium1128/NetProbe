@@ -15,7 +15,7 @@
       <!-- 规则列表 -->
       <el-tab-pane :label="t('alerts.rules') + ` (${rules.length})`" name="rules">
         <el-card>
-          <el-table :data="rules" v-loading="loading" style="width: 100%">
+          <el-table :data="pagedRules" v-loading="loading" style="width: 100%">
             <el-table-column prop="name" :label="t('alerts.name')" min-width="160" />
             <el-table-column :label="t('alerts.condition')" width="180">
               <template #default="{ row }">
@@ -42,6 +42,11 @@
             </el-table-column>
           </el-table>
           <el-empty v-if="!loading && !rules.length" :description="t('alerts.noRules')" />
+          <div class="np-pagination" v-if="rules.length">
+            <el-pagination v-model:current-page="rulePage" v-model:page-size="rulePerPage"
+              :total="rules.length" :page-sizes="[5, 10, 20, 50, 100]"
+              layout="total, sizes, prev, pager, next, jumper" background />
+          </div>
         </el-card>
       </el-tab-pane>
 
@@ -99,14 +104,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getAlerts, createAlert, deleteAlert, getAlertEvents } from '../api/scan'
+import { usePageSize } from '../composables/usePageSetting'
 
 const { t } = useI18n()
 const activeTab = ref('rules')
 const rules = ref<any[]>([])
+const rulePage = ref(1)
+const rulePerPage = usePageSize()
+const pagedRules = computed(() => {
+  const s = (rulePage.value - 1) * rulePerPage.value
+  return rules.value.slice(s, s + rulePerPage.value)
+})
 const events = ref<any[]>([])
 const loading = ref(true)
 const showForm = ref(false)

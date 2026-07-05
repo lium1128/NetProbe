@@ -79,44 +79,86 @@
         </div>
       </el-card>
 
-      <!-- 执行日志（实时 SSE） -->
-      <el-card class="log-card" v-if="task.status === 'running' || liveLogs.length">
-        <template #header>
-          <div class="np-card-header">
-            <el-icon :size="16" :class="{ 'spin': isStreaming }"><Monitor /></el-icon>
-            {{ t('taskDetail.executionLog') }}
-            <span class="log-count mono" v-if="liveLogs.length">{{ liveLogs.length }} {{ t('scanResult.events', { n: liveLogs.length }) }}</span>
-          </div>
-        </template>
-        <div class="console-area" ref="logRef">
-          <div v-for="(line, i) in liveLogs" :key="i" class="console-line">
-            <span class="console-prefix">{{ String(i + 1).padStart(3, '0') }}</span>
-            <span :class="logClass(line)">{{ line }}</span>
-          </div>
-          <div v-if="!liveLogs.length && task.status === 'running'" class="console-empty">
-            <span class="cursor-blink">▊</span> {{ t('dashboard.waitingEvents') }}
-          </div>
-        </div>
-      </el-card>
-
-      <!-- 概要统计（done 状态） -->
-      <el-card v-if="task.status === 'done'" class="summary-card">
-        <template #header>
-          <div class="np-card-header">
-            <el-icon :size="16"><DataLine /></el-icon>
-            {{ t('taskDetail.summary') }}
-          </div>
-        </template>
-        <div class="summary-grid">
+      <!-- Tab：执行日志 + 扫描结果（合并展示） -->
+      <el-tabs v-model="detailTab" class="detail-tabs">
+        <!-- 概要统计（done 时放最上面，紧凑） -->
+        <div v-if="task.status === 'done'" class="summary-bar">
           <div class="summary-item"><span class="summary-num">{{ task.host_count }}</span><span class="summary-label">{{ t('common.hosts') }}</span></div>
           <div class="summary-item"><span class="summary-num">{{ task.port_count }}</span><span class="summary-label">{{ t('common.ports') }}</span></div>
           <div class="summary-item"><span class="summary-num">{{ task.web_count }}</span><span class="summary-label">{{ t('common.web') }}</span></div>
-          <div class="summary-item" v-if="task.progress"><span class="summary-num small">{{ task.progress }}</span><span class="summary-label">{{ t('tasks.progress') }}</span></div>
         </div>
-        <el-button type="primary" @click="viewResults" style="margin-top: 16px">
-          <el-icon><View /></el-icon> {{ t('taskDetail.viewResults') }}
-        </el-button>
-      </el-card>
+
+        <!-- Tab 1: 执行日志 -->
+        <el-tab-pane name="logs">
+          <template #label>
+            <span class="tab-label">
+              <el-icon :class="{ 'spin': isStreaming }"><Monitor /></el-icon>
+              执行日志
+              <span class="tab-count" v-if="liveLogs.length">{{ liveLogs.length }}</span>
+            </span>
+          </template>
+          <div class="console-area" ref="logRef">
+            <div v-for="(line, i) in liveLogs" :key="i" class="console-line">
+              <span class="console-prefix">{{ String(i + 1).padStart(3, '0') }}</span>
+              <span :class="logClass(line)">{{ line }}</span>
+            </div>
+            <div v-if="!liveLogs.length && task.status === 'running'" class="console-empty">
+              <span class="cursor-blink">▊</span> {{ t('dashboard.waitingEvents') }}
+            </div>
+          </div>
+        </el-tab-pane>
+
+        <!-- Tab 2: 扫描结果（内联，无需跳转） -->
+        <el-tab-pane name="results" :disabled="task.status === 'running' && !scanStore.hosts.length">
+          <template #label>
+            <span class="tab-label">
+              <el-icon><View /></el-icon>
+              扫描结果
+              <span class="tab-count" v-if="scanStore.hosts.length">{{ scanStore.hosts.length }}</span>
+            </span>
+          </template>
+          <div v-if="scanStore.hosts.length" class="results-area">
+            <el-card v-for="(host, i) in scanStore.hosts" :key="i" class="host-card">
+              <template #header>
+                <div class="host-header">
+                  <span class="host-index">#{{ i + 1 }}</span>
+                  <span class="host-name">{{ host.hostname || host.ip }}</span>
+                  <span class="mono host-ip" v-if="host.ip && host.hostname">{{ host.ip }}</span>
+                </div>
+              </template>
+              <!-- 端口 -->
+              <div v-if="host.ports?.length" class="result-section">
+                <div class="np-section-title"><el-icon :size="14"><Connection /></el-icon> 端口 <span class="np-badge">{{ host.ports.length }}</span></div>
+                <div class="np-table-wrapper">
+                  <el-table :data="host.ports" size="small">
+                    <el-table-column prop="port" :label="t('table.port')" width="70"><template #default="{ row }"><span class="mono">{{ row.port }}</span></template></el-table-column>
+                    <el-table-column prop="proto" :label="t('table.proto')" width="65" />
+                    <el-table-column prop="state" :label="t('table.state')" width="80"><template #default="{ row }"><el-tag :type="row.state === 'open' ? 'success' : 'info'" size="small">{{ row.state }}</el-tag></template></el-table-column>
+                    <el-table-column prop="service" :label="t('table.service')" />
+                    <el-table-column prop="product" :label="t('table.product')" />
+                    <el-table-column prop="version" :label="t('table.version')" />
+                  </el-table>
+                </div>
+              </div>
+              <!-- Web 站点 -->
+              <div v-if="host.web_info?.length" class="result-section">
+                <div class="np-section-title"><el-icon :size="14"><Globe /></el-icon> Web 站点 <span class="np-badge">{{ host.web_info.length }}</span></div>
+                <div class="np-table-wrapper">
+                  <el-table :data="host.web_info" size="small">
+                    <el-table-column prop="url" label="URL" min-width="180" show-overflow-tooltip />
+                    <el-table-column prop="status" label="状态码" width="70" />
+                    <el-table-column prop="title" label="标题" min-width="120" show-overflow-tooltip />
+                  </el-table>
+                </div>
+              </div>
+            </el-card>
+          </div>
+          <div v-else class="np-empty">
+            <el-icon :size="28" color="var(--np-text-disabled)"><Grid /></el-icon>
+            <p>暂无结果数据（{{ task.status === 'running' ? '扫描进行中' : '无结果' }}）</p>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
     </template>
   </div>
 </template>
@@ -125,17 +167,21 @@
 import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { getTaskDetail } from '../api/scan'
+import { getTaskDetail, getHistoryDetail } from '../api/scan'
+import api from '../api/index'
+import { useScanStore } from '../stores/scan'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
+const scanStore = useScanStore()
 
 const task = ref<any>(null)
 const loading = ref(true)
 const liveLogs = ref<string[]>([])
 const isStreaming = ref(false)
 const logRef = ref<HTMLElement>()
+const detailTab = ref('logs')  // logs | results
 let eventSource: EventSource | null = null
 
 function statusType(status?: string) {
@@ -240,20 +286,59 @@ async function loadTask() {
   try {
     task.value = await getTaskDetail(route.params.id as string)
     if (task.value?.status === 'running') {
+      // 运行中：连 SSE（会自动推历史日志 + 实时）
+      liveLogs.value = []
       connectSSE(route.params.id as string)
+      // 运行中也连 scanStore 接收实时结果（done 事件带 hosts）
+      scanStore.connect(route.params.id as string)
+    } else {
+      // 已完成/出错/取消：从 DB 拉历史日志
+      liveLogs.value = []
+      try {
+        const data: any = await api.get(`/tasks/${route.params.id}/logs`)
+        if (data?.lines?.length) {
+          liveLogs.value = data.lines.filter((l: string) => l.trim())
+        } else {
+          liveLogs.value = ['[info] 该任务无历史日志（可能在日志持久化功能上线前完成）']
+        }
+      } catch (e: any) {
+        liveLogs.value = [`[error] 加载历史日志失败: ${e.message || e}`]
+      }
+      // 已完成：加载扫描结果数据供「扫描结果」Tab 展示
+      await loadResults()
     }
+  } catch {
+    task.value = null
   } finally {
     loading.value = false
   }
 }
 
-watch(liveLogs.value, async () => {
+watch(liveLogs, async () => {
   await nextTick()
   if (logRef.value) logRef.value.scrollTop = logRef.value.scrollHeight
-})
+}, { deep: true })
+
+/** 加载扫描结果数据到 scanStore（已完成任务，不走 SSE） */
+async function loadResults() {
+  try {
+    const result: any = await getHistoryDetail(route.params.id as string)
+    if (result) {
+      scanStore.scanId = result.scan_id || route.params.id
+      scanStore.status = result.status || 'done'
+      scanStore.baseDomain = result.base_domain || ''
+      scanStore.hosts = result.hosts || []
+    }
+  } catch {
+    /* 结果加载失败不影响日志查看 */
+  }
+}
 
 onMounted(loadTask)
-onUnmounted(disconnectSSE)
+onUnmounted(() => {
+  disconnectSSE()
+  scanStore.disconnect()
+})
 </script>
 
 <style scoped>
@@ -261,6 +346,47 @@ onUnmounted(disconnectSSE)
 .np-page-actions { display: flex; gap: 8px; }
 
 .config-card, .log-card, .summary-card { margin-bottom: var(--np-space-4); }
+
+/* Tab 区 */
+.detail-tabs { margin-top: var(--np-space-3); }
+.tab-label { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
+.tab-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--np-bg-elevated); color: var(--np-text-muted);
+  font-size: 10px; font-weight: 700; font-family: var(--np-font-mono);
+}
+
+/* 概要统计条（紧凑，放 Tab 上方） */
+.summary-bar {
+  display: flex;
+  gap: var(--np-space-6);
+  padding: var(--np-space-3) var(--np-space-4);
+  background: var(--np-bg-elevated);
+  border-radius: var(--np-radius-lg);
+  margin-bottom: var(--np-space-3);
+}
+
+/* 结果区 */
+.results-area { max-height: calc(80vh - 200px); overflow-y: auto; }
+.host-card { margin-bottom: var(--np-space-3); }
+.host-header { display: flex; align-items: center; gap: var(--np-space-2); }
+.host-index { color: var(--np-blue-500); font-weight: 700; font-size: 13px; }
+.host-name { font-size: 14px; font-weight: 600; color: var(--np-text-primary); }
+.host-ip { color: var(--np-text-muted); font-size: 12px; }
+.result-section { margin-top: var(--np-space-3); }
+.result-section:first-child { margin-top: 0; }
+.np-section-title {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--np-text-secondary);
+  margin-bottom: var(--np-space-2);
+}
+.np-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+  background: var(--np-info-bg); color: var(--np-blue-500);
+  font-size: 10px; font-weight: 700;
+}
 .config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--np-space-3); }
 .config-item { display: flex; flex-direction: column; gap: 2px; }
 .config-label { font-size: 12px; color: var(--np-text-muted); text-transform: uppercase; letter-spacing: 0.03em; }

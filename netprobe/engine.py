@@ -390,8 +390,8 @@ def _is_cancelled(options: dict) -> bool:
 # 默认行为：未配置 stages 时，全部启用（向后兼容）
 _DEFAULT_STAGES = {
     'subdomain': True, 'port': True, 'web': True, 'fingerprint': True,
-    'sensitive': True, 'takeover': True, 'js': True, 'vuln': True,
-    'screenshot': False, 'banner': True,
+    'sensitive': True, 'takeover': True, 'js': True, 'vuln': False,
+    'dir_brute': False, 'screenshot': False, 'banner': True,
 }
 
 
@@ -399,10 +399,15 @@ def _stage_enabled(options: dict, stage: str) -> bool:
     """检查某扫描阶段是否启用。
 
     优先读 options['stages'][stage]，回退到旧版 no_xxx 标志，再回退默认值。
+    兼容前端 dirBrute→dir_brute 命名。
     """
     stages = options.get('stages')
-    if isinstance(stages, dict) and stage in stages:
-        return bool(stages[stage])
+    if isinstance(stages, dict):
+        # 兼容前端 camelCase（dirBrute）→ snake_case（dir_brute）
+        if stage == 'dir_brute' and 'dirBrute' in stages:
+            return bool(stages['dirBrute'])
+        if stage in stages:
+            return bool(stages[stage])
     # 旧版兼容：no_dns_brute 关闭 subdomain，no_web 关闭 web 系列
     if stage == 'subdomain' and options.get('no_dns_brute'):
         return False
@@ -513,7 +518,9 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
     if _stage_enabled(options, 'fingerprint'):
         phases += 0  # 指纹识别在 Web 探测阶段内联，不单独计数
     if _stage_enabled(options, 'sensitive'):
-        phases += 2  # 敏感路径探测 + 目录爆破
+        phases += 1  # 敏感路径探测
+    if _stage_enabled(options, 'dir_brute'):
+        phases += 1  # 目录爆破（独立开关）
     if _stage_enabled(options, 'takeover'):
         phases += 1
     if _stage_enabled(options, 'js'):
@@ -658,8 +665,8 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         else:
             emit('progress', text=f'  ✓ 敏感路径探测完成: 无发现 ({elapsed:.1f}s)')
 
-    # ── 目录爆破 ──（复用 sensitive 阶段开关：与敏感路径探测性质类似）
-    if _stage_enabled(options, 'sensitive'):
+    # ── 目录爆破 ──（独立开关 dir_brute，默认关，耗时噪音项）
+    if _stage_enabled(options, 'dir_brute'):
         from .dir_brute import brute_for_hosts
         emit('progress', text=ph('目录爆破 ...'))
         t0 = time.time()

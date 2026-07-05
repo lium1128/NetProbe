@@ -25,7 +25,7 @@
       </div>
 
       <div v-else-if="clusters.length" class="cluster-grid">
-        <div v-for="(c, idx) in clusters" :key="activeType + idx" class="cluster-card">
+        <div v-for="(c, idx) in pagedClusters" :key="activeType + idx" class="cluster-card">
           <div class="cluster-head">
             <span class="cluster-key mono">{{ c.key }}</span>
             <el-tag size="small" type="info">{{ c.count }} {{ t('correlations.assets') }}</el-tag>
@@ -55,6 +55,13 @@
         </div>
       </div>
 
+      <!-- 分页 -->
+      <div class="np-pagination" v-if="clusters.length">
+        <el-pagination v-model:current-page="page" v-model:page-size="perPage"
+          :total="clusters.length" :page-sizes="[5, 10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper" background />
+      </div>
+
       <div v-else class="np-empty">
         <el-icon :size="36" color="var(--np-text-disabled)"><Share /></el-icon>
         <p>{{ t('correlations.empty') }}</p>
@@ -69,6 +76,7 @@ import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { getCorrelations } from '../api/scan'
 import type { CorrelationType, CorrelationCluster } from '../types'
+import { usePageSize } from '../composables/usePageSetting'
 
 const { t } = useI18n()
 
@@ -84,8 +92,14 @@ const tabs = [
 const activeType = ref<CorrelationType>('ip')
 const loading = ref(false)
 const groups = ref<Partial<Record<CorrelationType, CorrelationCluster[]>>>({})
+const page = ref(1)
+const perPage = usePageSize()
 
 const clusters = computed(() => groups.value[activeType.value] || [])
+const pagedClusters = computed(() => {
+  const s = (page.value - 1) * perPage.value
+  return clusters.value.slice(s, s + perPage.value)
+})
 const counts = computed(() => {
   const result: Record<string, number> = {}
   for (const tab of tabs) {
@@ -99,6 +113,7 @@ async function loadData() {
   try {
     const data = await getCorrelations()
     groups.value = data.groups
+    page.value = 1  // 切换 tab 后回到第一页
   } catch (e: any) {
     ElMessage.error(e.message)
   } finally {

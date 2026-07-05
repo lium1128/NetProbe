@@ -250,6 +250,10 @@ def _run_scan_task(task_id: str, raw_targets: str, options: dict):
         # 记录最近进度
         if event == "progress" and "text" in data:
             task["progress"] = data["text"]
+            # 持久化进度日志到 DB（刷新/重启后可查看）
+            _append_progress_log(task_id, data["text"])
+        elif event in ("done", "error", "cancelled") and "text" in data:
+            _append_progress_log(task_id, data["text"])
 
     try:
         targets = parse_targets(raw_targets)
@@ -441,5 +445,41 @@ def _update_scan_status(scan_id: str, status: str, error_msg: str = ""):
             scan.finished_at = datetime.utcnow()
             scan.duration_secs = int((scan.finished_at - scan.started_at).total_seconds())
             db.commit()
+    finally:
+        db.close()
+
+
+def _append_progress_log(scan_id: str, text: str):
+    """把进度日志追加到 DB 的 progress_log 字段（每行一条）。
+
+    解决：扫描中刷新页面/重启服务后日志丢失，以及历史任务日志查看。
+    """
+    if not text:
+        return
+    db = SessionLocal()
+    try:
+        scan = db.query(Scan).filter(Scan.scan_id == scan_id).first()
+        if scan:
+            # 追加换行分隔，限制总大小防膨胀（保留最后 500 行 ≈ 50KB）
+            existing = scan.progress_log or ""
+            new_log = existing + text + "\n"
+            if len(new_log) > 100_000:
+                # 超限只保留后半部分
+                lines = new_log.split("\n")
+                new_log = "\n".join(lines[-500:])
+            scan.progress_log = new_log
+            db.commit()
+    except Exception:
+        pass  # 日志写入失败不影响扫描
+    finally:
+        db.close()
+
+
+def get_progress_log(scan_id: str) -> str:
+    """读取持久化的扫描进度日志。"""
+    db = SessionLocal()
+    try:
+        scan = db.query(Scan).filter(Scan.scan_id == scan_id).first()
+        return scan.progress_log or "" if scan else ""
     finally:
         db.close()

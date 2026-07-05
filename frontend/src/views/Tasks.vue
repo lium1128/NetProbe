@@ -122,13 +122,17 @@
       </div>
 
       <!-- Pagination -->
-      <div class="pagination" v-if="total > perPage">
+      <div class="pagination" v-if="total > 0">
         <el-pagination
           v-model:current-page="page"
-          :page-size="perPage"
+          v-model:page-size="perPage"
           :total="total"
-          layout="prev, pager, next"
+          :page-sizes="[5, 10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+         
+          background
           @current-change="loadData"
+          @size-change="onSizeChange"
         />
       </div>
     </el-card>
@@ -156,7 +160,7 @@
               class="engine-option"
               :class="{ active: form.engineId === e.id }"
             >
-              <input type="radio" v-model="form.engineId" :value="e.id" class="sr-only" />
+              <input type="radio" v-model="form.engineId" :value="e.id" class="sr-only" @change="onEngineChange" />
               <span class="engine-name">
                 {{ e.name }}
                 <el-tag v-if="e.is_preset" size="small" type="info" effect="plain">预设</el-tag>
@@ -170,10 +174,38 @@
           <label class="np-form-label">{{ t('dashboard.scanMode') }}</label>
           <div class="mode-group">
             <label v-for="m in scanModes" :key="m.value" class="mode-option" :class="{ active: form.scanMode === m.value }">
-              <input type="radio" v-model="form.scanMode" :value="m.value" class="sr-only" />
+              <input type="radio" v-model="form.scanMode" :value="m.value" class="sr-only" @change="onModeChange" />
               <span class="mode-name">{{ t(m.labelKey) }}</span>
               <span class="mode-desc">{{ t(m.descKey) }}</span>
             </label>
+          </div>
+        </div>
+        <!-- 检测项勾选（可选增强项，可覆盖引擎默认） -->
+        <div class="np-form-row">
+          <label class="np-form-label">
+            检测项
+            <span class="np-form-hint">勾选要执行的检测（可覆盖引擎默认）</span>
+          </label>
+          <div class="stages-group">
+            <!-- 基础项（始终启用，灰显不可取消） -->
+            <div class="stage-item base">
+              <el-checkbox v-model="stages.subdomain" disabled>子域名枚举</el-checkbox>
+            </div>
+            <div class="stage-item base">
+              <el-checkbox v-model="stages.port" disabled>端口扫描</el-checkbox>
+            </div>
+            <div class="stage-item base">
+              <el-checkbox v-model="stages.web" disabled>Web 探测</el-checkbox>
+            </div>
+            <!-- 可选增强项 -->
+            <div class="stage-item"><el-checkbox v-model="stages.fingerprint">指纹识别</el-checkbox></div>
+            <div class="stage-item"><el-checkbox v-model="stages.sensitive">敏感路径</el-checkbox></div>
+            <div class="stage-item warn"><el-checkbox v-model="stages.dirBrute">目录爆破</el-checkbox></div>
+            <div class="stage-item warn"><el-checkbox v-model="stages.takeover">接管检测</el-checkbox></div>
+            <div class="stage-item"><el-checkbox v-model="stages.js">JS 分析</el-checkbox></div>
+            <div class="stage-item warn"><el-checkbox v-model="stages.vuln">漏洞扫描</el-checkbox></div>
+            <div class="stage-item"><el-checkbox v-model="stages.banner">Banner 抓取</el-checkbox></div>
+            <div class="stage-item"><el-checkbox v-model="stages.screenshot">截图</el-checkbox></div>
           </div>
         </div>
         <!-- Port range -->
@@ -221,11 +253,6 @@
                 <label class="np-form-label">{{ t('dashboard.timeout') }}</label>
                 <el-input-number v-model="form.timeout" :min="30" :max="3600" :step="30" style="width: 100%" />
               </div>
-              <div class="adv-field">
-                <label class="np-form-label">{{ t('dashboard.screenshot') }}</label>
-                <el-switch v-model="form.screenshot" />
-                <span class="np-form-hint">{{ t('dashboard.screenshotHint') }}</span>
-              </div>
             </div>
           </el-collapse-item>
         </el-collapse>
@@ -247,6 +274,7 @@ import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { startScan, getHistory, cancelTask, deleteHistory } from '../api/scan'
 import api from '../api/index'
+import { usePageSize } from '../composables/usePageSetting'
 import type { HistoryItem, ScanRequest } from '../types'
 
 const { t } = useI18n()
@@ -256,7 +284,8 @@ const router = useRouter()
 const items = ref<HistoryItem[]>([])
 const total = ref(0)
 const page = ref(1)
-const perPage = 20
+const perPage = usePageSize()
+function onSizeChange() { page.value = 1; loadData() }
 const loading = ref(true)
 const query = ref('')
 const statusFilter = ref('')
@@ -294,6 +323,21 @@ const form = reactive({
   timeout: 300,
   screenshot: false,
   advOpen: [] as string[],
+})
+
+/** 检测项勾选（可选增强项可手动改，选引擎时联动） */
+const stages = reactive({
+  subdomain: true,   // 基础项（始终启用）
+  port: true,
+  web: true,
+  fingerprint: true,
+  sensitive: true,
+  dirBrute: false,   // 耗时噪音项，默认关
+  takeover: true,
+  js: true,
+  vuln: false,       // nuclei 较慢，默认关（深度引擎才开）
+  banner: true,
+  screenshot: false,
 })
 
 const scanModes = [
@@ -361,7 +405,7 @@ function formatDate(d: string) {
 async function loadData() {
   loading.value = true
   try {
-    const res = await getHistory({ page: page.value, per_page: perPage, q: query.value, status: statusFilter.value })
+    const res = await getHistory({ page: page.value, per_page: perPage.value, q: query.value, status: statusFilter.value })
     items.value = res.items
     total.value = res.total
   } catch (e: any) {
@@ -406,6 +450,19 @@ async function handleScan() {
     // 选了扫描引擎：传 engine_id，引擎 config 在后端覆盖阶段/工具/参数
     if (form.engineId) {
       (opts as any).engine_id = form.engineId
+      // 用户勾选覆盖引擎默认 stages（勾选框优先级 > 引擎 config）
+      ;(opts as any).stages = {
+        subdomain: stages.subdomain,
+        port: stages.port,
+        web: stages.web,
+        fingerprint: stages.fingerprint,
+        sensitive: stages.sensitive,
+        takeover: stages.takeover,
+        js: stages.js,
+        vuln: stages.vuln,
+        banner: stages.banner,
+        screenshot: stages.screenshot,
+      }
     } else {
       // 未选引擎：用旧版模式逻辑
       if (form.scanMode === 'quick') {
@@ -416,6 +473,19 @@ async function handleScan() {
       } else if (form.scanMode === 'deep') {
         opts.portscan_tool = 'nmap'
         opts.timeout = 900
+      }
+      // 旧模式也传 stages（勾选框）
+      ;(opts as any).stages = {
+        subdomain: stages.subdomain,
+        port: stages.port,
+        web: stages.web,
+        fingerprint: stages.fingerprint,
+        sensitive: stages.sensitive,
+        takeover: stages.takeover,
+        js: stages.js,
+        vuln: stages.vuln,
+        banner: stages.banner,
+        screenshot: stages.screenshot,
       }
     }
     if (form.portscanTool !== 'auto') opts.portscan_tool = form.portscanTool
@@ -467,16 +537,74 @@ async function handleDelete(row: HistoryItem) {
 /** 加载扫描引擎列表（预设 + 自定义） */
 async function loadEngines() {
   try {
-    const res = await api.get('/api/scan-engines')
-    engines.value = res.data.items || []
-    // 默认选中「标准」预设引擎
+    const res: any = await api.get('/scan-engines')
+    engines.value = res.items || []
+    // 默认选中「标准」预设引擎，并联动设置勾选项
     if (!form.engineId && engines.value.length) {
       const standard = engines.value.find(e => e.name === '标准')
       form.engineId = standard ? standard.id : engines.value[0].id
+      applyEngineStages(form.engineId)
     }
   } catch {
     /* 引擎加载失败不阻塞，回退到旧版 scanMode */
   }
+}
+
+/** 引擎切换时联动勾选项：从引擎 config 的 stages 读取默认勾选 */
+function onEngineChange() {
+  applyEngineStages(form.engineId)
+}
+
+/** 扫描模式切换时联动勾选项（引擎未选时生效） */
+function onModeChange() {
+  if (form.engineId) return  // 选了引擎时模式不生效
+  if (form.scanMode === 'quick') {
+    // 快速：只跑子域名+端口+Banner，跳过所有 Web 增强
+    stages.fingerprint = false
+    stages.sensitive = false
+    stages.dirBrute = false
+    stages.takeover = false
+    stages.js = false
+    stages.vuln = false
+    stages.banner = true
+    stages.screenshot = false
+  } else if (form.scanMode === 'deep') {
+    // 深度：全量 + 漏洞 + 目录爆破 + 截图
+    stages.fingerprint = true
+    stages.sensitive = true
+    stages.dirBrute = true
+    stages.takeover = true
+    stages.js = true
+    stages.vuln = true
+    stages.banner = true
+    stages.screenshot = true
+  } else {
+    // 标准：默认增强项，跳过耗时项
+    stages.fingerprint = true
+    stages.sensitive = true
+    stages.dirBrute = false
+    stages.takeover = true
+    stages.js = true
+    stages.vuln = false
+    stages.banner = true
+    stages.screenshot = false
+  }
+}
+
+/** 把引擎 config 的 stages 映射到勾选框 */
+function applyEngineStages(engineId: number | null) {
+  if (!engineId) return
+  const engine = engines.value.find(e => e.id === engineId)
+  if (!engine?.config?.stages) return
+  const s = engine.config.stages
+  stages.fingerprint = s.fingerprint !== false
+  stages.sensitive = s.sensitive !== false
+  stages.dirBrute = s.dirBrute === true
+  stages.takeover = s.takeover !== false
+  stages.js = s.js !== false
+  stages.vuln = s.vuln === true
+  stages.banner = s.banner !== false
+  stages.screenshot = s.screenshot === true
 }
 
 onMounted(async () => {
@@ -591,6 +719,39 @@ onUnmounted(() => {
 }
 .engine-desc { font-size: 11px; color: var(--np-text-muted); margin-top: 2px; line-height: 1.4; }
 
+/* 检测项勾选区 */
+.stages-group {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px 12px;
+  padding: 12px;
+  background: var(--np-bg-elevated);
+  border: 1px solid var(--np-border);
+  border-radius: var(--np-radius-md);
+}
+.stage-item {
+  display: flex;
+  align-items: center;
+}
+.stage-item.base :deep(.el-checkbox__label) {
+  color: var(--np-text-disabled);
+}
+.stage-item.base :deep(.el-checkbox.is-disabled .el-checkbox__inner) {
+  background-color: var(--np-blue-500);
+  border-color: var(--np-blue-500);
+}
+.stage-item.base :deep(.el-checkbox.is-disabled.is-checked .el-checkbox__inner::after) {
+  border-color: #fff;
+}
+/* 警示项（目录爆破/漏洞扫描，耗时长，标签标橙） */
+.stage-item.warn :deep(.el-checkbox__label) {
+  color: var(--np-text-secondary);
+}
+.stage-item.warn :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background-color: var(--np-warning);
+  border-color: var(--np-warning);
+}
+
 .port-group {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -644,6 +805,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .mode-group { grid-template-columns: 1fr; }
   .engine-group { grid-template-columns: 1fr; }
+  .stages-group { grid-template-columns: repeat(2, 1fr); }
   .port-group { grid-template-columns: repeat(2, 1fr); }
   .adv-grid { grid-template-columns: 1fr; }
 }
