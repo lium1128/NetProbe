@@ -8,7 +8,7 @@
     </div>
 
     <el-card>
-      <!-- 搜索栏 + 排序 -->
+      <!-- 搜索栏 + 排序 + 标签筛选 -->
       <div class="np-filter-bar">
         <el-input v-model="query" :placeholder="t('assets.searchPlaceholder')" clearable style="width: 260px" @keyup.enter="loadData">
           <template #prefix><el-icon><Search /></el-icon></template>
@@ -18,6 +18,9 @@
           <el-option :label="t('assets.sortPortCount')" value="port_count" />
           <el-option :label="t('assets.sortScanCount')" value="scan_count" />
           <el-option :label="t('assets.sortRiskScore')" value="risk_score" />
+        </el-select>
+        <el-select v-model="tagFilter" placeholder="标签筛选" clearable style="width: 160px" @change="filterByTag">
+          <el-option v-for="tag in presetTags" :key="tag" :label="tag" :value="tag" />
         </el-select>
         <el-button type="primary" @click="loadData">{{ t('common.search') }}</el-button>
       </div>
@@ -105,6 +108,15 @@
             <span v-else class="cell-dash">—</span>
           </template>
         </el-table-column>
+        <!-- 标签 -->
+        <el-table-column label="标签" min-width="120">
+          <template #default="{ row }">
+            <div class="tag-cell" @click.stop="openTagEditor(row)">
+              <el-tag v-for="tag in (row._tags || [])" :key="tag" size="small" :type="tagType(tag)" effect="plain" class="asset-tag-chip">{{ tag }}</el-tag>
+              <el-icon v-if="!(row._tags || []).length" class="tag-add-icon"><Plus /></el-icon>
+            </div>
+          </template>
+        </el-table-column>
         <!-- 风险分（右固定） -->
         <el-table-column prop="risk_score" label="风险" width="70" align="center" fixed="right" sortable>
           <template #default="{ row }">
@@ -122,11 +134,11 @@
       </el-table>
 
       <!-- 分页 -->
-      <div class="np-pagination" v-if="items.length">
+      <div class="np-pagination" v-if="filteredItems.length">
         <el-pagination
           v-model:current-page="page"
           v-model:page-size="perPage"
-          :total="items.length"
+          :total="filteredItems.length"
           :page-sizes="[5, 10, 20, 50, 100]"
           layout="total, sizes, prev, pager, next, jumper"
          
@@ -600,13 +612,39 @@
         </template>
       </div>
     </el-dialog>
+
+    <!-- 标签编辑对话框 -->
+    <el-dialog v-model="tagDialogVisible" title="编辑标签" width="440px" destroy-on-close>
+      <div class="tag-edit-host mono">{{ tagForm.hostname }} / {{ tagForm.ip }}</div>
+      <div class="tag-edit-presets">
+        <el-check-tag
+          v-for="tag in presetTags"
+          :key="tag"
+          :checked="tagForm.tags.includes(tag)"
+          @change="toggleTag(tag)"
+        >{{ tag }}</el-check-tag>
+      </div>
+      <div class="tag-edit-custom">
+        <el-input v-model="customTag" placeholder="自定义标签后回车" size="small" style="width: 200px" @keyup.enter="addCustomTag" />
+        <el-button size="small" @click="addCustomTag">添加</el-button>
+      </div>
+      <div class="tag-edit-current">
+        <el-tag v-for="tag in tagForm.tags" :key="tag" size="small" closable @close="removeTag(tag)" style="margin: 2px">{{ tag }}</el-tag>
+      </div>
+      <el-input v-model="tagForm.notes" type="textarea" :rows="2" placeholder="备注（可选）" style="margin-top: 12px" />
+      <template #footer>
+        <el-button @click="tagDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveTags">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, reactive, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getAssets, getAssetDetail } from '../api/scan'
+import api from '../api/index'
 import { usePageSize } from '../composables/usePageSetting'
 import type { AssetSummary } from '../types'
 import VChart from 'vue-echarts'
@@ -642,6 +680,7 @@ interface AssetRow extends AssetSummary {
   rowKey: string
   _preview?: CardPreview
   _previewed?: boolean
+  _tags?: string[]
 }
 
 const items = ref<AssetRow[]>([])
@@ -652,8 +691,9 @@ const sortBy = ref('hostname')
 const page = ref(1)
 const perPage = usePageSize('assets')
 const pagedItems = computed(() => {
+  const src = tagFilter.value ? filteredItems.value : items.value
   const start = (page.value - 1) * perPage.value
-  return items.value.slice(start, start + perPage.value)
+  return src.slice(start, start + perPage.value)
 })
 
 /** 抽屉态 */
@@ -1016,7 +1056,98 @@ function servicesAt(layerN: number) {
   return layerBreakdown.value[layerN] || []
 }
 
-onMounted(loadData)
+/** 资产标签 */
+const tagDialogVisible = ref(false)
+const tagForm = reactive({ hostname: '', ip: '', tags: [] as string[], notes: '' })
+const tagFilter = ref('')
+const presetTags = ref(['重要资产', '影子资产', '废弃资产', '核心业务', '测试环境', '已确认', '待跟进'])
+const customTag = ref('')
+
+function tagType(tag: string) {
+  const map: Record<string, string> = {
+    '重要资产': 'danger', '核心业务': 'danger',
+    '影子资产': 'warning', '待跟进': 'warning',
+    '废弃资产': 'info', '测试环境': 'info',
+    '已确认': 'success',
+  }
+  return (map[tag] || '') as any
+}
+
+async function loadAllTags() {
+  try {
+    const res: any = await api.get('/asset-tags')
+    const tagMap: Record<string, string[]> = {}
+    for (const item of res.items || []) {
+      tagMap[`${item.hostname}::${item.ip}`] = item.tags || []
+    }
+    // 给 items 填充 _tags
+    for (const row of items.value) {
+      row._tags = tagMap[`${row.hostname}::${row.ip}`] || []
+    }
+  } catch { /* 不阻塞 */ }
+}
+
+function openTagEditor(row: AssetRow) {
+  tagForm.hostname = row.hostname
+  tagForm.ip = row.ip
+  tagForm.tags = [...(row._tags || [])]
+  tagForm.notes = ''
+  customTag.value = ''
+  tagDialogVisible.value = true
+}
+
+function toggleTag(tag: string) {
+  const idx = tagForm.tags.indexOf(tag)
+  if (idx >= 0) tagForm.tags.splice(idx, 1)
+  else tagForm.tags.push(tag)
+}
+
+function addCustomTag() {
+  const tag = customTag.value.trim()
+  if (tag && !tagForm.tags.includes(tag)) {
+    tagForm.tags.push(tag)
+    if (!presetTags.value.includes(tag)) presetTags.value.push(tag)
+  }
+  customTag.value = ''
+}
+
+function removeTag(tag: string) {
+  tagForm.tags = tagForm.tags.filter((t: string) => t !== tag)
+}
+
+async function saveTags() {
+  try {
+    await api.put('/asset-tags', {
+      hostname: tagForm.hostname,
+      ip: tagForm.ip,
+      tags: tagForm.tags,
+      notes: tagForm.notes,
+    })
+    // 更新本地
+    const row = items.value.find(r => r.hostname === tagForm.hostname && r.ip === tagForm.ip)
+    if (row) row._tags = [...tagForm.tags]
+    tagDialogVisible.value = false
+  } catch (e: any) {
+    // 静默
+  }
+}
+
+/** 按标签筛选 */
+function filterByTag() {
+  // 前端过滤（_tags 包含选中的 tag）
+  // 实际筛选在 pagedItems 前做
+}
+
+/** 筛选后的 items（按标签过滤） */
+const filteredItems = computed(() => {
+  if (!tagFilter.value) return items.value
+  return items.value.filter(row => (row._tags || []).includes(tagFilter.value))
+})
+
+onMounted(async () => {
+  await loadData()
+  await loadAllTags()
+})
 </script>
 
 <style scoped>
@@ -1081,6 +1212,25 @@ onMounted(loadData)
 .cell-risk.risk-high { color: var(--np-danger); }
 .cell-risk.risk-medium { color: var(--np-warning); }
 .cell-risk.risk-low { color: var(--np-success); }
+
+/* 资产标签 */
+.tag-cell {
+  display: flex; align-items: center; gap: 3px; flex-wrap: wrap;
+  cursor: pointer; min-height: 24px;
+}
+.asset-tag-chip {
+  font-size: 11px; height: 20px; line-height: 18px;
+}
+.tag-add-icon {
+  color: var(--np-text-disabled); font-size: 14px;
+}
+.tag-cell:hover .tag-add-icon { color: var(--np-blue-500); }
+
+/* 标签编辑器 */
+.tag-edit-host { font-size: 13px; font-weight: 600; color: var(--np-text-primary); margin-bottom: 12px; }
+.tag-edit-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.tag-edit-custom { display: flex; gap: 6px; margin-bottom: 12px; }
+.tag-edit-current { min-height: 28px; padding: 8px; background: var(--np-bg-elevated); border-radius: var(--np-radius-md); }
 
 
 /* ═══ 详情弹窗（居中大窗，固定高度，内容少也不缩） ═══ */

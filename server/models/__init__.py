@@ -6,6 +6,7 @@ from .schedule import Schedule
 from .alert import Alert, AlertEvent
 from .scan_engine import ScanEngine
 from .user import User
+from .asset_tag import AssetTag
 
 __all__ = [
     "Base",
@@ -24,4 +25,5 @@ __all__ = [
     "AlertEvent",
     "ScanEngine",
     "User",
+    "AssetTag",
 ]
