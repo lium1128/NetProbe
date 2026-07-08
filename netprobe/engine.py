@@ -226,7 +226,7 @@ def do_web_probe(hosts: list[dict], options: dict, emit) -> None:
                     js_urls.extend(w.pop('_js_urls', []))
                     cookies = raw_hdrs.get('Set-Cookie', '')
                     try:
-                        tech = detect_technologies(raw_hdrs, raw_html, cookies, w.get('status', 0))
+                        tech = detect_technologies(raw_hdrs, raw_html, cookies, w.get('status', 0), w.get('favicon_hash', ''))
                     except Exception:
                         tech = []
                     # Phase C: CDN/WAF 整合 — 把 cdn.py 的检测结果注入 tech（避免与指纹库 CDN 规则割裂）

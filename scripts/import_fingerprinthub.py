@@ -1,195 +1,251 @@
 #!/usr/bin/env python3
-"""从 FingerprintHub (0x727) 导入高准确率 Web 指纹规则。
+"""从 FingerprintHub (0x727) 导入 Web 指纹规则（全量版）。
 
-FingerprintHub 的 YAML 格式:
+数据源: 0x727/FingerprintHub 的 web-fingerprint/*.yaml（约 3293 个文件）
+下载: 通过 jsdelivr CDN 并发拉取（12 线程），绕开 GitHub API 限流。
+
+FingerprintHub YAML 格式:
   id/name: 产品名
-  http.matchers: word/header 匹配规则
-  http.path: 探测路径
-  metadata.verified: 是否已验证（true=高置信度）
+  http.matchers: word 匹配规则
+  metadata.verified: 是否已验证
 
-转换策略: 只导入 verified=true 或有 header 匹配的（高准确率），
-跳过纯宽泛 html 匹配的（低准确率，避免误报）。
+转换策略（相比旧版的改进）:
+  - 去掉 800 条限制，全量处理 3293 个文件
+  - 并发下载（12 线程）
+  - 复用 nuclei 导入器的 merge() 逻辑（同名合并 patterns，而非简单跳过）
+  - 宽泛 pattern 过滤（避免误报）
+  - 加 source 字段溯源
 """
-import requests
 import json
-import base64
+import re
+import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-FP_PATH = Path(__file__).parent.parent / "netprobe" / "data" / "fingerprints.json"
+import requests
 
-# 先获取所有 web-fingerprint 文件列表
-def get_file_list():
-    """递归获取 web-fingerprint 目录的所有 YAML 文件路径。"""
-    r = requests.get(
-        'https://api.github.com/repos/0x727/FingerprintHub/git/trees/main?recursive=1',
-        timeout=30, headers={'Accept': 'application/vnd.github+json'}
-    )
+FP_PATH = Path(__file__).parent.parent / "netprobe" / "data" / "fingerprints.json"
+API_TREE = ("https://api.github.com/repos/0x727/FingerprintHub"
+            "/git/trees/main?recursive=1")
+CDN_BASE = "https://cdn.jsdelivr.net/gh/0x727/FingerprintHub@main"
+
+# 宽泛 pattern 黑名单（与 nuclei/hfinger 导入器一致）
+VAGUE_PATTERNS = {
+    "<html", "<body", "<head", "<div", "<span", "<meta", "<title",
+    "<script", "<link", "<img", "<p>", "<br",
+    "text/html", "text/plain", "application/json", "application/javascript",
+    "content-type", "charset", "utf-8", "gzip", "keep-alive",
+    "login", "登录", "welcome", "首页",
+    "content-type", "server", "set-cookie", "x-powered-by",
+}
+
+
+def _is_vague(pattern: str) -> bool:
+    pat = str(pattern).lower().strip()
+    if not pat or len(pat) < 4:
+        return True
+    for v in VAGUE_PATTERNS:
+        if pat == v:
+            return True
+    return False
+
+
+def get_file_list() -> list[str]:
+    """获取 web-fingerprint 目录下所有 yaml 文件相对路径。"""
+    r = requests.get(API_TREE, timeout=30,
+                     headers={"Accept": "application/vnd.github+json"})
     if r.status_code != 200:
-        print(f'获取文件列表失败: {r.status_code}')
+        print(f"获取文件列表失败: {r.status_code}")
         return []
     data = r.json()
-    return [t['path'] for t in data.get('tree', [])
-            if t['path'].startswith('web-fingerprint/') and t['path'].endswith('.yaml')]
+    files = [t["path"] for t in data.get("tree", [])
+             if t["path"].startswith("web-fingerprint/")
+             and t["path"].endswith(".yaml")
+             and t["type"] == "blob"]
+    return files
 
 
-def download_yaml(path):
-    """下载单个 YAML 文件内容。"""
-    url = f'https://api.github.com/repos/0x727/FingerprintHub/contents/{path}'
-    r = requests.get(url, timeout=15, headers={'Accept': 'application/vnd.github+json'})
-    if r.status_code == 200:
-        data = r.json()
-        return base64.b64decode(data.get('content', '')).decode('utf-8')
-    return ''
+def download_yaml(rel_path: str) -> str:
+    """通过 jsdelivr CDN 下载 yaml。"""
+    url = f"{CDN_BASE}/{rel_path}"
+    r = requests.get(url, timeout=20)
+    return r.text if r.status_code == 200 else ""
 
 
-def parse_yaml_simple(text):
-    """简单解析 YAML（不依赖 pyyaml，提取关键字段）。
-
-    FingerprintHub YAML 结构固定，可以用正则提取。
-    """
-    import re
-
-    result = {
-        'name': '',
-        'verified': False,
-        'matchers': [],
-        'headers': [],
-        'words': [],
-    }
+def parse_yaml(text: str) -> dict:
+    """简单解析 FingerprintHub YAML（正则提取关键字段）。"""
+    result = {"name": "", "verified": False, "words": [], "headers": []}
 
     # name
-    m = re.search(r'^info:\s*\n\s+name:\s*(.+)', text)
+    m = re.search(r"^info:\s*\n\s+name:\s*(.+)", text, re.MULTILINE)
     if m:
-        result['name'] = m.group(1).strip()
+        result["name"] = m.group(1).strip().strip("'\"")
 
-    # verified
-    if 'verified: true' in text:
-        result['verified'] = True
+    if "verified: true" in text:
+        result["verified"] = True
 
-    # 提取 matchers 部分的 words 和 headers
-    # 简单提取 word 匹配
+    # 提取 words（FingerprintHub 的 word 匹配默认是 response body 或 header）
     in_words = False
-    in_headers = False
     for line in text.splitlines():
         stripped = line.strip()
-        if stripped == 'words:':
+        if stripped == "words:":
             in_words = True
-            in_headers = False
             continue
-        elif stripped.startswith('type:') or stripped.startswith('method:') or stripped.startswith('path:'):
+        elif stripped.startswith(("type:", "method:", "path:", "regex:", "dsl:")):
             in_words = False
-            in_headers = False
             continue
-
         if in_words:
-            # word 值（- value 格式）
-            wm = re.match(r'^-\s+(.+)', stripped)
+            wm = re.match(r"^-\s+(.+)", stripped)
             if wm:
-                word = wm.group(1).strip()
-                # 去掉引号
-                if word.startswith('"') and word.endswith('"'):
-                    word = word[1:-1]
-                elif word.startswith("'") and word.endswith("'"):
-                    word = word[1:-1]
+                word = wm.group(1).strip().strip("'\"")
                 if word:
-                    result['words'].append(word)
-
-    # 从 words 里区分 header 和 html 匹配
-    # FingerprintHub 的 word 匹配默认是 response body（html）或 header
-    # 简单处理：所有 word 都当 html 匹配，header 特征单独提取
-    result['matchers'] = result['words']
+                    result["words"].append(word)
 
     return result
 
 
-def convert(fp_text, file_path):
-    """转换单个 FingerprintHub YAML 为 NetProbe 指纹格式。"""
-    parsed = parse_yaml_simple(fp_text)
-    if not parsed['name'] or not parsed['matchers']:
+def convert(text: str) -> dict | None:
+    """转换单个 YAML 为 NetProbe 指纹格式。"""
+    parsed = parse_yaml(text)
+    if not parsed["name"] or not parsed["words"]:
         return None
-
-    # 过滤太短或太宽泛的匹配词（避免误报）
-    words = []
-    for w in parsed['matchers']:
-        w = w.strip()
-        if len(w) < 4:  # 太短的跳过
-            continue
-        # 跳过纯通用的（如 html, body, script）
-        if w.lower() in ('html', 'body', 'script', 'head', 'div', 'span', 'meta'):
-            continue
-        words.append(w)
-
-    if not words:
-        return None
-
-    # 取产品名（去掉 vendor 前缀）
-    name = parsed['name']
-    # 从文件路径提取 vendor 作为 category 参考
-    parts = file_path.split('/')
-    vendor = parts[1] if len(parts) >= 3 and parts[1] != '00_unknown' else ''
 
     patterns = []
-    for w in words[:3]:  # 最多 3 个匹配词
-        patterns.append({'type': 'html', 'pattern': w.lower()})
+    seen = set()
+    for w in parsed["words"]:
+        w = w.strip()
+        if not w or _is_vague(w):
+            continue
+        wl = w.lower()
+        k = ("html", wl)
+        if k not in seen:
+            seen.add(k)
+            patterns.append({"type": "html", "pattern": wl})
+        if len(patterns) >= 6:
+            break
 
     if not patterns:
         return None
 
     return {
-        'name': name,
-        'category': 'Other',  # FingerprintHub 不分类别，统一 Other
-        'vendor': vendor,
-        'verified': parsed['verified'],
-        'patterns': patterns,
+        "name": parsed["name"],
+        "category": "Other",  # FingerprintHub 不分类
+        "patterns": patterns,
+        "source": "fingerprinthub",
+        "verified": parsed["verified"],
     }
 
 
-def main():
-    # 加载现有指纹库
-    fps = json.load(open(FP_PATH, encoding='utf-8'))
-    existing = {fp['name'].lower() for fp in fps}
-    print(f'现有指纹: {len(fps)} 条')
+def _fingerprint_key(rule: dict) -> str:
+    name = rule["name"].lower()
+    pats = rule.get("patterns", [])
+    sig = pats[0]["pattern"] if pats else ""
+    return f"{name}::{sig[:40]}"
 
-    # 获取文件列表
-    print('获取 FingerprintHub 文件列表...')
-    files = get_file_list()
-    print(f'Web 指纹文件: {len(files)} 个')
 
-    # 下载并转换（分批，避免 API rate limit）
-    added = 0
-    batch_size = 0
-    for i, file_path in enumerate(files):
-        # 下载
-        text = download_yaml(file_path)
-        if not text:
+def merge(existing: list[dict], new_rules: list[dict]) -> tuple[list[dict], dict]:
+    """合并去重（与 nuclei 导入器逻辑一致）。"""
+    existing_keys = {_fingerprint_key(r) for r in existing}
+    name_index = {}
+    for i, r in enumerate(existing):
+        name_index.setdefault(r["name"].lower(), []).append(i)
+
+    stats = {"added": 0, "merged": 0, "skipped": 0}
+    for rule in new_rules:
+        key = _fingerprint_key(rule)
+        if key in existing_keys:
+            stats["skipped"] += 1
             continue
 
-        # 解析转换
-        rule = convert(text, file_path)
-        if rule and rule['name'].lower() not in existing:
-            fps.append(rule)
-            existing.add(rule['name'].lower())
-            added += 1
+        nl = rule["name"].lower()
+        if nl in name_index:
+            for idx in name_index[nl]:
+                target = existing[idx]
+                existing_pats = {(p["type"], p["pattern"]) for p in target.get("patterns", [])}
+                added_any = False
+                for p in rule["patterns"]:
+                    pk = (p["type"], p["pattern"])
+                    if pk not in existing_pats:
+                        if len(target.get("patterns", [])) >= 8:
+                            break
+                        target.setdefault("patterns", []).append(p)
+                        existing_pats.add(pk)
+                        added_any = True
+                if added_any:
+                    stats["merged"] += 1
+                else:
+                    stats["skipped"] += 1
+                existing_keys.add(key)
+                break
+        else:
+            existing.append(rule)
+            existing_keys.add(key)
+            name_index.setdefault(nl, []).append(len(existing) - 1)
+            stats["added"] += 1
 
-        batch_size += 1
-
-        # 每 100 个打印进度 + 控制速率
-        if batch_size >= 100:
-            print(f'  已处理 {i+1}/{len(files)}, 新增 {added} 条')
-            batch_size = 0
-            time.sleep(1)  # 避免 GitHub API rate limit
-
-        # 限制最多处理 1500 个文件（覆盖主要产品）
-        if i >= 800:
-            print(f'  达到处理上限 1500，停止')
-            break
-
-    # 保存
-    json.dump(fps, open(FP_PATH, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
-    print(f'\n✓ 从 FingerprintHub 新增 {added} 条')
-    print(f'✓ 总规则数: {len(fps)}')
+    return existing, stats
 
 
-if __name__ == '__main__':
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="导入 FingerprintHub 指纹（全量）")
+    parser.add_argument("--dry-run", action="store_true", help="只统计不写入")
+    parser.add_argument("--limit", type=int, default=0, help="限制处理文件数（0=全部）")
+    args = parser.parse_args()
+
+    print(f"指纹库路径: {FP_PATH}")
+    existing = json.load(open(FP_PATH, encoding="utf-8"))
+    print(f"现有规则: {len(existing)} 条")
+
+    print("\n获取 FingerprintHub 文件列表...")
+    files = get_file_list()
+    print(f"web-fingerprint 模板: {len(files)} 个")
+    if args.limit:
+        files = files[:args.limit]
+        print(f"  (限制处理 {len(files)} 个)")
+
+    print("\n下载并转换（并发 12 线程）...")
+    new_rules = []
+    failed = 0
+
+    def _download_and_convert(rel):
+        text = download_yaml(rel)
+        if not text:
+            return None
+        return convert(text)
+
+    with ThreadPoolExecutor(max_workers=12) as pool:
+        futures = {pool.submit(_download_and_convert, rel): rel for rel in files}
+        done = 0
+        for fut in as_completed(futures):
+            done += 1
+            try:
+                rule = fut.result()
+            except Exception:
+                rule = None
+            if rule is None:
+                failed += 1
+            else:
+                new_rules.append(rule)
+            if done % 500 == 0:
+                print(f"  进度 {done}/{len(files)}, 已转换 {len(new_rules)}, 失败 {failed}")
+
+    print(f"\n转换完成: {len(new_rules)} 条新规则 (失败 {failed})")
+
+    print("\n合并去重...")
+    merged, stats = merge(existing, new_rules)
+    print(f"  新增: {stats['added']}")
+    print(f"  增强现有: {stats['merged']}")
+    print(f"  跳过重复: {stats['skipped']}")
+
+    if args.dry_run:
+        print(f"\n[dry-run] 合并后总计 {len(merged)} 条（未写入）")
+    else:
+        with open(FP_PATH, "w", encoding="utf-8") as f:
+            json.dump(merged, f, ensure_ascii=False, indent=2)
+        print(f"\n✓ 写入完成: {len(merged)} 条 → {FP_PATH}")
+
+
+if __name__ == "__main__":
     main()
