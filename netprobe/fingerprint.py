@@ -43,6 +43,7 @@ IMPLY_CONFIDENCE = 50
 # html:    页面内容匹配，最易误报（可能只是提到产品名）
 PATTERN_CONFIDENCE = {
     'header': 90,
+    'favicon_hash': 90,
     'cookie': 85,
     'meta': 80,
     'script_src': 75,
@@ -56,6 +57,7 @@ def detect_technologies(
     html: str,
     cookies: str,
     status_code: int = 0,
+    favicon_hash: str = '',
 ) -> list[dict]:
     """从 HTTP 响应中检测 Web 技术栈。
 
@@ -64,6 +66,8 @@ def detect_technologies(
         html: HTML 正文
         cookies: Set-Cookie 头的值
         status_code: HTTP 状态码（用于 status_code pattern）
+        favicon_hash: 站点 favicon 的 mmh3 哈希（FOFA icon_hash 同款，
+                      由 web_probe.compute_favicon_hash 计算）
 
     返回: [{'name': str, 'category': str, 'version': str, 'confidence': int}, ...]
           version 为空串表示未提取到；confidence 为 0-100。
@@ -97,6 +101,7 @@ def detect_technologies(
         'cookie': cookies or '',
         'meta': meta_content,
         'script_src': '\n'.join(script_srcs),
+        'favicon_hash': favicon_hash or '',
     }
 
     detected = []
@@ -110,12 +115,12 @@ def detect_technologies(
         for pat in fp['patterns']:
             matched, match_type = _match_pattern(
                 pat, headers_lower, html_lower, cookies_lower,
-                script_srcs, meta_content, status_code,
+                script_srcs, meta_content, status_code, favicon_hash,
             )
             if not matched:
                 continue
             match_count += 1
-            if match_type in ('header', 'cookie', 'script_src', 'meta'):
+            if match_type in ('header', 'cookie', 'script_src', 'meta', 'favicon_hash'):
                 has_precise = True
             confidence = PATTERN_CONFIDENCE.get(match_type, 50)
             # 提取版本（如有 version 正则）
@@ -287,7 +292,7 @@ def _safe_search(pattern: str, text: str) -> bool:
         return False
 
 
-def _match_pattern(pat, headers, html, cookies, script_srcs, meta, status_code) -> tuple[bool, str]:
+def _match_pattern(pat, headers, html, cookies, script_srcs, meta, status_code, favicon_hash='') -> tuple[bool, str]:
     """匹配单个 pattern。返回 (是否命中, 命中的 pattern type)。
 
     成功时第二个返回值是该 pattern 的 type（用于置信度计算与版本提取定位）。
@@ -329,6 +334,12 @@ def _match_pattern(pat, headers, html, cookies, script_srcs, meta, status_code) 
                     return True, ptype
             elif search_str in src:
                 return True, ptype
+        return False, ptype
+
+    if ptype == 'favicon_hash':
+        # favicon mmh3 哈希精确匹配（FOFA icon_hash 同款，高置信度）
+        if favicon_hash and pattern.strip():
+            return pattern.strip() == favicon_hash.strip(), ptype
         return False, ptype
 
     if ptype == 'status_code':
