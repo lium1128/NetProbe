@@ -14,6 +14,7 @@
           <template #prefix><el-icon><Search /></el-icon></template>
         </el-input>
         <el-select v-model="sortBy" style="width: 160px" @change="loadData">
+          <el-option label="最后扫描" value="last_scan" />
           <el-option :label="t('assets.sortHostname')" value="hostname" />
           <el-option :label="t('assets.sortPortCount')" value="port_count" />
           <el-option :label="t('assets.sortScanCount')" value="scan_count" />
@@ -100,6 +101,13 @@
         <!-- 扫描次数 -->
         <el-table-column prop="scan_count" label="扫描" min-width="60" align="center" sortable>
           <template #default="{ row }">{{ row.scan_count }}</template>
+        </el-table-column>
+        <!-- 最后扫描时间 -->
+        <el-table-column label="最后扫描" min-width="155" sortable :sort-method="(a: any, b: any) => (a.last_scan_at || '').localeCompare(b.last_scan_at || '')">
+          <template #default="{ row }">
+            <span v-if="row.last_scan_at" class="mono cell-time">{{ formatScanTime(row.last_scan_at) }}</span>
+            <span v-else class="cell-dash">—</span>
+          </template>
         </el-table-column>
         <!-- 漏洞数 -->
         <el-table-column label="漏洞" min-width="60" align="center" sortable :sort-method="(a: any, b: any) => (a._preview?.vulnCount || 0) - (b._preview?.vulnCount || 0)">
@@ -717,7 +725,7 @@ interface AssetRow extends AssetSummary {
 const items = ref<AssetRow[]>([])
 const loading = ref(false)
 const query = ref('')
-const sortBy = ref('hostname')
+const sortBy = ref('last_scan')
 /** 分页 */
 const page = ref(1)
 const perPage = usePageSize('assets')

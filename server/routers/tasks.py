@@ -22,8 +22,11 @@ router = APIRouter(tags=["tasks"])
 
 @router.get("/tasks")
 def list_tasks():
-    """返回所有任务：内存中的运行任务 + DB 已完成任务。"""
-    # 1. 内存中活跃任务
+    """返回所有任务：内存中的运行任务 + DB 已完成任务。
+
+    内存中不存在的 running 任务 = 进程重启中断的僵尸任务，自动标为 error。
+    """
+    # 1. 内存中活跃任务（只有内存里还在跑的才是真 running）
     active = list_active_tasks()
     active_ids = {t["id"] for t in active}
 
@@ -38,12 +41,19 @@ def list_tasks():
             .all()
         )
         for s in db_scans:
+            # 内存里没有但 DB 状态是 running → 僵尸任务，标为 error
+            status = s.status
+            if status == "running":
+                status = "error"
+                # 同步修正 DB
+                s.status = "error"
+                s.error_msg = s.error_msg or "进程重启中断"
             active.append({
                 "id": s.scan_id,
                 "scan_id": s.scan_id,
                 "name": s.name or "",
                 "target": s.target_raw,
-                "status": s.status,
+                "status": status,
                 "host_count": s.host_count,
                 "port_count": s.port_count,
                 "web_count": s.web_count,
@@ -55,6 +65,7 @@ def list_tasks():
                 "scan_mode": _infer_scan_mode(s.options_json),
                 "error_msg": s.error_msg or "",
             })
+        db.commit()
     finally:
         db.close()
 
