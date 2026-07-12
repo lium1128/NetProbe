@@ -82,3 +82,6 @@ def ensure_schema():
     # v3.0: vulnerabilities cwe/category（nuclei 结果结构化）
     _add_column("vulnerabilities", "cwe", "VARCHAR(32)", "''")
     _add_column("vulnerabilities", "category", "VARCHAR(32)", "''")
+    # v3.7: vulnerabilities 漏洞生命周期管理
+    _add_column("vulnerabilities", "status", "VARCHAR(16)", "'open'")
+    _add_column("vulnerabilities", "note", "TEXT", "''")

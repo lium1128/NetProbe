@@ -205,6 +205,21 @@
                     <a v-if="v.cve" :href="`https://nvd.nist.gov/vuln/detail/${v.cve}`" target="_blank" rel="noopener" class="mono vuln-cve">{{ v.cve }}</a>
                     <span class="mono cvss" v-if="v.cvss_score">CVSS {{ v.cvss_score }}</span>
                     <el-tag v-if="v.category && group.key === 'other'" size="small" effect="plain">{{ v.category }}</el-tag>
+                    <el-select
+                      v-if="v.vuln_id"
+                      :model-value="v.status || 'open'"
+                      size="small"
+                      class="vuln-status-select"
+                      @change="(val: string) => updateVulnStatus(v, val)"
+                    >
+                      <el-option label="待处理" value="open" />
+                      <el-option label="已确认" value="confirmed" />
+                      <el-option label="修复中" value="fixing" />
+                      <el-option label="已修复" value="fixed" />
+                      <el-option label="已验证" value="verified" />
+                      <el-option label="已关闭" value="closed" />
+                      <el-option label="误报" value="false_positive" />
+                    </el-select>
                   </div>
                 </div>
               </div>
@@ -929,6 +944,18 @@ const timelineChartOption = computed(() => {
 })
 
 /** 点击卡片：打开抽屉并加载完整详情 */
+/** 更新漏洞状态（生命周期管理） */
+async function updateVulnStatus(vuln: any, status: string) {
+  if (!vuln.vuln_id) return
+  try {
+    await api.patch(`/vulnerabilities/${vuln.vuln_id}/status`, { status })
+    vuln.status = status
+    ElMessage.success('状态已更新')
+  } catch (e: any) {
+    ElMessage.error('更新失败: ' + (e.message || e))
+  }
+}
+
 async function openDetail(row: AssetRow) {
   activeRow.value = row
   drawerVisible.value = true
@@ -1506,6 +1533,13 @@ onMounted(async () => {
   color: var(--np-text-primary);
   flex: 1;
   min-width: 120px;
+}
+.vuln-status-select {
+  width: 100px;
+  flex-shrink: 0;
+}
+.vuln-status-select :deep(.el-input__wrapper) {
+  box-shadow: 0 0 0 1px var(--np-border) !important;
 }
 .vuln-cve {
   font-size: 12px;

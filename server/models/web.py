@@ -37,7 +37,7 @@ class WhoisRecord(Base):
 
 
 class Vulnerability(Base):
-    """nuclei 漏洞扫描结果。"""
+    """漏洞扫描结果（nuclei + CVE 关联 + 各类安全检测）。"""
 
     __tablename__ = "vulnerabilities"
 
@@ -54,6 +54,10 @@ class Vulnerability(Base):
     matched_at = Column(Text, default="")
     extracted_data_json = Column(Text, default="{}")
     detected_at = Column(DateTime, default=datetime.utcnow)
+    # 漏洞生命周期管理
+    status = Column(String(16), default="open", index=True)  # open/confirmed/fixing/fixed/verified/closed/false_positive
+    note = Column(Text, default="")  # 处理备注
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class SensitivePath(Base):

@@ -165,9 +165,11 @@ def get_asset_detail(hostname: str, ip: str) -> dict | None:
                 continue
             seen_vulns.add(key)
             vulnerabilities.append({
+                "vuln_id": v.vuln_id,
                 "name": v.name, "severity": v.severity, "cve": v.cve,
                 "cvss_score": v.cvss_score, "cwe": v.cwe, "category": v.category,
                 "template_id": v.template_id,
+                "status": v.status or "open",
             })
 
         # Banner（按 port+service 去重）
