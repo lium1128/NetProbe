@@ -215,6 +215,16 @@ const stages = reactive({
 
 function onEngineChange() {
   const engine = engines.value.find(e => e.id === form.engineId)
+  if (!engine) return
+  // 根据引擎名同步 scan_mode
+  const name = (engine.name || '').toLowerCase()
+  if (name.includes('快速') || name.includes('quick')) {
+    form.scanMode = 'quick'
+  } else if (name.includes('深度') || name.includes('deep')) {
+    form.scanMode = 'deep'
+  } else {
+    form.scanMode = 'normal'
+  }
   if (!engine?.config?.stages) return
   const s = engine.config.stages
   stages.fingerprint = s.fingerprint !== false
@@ -408,7 +418,8 @@ function formatTime(s: string | null): string {
 }
 
 onMounted(async () => {
-  await Promise.all([loadData(), loadEngines()])
+  await loadEngines()
+  await loadData()
 })
 </script>
 

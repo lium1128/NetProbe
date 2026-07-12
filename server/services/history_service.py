@@ -33,7 +33,12 @@ def _infer_scan_mode(options_json: str) -> str:
 
 
 def list_scans(page: int = 1, per_page: int = 20, q: str = "", status: str = "") -> dict:
-    """分页查询扫描历史。"""
+    """分页查询扫描历史。
+
+    内存中不存在的 running 任务 = 进程重启中断的僵尸任务，展示为 error。
+    """
+    # 取内存中活跃任务 ID（只有内存里的 running 才是真 running）
+    from .scan_service import get_task
     db = SessionLocal()
     try:
         query = db.query(Scan)
@@ -53,26 +58,31 @@ def list_scans(page: int = 1, per_page: int = 20, q: str = "", status: str = "")
             .all()
         )
 
+        result_items = []
+        for s in items:
+            status_val = s.status
+            # 内存里没有但状态是 running → 僵尸任务
+            if status_val == "running" and not get_task(s.scan_id):
+                status_val = "error"
+            result_items.append({
+                "scan_id": s.scan_id,
+                "name": s.name or "",
+                "target_raw": s.target_raw,
+                "base_domain": s.base_domain,
+                "status": status_val,
+                "host_count": s.host_count,
+                "port_count": s.port_count,
+                "web_count": s.web_count,
+                "sensitive_count": s.sensitive_count,
+                "error_msg": s.error_msg,
+                "started_at": to_iso_z(s.started_at),
+                "finished_at": to_iso_z(s.finished_at),
+                "duration_secs": s.duration_secs,
+                "scan_mode": _infer_scan_mode(s.options_json),
+            })
+
         return {
-            "items": [
-                {
-                    "scan_id": s.scan_id,
-                    "name": s.name or "",
-                    "target_raw": s.target_raw,
-                    "base_domain": s.base_domain,
-                    "status": s.status,
-                    "host_count": s.host_count,
-                    "port_count": s.port_count,
-                    "web_count": s.web_count,
-                    "sensitive_count": s.sensitive_count,
-                    "error_msg": s.error_msg,
-                    "started_at": to_iso_z(s.started_at),
-                    "finished_at": to_iso_z(s.finished_at),
-                    "duration_secs": s.duration_secs,
-                    "scan_mode": _infer_scan_mode(s.options_json),
-                }
-                for s in items
-            ],
+            "items": result_items,
             "total": total,
             "page": page,
             "per_page": per_page,

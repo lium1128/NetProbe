@@ -34,17 +34,38 @@ def list_assets(q: str = "", sort: str = "last_seen") -> dict:
             .group_by(WebInfo.host_id)
             .subquery()
         )
-        # 漏洞数子查询
+        # 漏洞数：通过 Host JOIN Vulnerability，在 hostname+ip 维度做去重计数
+        # 与资产详情 get_asset_detail 的去重逻辑一致：(name, cve, category)
+        from ..models import Scan
+        vuln_sub = (
+            db.query(
+                Host.hostname.label("vh"),
+                Host.ip.label("vi"),
+                Vulnerability.name.label("vn"),
+                Vulnerability.cve.label("vc"),
+                Vulnerability.category.label("vcat"),
+            )
+            .join(Vulnerability, Vulnerability.host_id == Host.host_id)
+            .subquery()
+        )
         vuln_cnt = (
             db.query(
-                Vulnerability.host_id.label("h_id"),
-                func.count(Vulnerability.vuln_id).label("cnt"),
+                vuln_sub.c.vh.label("vh"),
+                vuln_sub.c.vi.label("vi"),
+                func.count(func.distinct(
+                    func.concat(
+                        func.coalesce(vuln_sub.c.vn, ''), '|',
+                        func.coalesce(vuln_sub.c.vc, ''), '|',
+                        func.coalesce(vuln_sub.c.vcat, '')
+                    )
+                )).label("cnt"),
             )
-            .group_by(Vulnerability.host_id)
+            .group_by(vuln_sub.c.vh, vuln_sub.c.vi)
             .subquery()
         )
 
-        # 主聚合：按 hostname+ip 分组，JOIN 端口/Web/漏洞计数（单次查询）
+        # 主聚合：按 hostname+ip 分组，JOIN 端口/Web/漏洞计数 + 最近扫描时间
+        from ..models import Scan
         rows = (
             db.query(
                 Host.hostname.label("hostname"),
@@ -53,11 +74,13 @@ def list_assets(q: str = "", sort: str = "last_seen") -> dict:
                 func.count(Host.host_id).label("scan_count"),
                 func.sum(func.coalesce(port_cnt.c.cnt, 0)).label("port_count"),
                 func.sum(func.coalesce(web_cnt.c.cnt, 0)).label("web_count"),
-                func.sum(func.coalesce(vuln_cnt.c.cnt, 0)).label("vuln_count"),
+                func.max(func.coalesce(vuln_cnt.c.cnt, 0)).label("vuln_count"),
+                func.max(Scan.started_at).label("last_scan_at"),
             )
             .outerjoin(port_cnt, port_cnt.c.h_id == Host.host_id)
             .outerjoin(web_cnt, web_cnt.c.h_id == Host.host_id)
-            .outerjoin(vuln_cnt, vuln_cnt.c.h_id == Host.host_id)
+            .outerjoin(vuln_cnt, (vuln_cnt.c.vh == Host.hostname) & (vuln_cnt.c.vi == Host.ip))
+            .outerjoin(Scan, Scan.scan_id == Host.scan_id)
             .group_by(Host.hostname, Host.ip)
             .all()
         )
@@ -147,6 +170,7 @@ def list_assets(q: str = "", sort: str = "last_seen") -> dict:
                 "web_count": int(row.web_count or 0),
                 "vuln_count": int(row.vuln_count or 0),
                 "risk_score": row.risk_score or 0,
+                "last_scan_at": _iso(row.last_scan_at),
                 # 卡片预览数据（后端预聚合，前端无需逐个请求详情）
                 "_preview": {
                     "firstSite": web,
@@ -163,6 +187,8 @@ def list_assets(q: str = "", sort: str = "last_seen") -> dict:
             items.sort(key=lambda x: x["scan_count"], reverse=True)
         elif sort == "risk_score":
             items.sort(key=lambda x: x["risk_score"], reverse=True)
+        elif sort == "last_scan":
+            items.sort(key=lambda x: x.get("last_scan_at") or "", reverse=True)
         else:
             items.sort(key=lambda x: x["hostname"])
 
@@ -249,3 +275,10 @@ def _pick_primary(web: dict | None, ports: list[dict]) -> dict | None:
     if ports:
         return {"port": ports[0]["port"], "proto": ports[0].get("proto", "tcp")}
     return None
+
+
+def _iso(dt) -> str:
+    """datetime → ISO 字符串（None 返回空串）。"""
+    if not dt:
+        return ""
+    return dt.isoformat() + "Z"

@@ -628,7 +628,10 @@ function applyEngineStages(engineId: number | null) {
 }
 
 onMounted(async () => {
-  await Promise.all([loadData(), loadEngines()])
+  // 先加载引擎（设默认引擎+联动stages），再加载列表
+  // 避免并行执行时 loadEngines 的默认引擎设置覆盖用户操作
+  await loadEngines()
+  await loadData()
   if (items.value.some(i => i.status === 'running')) startPolling()
 })
 

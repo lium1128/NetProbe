@@ -168,6 +168,27 @@ def migrate(dry_run: bool = False):
                 sqlite_conn2.close()
                 match = "✓" if pg_count == sqlite_count else "⚠"
                 print(f"  {match} {table:25s}  PG={pg_count:>6}  SQLite={sqlite_count:>6}")
+
+        # 同步自增序列（迁移带主键的数据后，PG 序列还停在初始值）
+        print()
+        print("同步自增序列:")
+        from sqlalchemy import text
+        id_cols_sync = {
+            'hosts': 'host_id', 'ports': 'port_id', 'banners': 'banner_id',
+            'web_info': 'web_id', 'whois_records': 'id', 'vulnerabilities': 'vuln_id',
+            'sensitive_paths': 'id', 'js_findings': 'id', 'schedules': 'id',
+            'alerts': 'id', 'alert_events': 'id', 'scan_engines': 'id',
+            'users': 'id', 'asset_tags': 'id',
+        }
+        with engine.begin() as conn:
+            for tbl, col in id_cols_sync.items():
+                seq = tbl + '_' + col + '_seq'
+                sql = "SELECT setval('%s', COALESCE((SELECT MAX(%s) FROM \"%s\"), 1), true)" % (seq, col, tbl)
+                try:
+                    conn.execute(text(sql))
+                    print(f"  OK: {tbl}")
+                except Exception:
+                    pass
         finally:
             db.close()
 
