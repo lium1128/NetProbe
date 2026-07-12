@@ -333,14 +333,25 @@ watch(() => route.path, () => {
 }
 
 .nav-item.active {
-  background: var(--np-gradient-brand);
+  background: rgba(59, 130, 246, 0.18);
   color: #fff !important;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+  position: relative;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--np-blue-400);
 }
 
 .nav-item.active .el-icon {
-  color: #fff;
+  color: var(--np-blue-400);
 }
 
 .nav-label {
@@ -422,8 +433,9 @@ watch(() => route.path, () => {
 /* ── Top Header ────────────────────────────────────────────── */
 .admin-header {
   height: var(--np-header-height);
-  background: var(--np-bg-layout);
+  background: var(--np-bg-surface);
   border-bottom: 1px solid var(--np-border);
+  box-shadow: var(--np-shadow-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
