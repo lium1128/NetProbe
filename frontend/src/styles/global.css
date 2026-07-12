@@ -5,51 +5,52 @@
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Elevation Layers（冷调灰，拉开层次）────────────────── */
-  --np-bg-app:      #f8fafc;    /* app shell 背景 — 冷调浅灰（slate-50）*/
-  --np-bg-layout:   #ffffff;    /* sidebar / header / panels — 纯白 */
+  /* ── Elevation Layers（蓝调灰体系，与侧边栏色调统一）────── */
+  --np-bg-app:      #f1f5f9;    /* app shell — slate-100（比纯灰略蓝）*/
+  --np-bg-layout:   #ffffff;    /* header / panels — 纯白 */
   --np-bg-surface:  #ffffff;    /* cards, table rows — 纯白卡片 */
-  --np-bg-elevated: #f1f5f9;    /* hover states — slate-100 */
+  --np-bg-elevated: #f8fafc;    /* hover / 嵌套层 — slate-50 */
   --np-bg-overlay:  #e2e8f0;    /* tooltips, popovers — slate-200 */
 
-  /* ── Text（加深对比，主文字接近纯黑）────────────────────── */
-  --np-text-primary:   #0f172a;    /* 主文字 — slate-900，接近纯黑 */
-  --np-text-secondary: #475569;    /* 次要文字 — slate-600 */
-  --np-text-muted:     #94a3b8;    /* 辅助文字 — slate-400 */
-  --np-text-disabled:  #cbd5e1;    /* 禁用 — slate-300 */
+  /* ── Text ──────────────────────────────────────────────────── */
+  --np-text-primary:   #0f172a;    /* slate-900 */
+  --np-text-secondary: #475569;    /* slate-600 */
+  --np-text-muted:     #94a3b8;    /* slate-400 */
+  --np-text-disabled:  #cbd5e1;    /* slate-300 */
 
-  /* ── Brand（明亮清晰蓝，Blue — 高辨识度不偏紫）── */
-  --np-blue-400: #60a5fa;    /* blue-400 浅 */
+  /* ── Brand（蓝色体系）────────────────────────────────────── */
+  --np-blue-400: #60a5fa;    /* blue-400 */
   --np-blue-500: #3b82f6;    /* blue-500 主品牌色 */
-  --np-blue-600: #2563eb;    /* blue-600 深 */
-  --np-blue-700: #1d4ed8;    /* blue-700 更深 */
+  --np-blue-600: #2563eb;    /* blue-600 */
+  --np-blue-700: #1d4ed8;    /* blue-700 */
 
-  /* ── 渐变（品牌强调用）────────────────────────────────── */
+  /* ── 渐变 ──────────────────────────────────────────────────── */
   --np-gradient-brand:   linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   --np-gradient-brand-hover: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  --np-gradient-sidebar: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  /* 侧边栏：蓝调深色，与内容区同色系（不是纯灰）*/
+  --np-gradient-sidebar: linear-gradient(180deg, #1e3a5f 0%, #0f1f3a 100%);
 
   /* ── Accent / CTA ──────────────────────────────────────────── */
   --np-amber-400: #fbbf24;
   --np-amber-500: #f59e0b;
 
-  /* ── Semantic（更鲜明的状态色）──────────────────────────── */
-  --np-success:     #10b981;    /* emerald-500 */
-  --np-success-bg:  rgba(16, 185, 129, 0.10);
-  --np-danger:      #ef4444;    /* red-500 */
-  --np-danger-bg:   rgba(239, 68, 68, 0.10);
-  --np-warning:     #f59e0b;    /* amber-500 */
-  --np-warning-bg:  rgba(245, 158, 11, 0.12);
-  --np-info:        #3b82f6;    /* blue-500 */
-  --np-info-bg:     rgba(59, 130, 246, 0.10);
+  /* ── Semantic ──────────────────────────────────────────────── */
+  --np-success:     #10b981;
+  --np-success-bg:  rgba(16, 185, 129, 0.08);
+  --np-danger:      #ef4444;
+  --np-danger-bg:   rgba(239, 68, 68, 0.08);
+  --np-warning:     #f59e0b;
+  --np-warning-bg:  rgba(245, 158, 11, 0.10);
+  --np-info:        #3b82f6;
+  --np-info-bg:     rgba(59, 130, 246, 0.08);
 
-  /* ── Borders（减弱，让内容跳出来）──────────────────────── */
-  --np-border:       #e2e8f0;    /* slate-200 更淡 */
+  /* ── Borders ───────────────────────────────────────────────── */
+  --np-border:       #e2e8f0;    /* slate-200 */
   --np-border-light: #cbd5e1;    /* slate-300 */
   --np-border-focus: var(--np-blue-500);
 
-  /* ── Shadows（分层差异化，强化卡片层次）────────────────── */
-  --np-shadow-sm:  0 1px 2px rgba(15, 23, 42, 0.04);
+  /* ── Shadows ───────────────────────────────────────────────── */
+  --np-shadow-sm:  0 1px 3px rgba(15, 23, 42, 0.06);
   --np-shadow-md:  0 4px 12px rgba(15, 23, 42, 0.08);
   --np-shadow-lg:  0 12px 32px rgba(15, 23, 42, 0.12);
   --np-shadow-glow: 0 0 0 3px rgba(59, 130, 246, 0.15);
@@ -150,7 +151,7 @@ body {
    Element Plus — Admin Dark Overrides
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Card（恢复阴影层次，hover 加深）────────────────────── */
+/* ── Card ──────────────────────────────────────────────────── */
 .el-card {
   --el-card-bg-color: var(--np-bg-surface) !important;
   --el-card-border-color: var(--np-border) !important;
@@ -158,11 +159,10 @@ body {
   border-color: var(--np-border) !important;
   color: var(--np-text-primary) !important;
   box-shadow: var(--np-shadow-sm) !important;
-  transition: box-shadow var(--np-transition), border-color var(--np-transition);
+  transition: box-shadow var(--np-transition) !important;
 }
 
 .el-card:hover {
-  border-color: var(--np-blue-400) !important;
   box-shadow: var(--np-shadow-md) !important;
 }
 
@@ -387,8 +387,8 @@ body {
 .el-table {
   --el-table-bg-color: var(--np-bg-surface) !important;
   --el-table-tr-bg-color: var(--np-bg-surface) !important;
-  --el-table-header-bg-color: var(--np-bg-app) !important;
-  --el-table-row-hover-bg-color: rgba(59, 130, 246, 0.05) !important;
+  --el-table-header-bg-color: var(--np-bg-elevated) !important;
+  --el-table-row-hover-bg-color: rgba(59, 130, 246, 0.04) !important;
   --el-table-border-color: var(--np-border) !important;
   --el-table-text-color: var(--np-text-primary) !important;
   --el-table-header-text-color: var(--np-text-secondary) !important;
@@ -401,8 +401,8 @@ body {
   font-size: 12px !important;
   color: var(--np-text-secondary) !important;
   white-space: nowrap !important;
-  background: var(--np-bg-app) !important;
-  border-bottom: 2px solid var(--np-border-light) !important;
+  background: var(--np-bg-elevated) !important;
+  border-bottom: 2px solid var(--np-border) !important;
 }
 /* 表头内容：完整展示不截断，列宽自动适应表头 */
 .el-table th.el-table__cell .cell {
