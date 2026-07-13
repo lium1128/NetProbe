@@ -9,6 +9,19 @@
         <el-button v-if="task?.status === 'done'" type="primary" size="small" @click="viewResults">
           <el-icon><View /></el-icon> {{ t('taskDetail.viewResults') }}
         </el-button>
+        <el-dropdown v-if="task?.status === 'done'" @command="downloadReport" size="small">
+          <el-button type="success" size="small">
+            <el-icon><Download /></el-icon> 导出报告
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="pdf">PDF 报告</el-dropdown-item>
+              <el-dropdown-item command="html">HTML 报告</el-dropdown-item>
+              <el-dropdown-item command="json">JSON 数据</el-dropdown-item>
+              <el-dropdown-item command="csv">CSV 表格</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button @click="$router.push('/tasks')" size="small">{{ t('common.back') }}</el-button>
       </div>
     </div>
@@ -325,6 +338,13 @@ function logClass(line: string) {
   if (line.includes('[done]')) return 'log-done'
   if (line.includes('✓') || line.includes('[+]')) return 'log-found'
   return ''
+}
+
+function downloadReport(fmt: string) {
+  const scanId = route.params.id as string
+  const token = localStorage.getItem('netprobe_token') || ''
+  // 直接打开下载链接（浏览器自动处理文件下载）
+  window.open(`/api/download/${scanId}/${fmt}?token=${encodeURIComponent(token)}`, '_blank')
 }
 
 function viewResults() {

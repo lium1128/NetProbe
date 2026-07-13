@@ -219,8 +219,263 @@ def save_to_json(hosts: list[dict], filepath: str, base_domain: str) -> None:
 # ── PDF 导出 (HTML → Playwright) ───────────────────────
 
 def _build_report_html(hosts: list[dict], base_domain: str) -> str:
-    """生成 PDF 报告用的完整 HTML。"""
+    """生成专业渗透测试报告 HTML。
+
+    包含:
+    1. 封面（标题/目标/日期/统计）
+    2. 执行摘要（风险评级/统计概览/关键发现）
+    3. 风险矩阵（漏洞严重性分布）
+    4. 漏洞详情（按严重性排序，含修复建议）
+    5. 资产清单（主机/端口/Web站点/技术栈）
+    """
     now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    total_ports = sum(len(h.get('ports', [])) for h in hosts)
+    total_web = sum(len(h.get('web_info', [])) for h in hosts)
+    total_sensitive = sum(len(h.get('sensitive', [])) for h in hosts)
+
+    # 收集所有漏洞（跨主机）
+    all_vulns = []
+    for h in hosts:
+        for v in h.get('vulnerabilities', []):
+            v['_hostname'] = h.get('hostname', '')
+            v['_ip'] = h.get('ip', '')
+            all_vulns.append(v)
+    # 按严重性排序
+    sev_order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3, 'info': 4}
+    all_vulns.sort(key=lambda v: sev_order.get((v.get('severity') or 'info').lower(), 5))
+
+    # 风险评级
+    risk_score = max((h.get('risk_score', 0) for h in hosts), default=0)
+    if risk_score >= 70:
+        risk_level, risk_color, risk_desc = '高危', '#dc2626', '存在严重安全风险，建议立即整改'
+    elif risk_score >= 40:
+        risk_level, risk_color, risk_desc = '中危', '#d97706', '存在中等安全风险，建议尽快修复'
+    elif risk_score >= 20:
+        risk_level, risk_color, risk_desc = '低危', '#2563eb', '存在少量安全问题，建议关注'
+    else:
+        risk_level, risk_color, risk_desc = '安全', '#10b981', '未发现重大安全问题'
+
+    # 漏洞统计
+    vuln_stats = {'critical': 0, 'high': 0, 'medium': 0, 'low': 0, 'info': 0}
+    for v in all_vulns:
+        sev = (v.get('severity') or 'info').lower()
+        vuln_stats[sev] = vuln_stats.get(sev, 0) + 1
+
+    # 修复建议库
+    fix_suggestions = _get_fix_suggestions(all_vulns)
+
+    parts = [f'''<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<style>
+@page {{ size: A4; margin: 15mm 12mm; }}
+* {{ box-sizing: border-box; margin: 0; padding: 0; }}
+body {{ font-family: "Microsoft YaHei","PingFang SC","Noto Sans SC","Segoe UI",sans-serif;
+       color: #1e293b; font-size: 10pt; line-height: 1.6; }}
+
+/* 封面 */
+.cover {{ text-align: center; padding-top: 120px; page-break-after: always; }}
+.cover h1 {{ font-size: 36pt; color: #2563eb; margin-bottom: 4px; letter-spacing: 2px; }}
+.cover .subtitle {{ font-size: 14pt; color: #64748b; margin-bottom: 32px; }}
+.cover h2 {{ font-size: 18pt; color: #1e293b; font-weight: 600; margin-bottom: 16px; }}
+.cover .meta {{ font-size: 11pt; color: #64748b; line-height: 2; }}
+.cover .badge {{ display: inline-block; padding: 6px 20px; border-radius: 20px;
+                font-size: 14pt; font-weight: 700; color: #fff; margin-top: 16px;
+                background: {risk_color}; }}
+
+/* 章节标题 */
+h2.section {{ font-size: 16pt; color: #1e293b; border-bottom: 2px solid #2563eb;
+              padding-bottom: 6px; margin: 24px 0 12px 0; }}
+h3.subsection {{ font-size: 12pt; color: #334155; margin: 16px 0 8px 0;
+                 border-left: 3px solid #2563eb; padding-left: 8px; }}
+
+/* 统计卡片 */
+.stats-grid {{ display: flex; gap: 12px; margin: 12px 0; }}
+.stat-card {{ flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; text-align: center; }}
+.stat-card .num {{ font-size: 22pt; font-weight: 700; }}
+.stat-card .lbl {{ font-size: 9pt; color: #64748b; margin-top: 2px; }}
+
+/* 风险矩阵 */
+.risk-matrix {{ display: flex; gap: 8px; margin: 12px 0; }}
+.risk-bar {{ flex: 1; border-radius: 6px; padding: 8px; text-align: center; color: #fff; }}
+.risk-bar .count {{ font-size: 18pt; font-weight: 700; }}
+.risk-bar .label {{ font-size: 9pt; }}
+
+/* 表格 */
+table {{ width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9pt; }}
+th {{ background: #1e293b; color: #fff; padding: 6px 8px; text-align: left; font-weight: 600; }}
+td {{ padding: 5px 8px; border-bottom: 1px solid #e2e8f0; vertical-align: top; word-break: break-all; }}
+tr:nth-child(even) td {{ background: #f8fafc; }}
+
+/* 漏洞条目 */
+.vuln-item {{ border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px; margin-bottom: 8px;
+             page-break-inside: avoid; }}
+.vuln-item-head {{ display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }}
+.vuln-badge {{ display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 8pt;
+               font-weight: 700; color: #fff; }}
+.vuln-badge.critical {{ background: #dc2626; }}
+.vuln-badge.high {{ background: #ea580c; }}
+.vuln-badge.medium {{ background: #d97706; }}
+.vuln-badge.low {{ background: #2563eb; }}
+.vuln-badge.info {{ background: #64748b; }}
+.vuln-name {{ font-weight: 600; font-size: 10pt; flex: 1; }}
+.vuln-host {{ font-size: 9pt; color: #64748b; font-family: "Consolas",monospace; }}
+.vuln-fix {{ margin-top: 6px; padding: 6px 10px; background: #f0fdf4; border-radius: 4px;
+             font-size: 9pt; color: #166534; border-left: 3px solid #10b981; }}
+.vuln-cve {{ font-family: "Consolas",monospace; font-size: 9pt; color: #2563eb; }}
+
+/* 通用 */
+.mono {{ font-family: "Cascadia Code","Consolas","Courier New",monospace; font-size: 8.5pt; }}
+.tag {{ display: inline-block; background: #eff6ff; color: #2563eb; border-radius: 3px;
+        padding: 1px 6px; margin: 1px 2px; font-size: 8pt; }}
+.host-block {{ page-break-before: always; }}
+.host-block:first-of-type {{ page-break-before: auto; }}
+.host-header {{ border-bottom: 2px solid #2563eb; padding-bottom: 6px; margin-bottom: 12px; }}
+.host-header h3 {{ font-size: 14pt; color: #1e293b; }}
+</style></head><body>
+
+<!-- 封面 -->
+<div class="cover">
+  <h1>NetProbe</h1>
+  <div class="subtitle">攻击面安全评估报告</div>
+  <h2>{html.escape(base_domain)}</h2>
+  <div class="meta">
+    <p>报告日期: {now}</p>
+    <p>主机数: {len(hosts)} &nbsp;|&nbsp; 端口: {total_ports} &nbsp;|&nbsp; Web站点: {total_web}</p>
+  </div>
+  <div class="badge">{risk_level}（{risk_score}分）</div>
+  <p class="meta" style="margin-top:12px;font-size:10pt">{risk_desc}</p>
+</div>
+
+<!-- 执行摘要 -->
+<h2 class="section">一、执行摘要</h2>
+<p>本次安全评估对目标 <b>{html.escape(base_domain)}</b> 进行了全面的攻击面扫描，
+共发现 <b>{len(hosts)}</b> 台主机、<b>{total_ports}</b> 个开放端口、<b>{total_web}</b> 个 Web 站点。</p>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="num" style="color:{risk_color}">{risk_score}</div><div class="lbl">风险评分</div></div>
+  <div class="stat-card"><div class="num" style="color:#dc2626">{vuln_stats['critical']}</div><div class="lbl">严重漏洞</div></div>
+  <div class="stat-card"><div class="num" style="color:#ea580c">{vuln_stats['high']}</div><div class="lbl">高危漏洞</div></div>
+  <div class="stat-card"><div class="num" style="color:#d97706">{vuln_stats['medium']}</div><div class="lbl">中危漏洞</div></div>
+  <div class="stat-card"><div class="num">{total_sensitive}</div><div class="lbl">敏感路径</div></div>
+</div>
+
+<!-- 风险矩阵 -->
+<h2 class="section">二、风险矩阵</h2>
+<div class="risk-matrix">
+  <div class="risk-bar" style="background:#dc2626"><div class="count">{vuln_stats['critical']}</div><div class="label">严重 Critical</div></div>
+  <div class="risk-bar" style="background:#ea580c"><div class="count">{vuln_stats['high']}</div><div class="label">高危 High</div></div>
+  <div class="risk-bar" style="background:#d97706"><div class="count">{vuln_stats['medium']}</div><div class="label">中危 Medium</div></div>
+  <div class="risk-bar" style="background:#2563eb"><div class="count">{vuln_stats['low']}</div><div class="label">低危 Low</div></div>
+  <div class="risk-bar" style="background:#64748b"><div class="count">{vuln_stats['info']}</div><div class="label">信息 Info</div></div>
+</div>
+''']
+
+    # 漏洞详情
+    if all_vulns:
+        parts.append('<h2 class="section">三、漏洞详情</h2>')
+        for v in all_vulns[:50]:  # 最多 50 条
+            sev = (v.get('severity') or 'info').lower()
+            name = html.escape(v.get('name', '未知漏洞'))
+            cve = v.get('cve', '')
+            cvss = v.get('cvss_score', '')
+            hostname = html.escape(v.get('_hostname', ''))
+            category = v.get('category', '')
+            fix = fix_suggestions.get(category, fix_suggestions.get('_default', ''))
+
+            parts.append('<div class="vuln-item">')
+            parts.append(f'<div class="vuln-item-head">')
+            parts.append(f'<span class="vuln-badge {sev}">{sev.upper()}</span>')
+            parts.append(f'<span class="vuln-name">{name}</span>')
+            if cve:
+                parts.append(f'<span class="vuln-cve">{html.escape(cve)}</span>')
+            if cvss:
+                parts.append(f'<span class="vuln-cve">CVSS {html.escape(str(cvss))}</span>')
+            parts.append('</div>')
+            parts.append(f'<div class="vuln-host">主机: {hostname}')
+            if category:
+                parts.append(f' &nbsp;|&nbsp; 类型: {html.escape(category)}')
+            parts.append('</div>')
+            if fix:
+                parts.append(f'<div class="vuln-fix">💡 <b>修复建议:</b> {html.escape(fix)}</div>')
+            parts.append('</div>')
+
+    # 资产清单
+    parts.append('<h2 class="section">四、资产清单</h2>')
+    for idx, host in enumerate(hosts, 1):
+        hostname = html.escape(host.get('hostname', 'N/A'))
+        ip = html.escape(host.get('ip', 'N/A'))
+        host_risk = host.get('risk_score', 0)
+
+        parts.append(f'<div class="host-block">')
+        parts.append(f'<div class="host-header"><h3>[{idx}] {hostname}</h3>')
+        parts.append(f'<div style="font-size:10pt;color:#64748b">IP: {ip}')
+        if host_risk:
+            parts.append(f' &nbsp;|&nbsp; 风险分: <b>{host_risk}</b>')
+        parts.append('</div></div>')
+
+        # 端口表格
+        ports = host.get('ports', [])
+        if ports:
+            parts.append('<h3 class="subsection">端口服务</h3><table>')
+            parts.append('<tr><th>Port</th><th>Proto</th><th>State</th><th>Service</th><th>Product</th></tr>')
+            for p in ports:
+                svc = html.escape(_format_service(p))
+                product = html.escape(f'{p.get("product","")} {p.get("version","")}'.strip())
+                parts.append(f'<tr><td class="mono">{p.get("port","")}</td>'
+                             f'<td>{p.get("proto","")}</td><td>{p.get("state","")}</td>'
+                             f'<td>{svc}</td><td>{product}</td></tr>')
+            parts.append('</table>')
+
+        # Web 站点
+        web_info = host.get('web_info', [])
+        if web_info:
+            parts.append('<h3 class="subsection">Web 站点</h3><table>')
+            parts.append('<tr><th style="width:50%">URL</th><th>Status</th><th>Title</th><th>Tech</th></tr>')
+            for w in web_info:
+                url = html.escape(w.get('url', ''))
+                status = html.escape(str(w.get('status', '')))
+                title = html.escape(w.get('title', '')[:40])
+                tech_tags = ''.join(f'<span class="tag">{html.escape(t.get("name",""))}</span>'
+                                    for t in (w.get('tech') or [])[:8])
+                parts.append(f'<tr><td class="mono">{url}</td><td>{status}</td>'
+                             f'<td>{title}</td><td>{tech_tags}</td></tr>')
+            parts.append('</table>')
+
+        # 技术栈
+        all_tech = set()
+        for w in web_info:
+            for t in w.get('tech', []):
+                name = t.get('name', '')
+                ver = t.get('version', '')
+                all_tech.add(f'{name} {ver}'.strip() if ver else name)
+        if all_tech:
+            parts.append('<h3 class="subsection">技术栈</h3>')
+            parts.append('<div>' + ''.join(f'<span class="tag">{html.escape(t)}</span>' for t in sorted(all_tech)) + '</div>')
+
+        parts.append('</div>')  # host-block
+
+    parts.append('</body></html>')
+    return '\n'.join(parts)
+
+
+def _get_fix_suggestions(vulns: list[dict]) -> dict:
+    """根据漏洞分类生成修复建议。"""
+    suggestions = {
+        'cve_fingerprint': '升级到安全版本，关注厂商安全公告，及时应用补丁修复已知 CVE。',
+        'ssl_tls': '使用 TLS 1.2+ 协议，禁用弱加密套件（RC4/DES/3DES），及时更新即将过期的证书，使用 Let\'s Encrypt 自动续期。',
+        'mail_security': '配置完整的 SPF + DMARC（p=reject）+ DKIM 三重邮件认证，添加 MTA-STS 策略强制 SMTP 加密传输。',
+        'unauth_access': '限制管理接口的访问来源（IP 白名单/内网），禁用生产环境的调试端点（actuator/phpinfo/.env），配置访问认证。',
+        'security_header': '配置 HSTS、X-Frame-Options、X-Content-Type-Options、Content-Security-Policy 等安全响应头。',
+        'cors': '限制 CORS 允许的 Origin 为可信域名，禁止使用通配符 *，特别是带 credentials 的跨域。',
+        'weak_password': '修改默认密码，使用强密码策略（12位+大小写+数字+特殊字符），启用密钥认证（SSH），限制登录失败次数。',
+        'admin_panel': '限制管理后台访问来源，配置多因素认证，更改默认管理路径。',
+        'origin_ip': '确保 CDN/WAF 配置正确不泄露源站 IP，防火墙只允许 CDN 回源 IP 访问。',
+        'robots': '检查 robots.txt 是否泄露了敏感路径信息，避免暴露后台/管理接口路径。',
+        '_default': '评估漏洞影响范围，根据业务优先级安排修复，关注厂商安全公告。',
+    }
+    # 按实际出现的 category 收集
+    result = {v.get('category', '_default') for v in vulns if v.get('category')}
+    return {cat: suggestions.get(cat, suggestions['_default']) for cat in result}
     total_ports = sum(len(h.get('ports', [])) for h in hosts)
     total_web = sum(len(h.get('web_info', [])) for h in hosts)
     total_sensitive = sum(len(h.get('sensitive', [])) for h in hosts)

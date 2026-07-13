@@ -32,6 +32,7 @@ def create_app() -> FastAPI:
         if (path == "/api/auth/login"
             or path.startswith("/api/auth/me")
             or path.startswith("/api/stream/")
+            or path.startswith("/api/download/")
             or not path.startswith("/api")
             or path in ("/docs", "/openapi.json", "/redoc")):
             return await call_next(request)

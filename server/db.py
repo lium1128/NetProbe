@@ -85,3 +85,4 @@ def ensure_schema():
     # v3.7: vulnerabilities 漏洞生命周期管理
     _add_column("vulnerabilities", "status", "VARCHAR(16)", "'open'")
     _add_column("vulnerabilities", "note", "TEXT", "''")
+    _add_column("vulnerabilities", "updated_at", "TIMESTAMP", "CURRENT_TIMESTAMP")

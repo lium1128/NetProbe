@@ -127,8 +127,21 @@ def get_result(scan_id: str):
 
 
 @router.get("/download/{scan_id}/{fmt}")
-def download_result(scan_id: str, fmt: str):
-    """下载报告 (txt/csv/json/pdf)。"""
+def download_result(scan_id: str, fmt: str, token: str = ""):
+    """下载报告 (txt/csv/json/pdf/html)。
+
+    鉴权：window.open 无法设 Authorization 头，用 query 参数 ?token=xxx。
+    """
+    # 验证 token
+    if token:
+        try:
+            from ..services.auth_service import get_current_user
+            get_current_user(token)
+        except Exception:
+            raise HTTPException(401, "token 无效或已过期")
+    else:
+        raise HTTPException(401, "未登录")
+
     if fmt not in ("txt", "csv", "json", "pdf", "html"):
         raise HTTPException(400, "fmt must be one of: txt, csv, json, pdf, html")
 
