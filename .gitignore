@@ -41,3 +41,8 @@ Thumbs.db
 
 # ── 工具 ──
 .claude
+
+# IDE / tool artifacts
+.zcode/
+nul
+*.pyc
