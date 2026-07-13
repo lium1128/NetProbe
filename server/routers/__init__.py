@@ -17,6 +17,7 @@ from .auth import router as auth_router
 from .asset_tags import router as asset_tags_router
 from .asm import router as asm_router
 from .vulnerabilities import router as vulnerabilities_router
+from .plugins import router as plugins_router
 
 
 def include_all_routers(app: FastAPI):
@@ -37,3 +38,4 @@ def include_all_routers(app: FastAPI):
     app.include_router(asset_tags_router, prefix="/api")
     app.include_router(asm_router, prefix="/api")
     app.include_router(vulnerabilities_router, prefix="/api")
+    app.include_router(plugins_router, prefix="/api")

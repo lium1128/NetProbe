@@ -740,35 +740,11 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         else:
             emit('progress', text=f'  ✓ 敏感路径探测完成: 无发现 ({elapsed:.1f}s)')
 
-        # ── robots.txt / sitemap.xml 解析（复用 sensitive 阶段，路径发现）──
+        # ── 插件系统：执行 sensitive 阶段的插件（robots/管理后台等）──
         try:
-            from .robots_sitemap import parse_robots_for_hosts
-            emit('progress', text='  · robots.txt / sitemap.xml 解析 ...')
-            t0 = time.time()
-            parse_robots_for_hosts(all_hosts)
-            robots_total = sum(len(h.get('_robots_findings', [])) for h in all_hosts)
-            extra_paths = sum(len(h.get('_extra_paths', [])) for h in all_hosts)
-            elapsed = time.time() - t0
-            if robots_total:
-                emit('progress', text=f'    ✓ robots/sitemap 解析完成: {robots_total} 个站点, 提取 {extra_paths} 条路径 ({elapsed:.1f}s)')
-            else:
-                emit('progress', text=f'    ✓ robots/sitemap 解析完成: 无发现 ({elapsed:.1f}s)')
-        except Exception as e:
-            emit('progress', text=f'  robots/sitemap 解析失败（不影响主流程）: {e}')
-
-        # ── 管理后台专项识别（复用 sensitive 阶段开关，title/URL 三重判定）──
-        try:
-            from .admin_detect import detect_admin_panels
-            emit('progress', text='  · 管理后台专项识别 ...')
-            t0 = time.time()
-            admin_total = detect_admin_panels(all_hosts)
-            elapsed = time.time() - t0
-            if admin_total:
-                emit('progress', text=f'    ✓ 管理后台识别完成: 发现 {admin_total} 个疑似后台 ({elapsed:.1f}s)')
-            else:
-                emit('progress', text=f'    ✓ 管理后台识别完成: 无发现 ({elapsed:.1f}s)')
-        except Exception as e:
-            emit('progress', text=f'  管理后台识别失败（不影响主流程）: {e}')
+            from .plugins.registry import run_plugins_for_stage
+            run_plugins_for_stage('sensitive', all_hosts, options, emit)
+        except Exception:
             for host in all_hosts:
                 host.setdefault('_admin_panels', [])
 
@@ -940,95 +916,20 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
         else:
             emit('progress', text='  ✓ 漏洞扫描跳过: 无 Web 站点')
 
-        # ── WAF/防护层识别（纯内存分析，无网络请求）──
+        # ── 插件系统：执行 vuln 阶段的所有已启用插件 ──
+        # WAF/安全头/CORS/SSL/未授权/弱口令/CDN真实IP 等检测全部由插件系统统一调度
         try:
-            from .waf_detect import detect_waf_for_hosts
-            waf_count = detect_waf_for_hosts(all_hosts)
-            if waf_count:
-                emit('progress', text=f'  · WAF 识别: {waf_count} 台主机检测到防护层')
-        except Exception:
-            pass
-
-        # ── 安全响应头检查（同类安全检测，复用 vuln 阶段开关）──
-        try:
-            from .security_headers import check_security_headers_for_hosts
-            emit('progress', text='  · HTTP 安全响应头检查 ...')
+            from .plugins.registry import run_plugins_for_stage
+            emit('progress', text='  · 深度安全检测（插件系统）...')
             t0 = time.time()
-            check_security_headers_for_hosts(all_hosts)
-            hdr_total = sum(len(h.get('_security_findings', [])) for h in all_hosts)
+            plugin_total = run_plugins_for_stage('vuln', all_hosts, options, emit)
             elapsed = time.time() - t0
-            if hdr_total:
-                emit('progress', text=f'    ✓ 安全头检查完成: {hdr_total} 项缺失/弱配置 ({elapsed:.1f}s)')
+            if plugin_total:
+                emit('progress', text=f'    ✓ 深度安全检测完成: {plugin_total} 个发现 ({elapsed:.1f}s)')
             else:
-                emit('progress', text=f'    ✓ 安全头检查完成: 无发现 ({elapsed:.1f}s)')
+                emit('progress', text=f'    ✓ 深度安全检测完成: 无发现 ({elapsed:.1f}s)')
         except Exception as e:
-            emit('progress', text=f'  安全头检查失败（不影响主流程）: {e}')
-
-        # ── CORS 配置检测（同类安全检测，复用 vuln 阶段开关）──
-        try:
-            from .cors_check import check_cors_for_hosts
-            emit('progress', text='  · CORS 配置检测 ...')
-            t0 = time.time()
-            check_cors_for_hosts(all_hosts)
-            cors_total = sum(len(h.get('_cors_findings', [])) for h in all_hosts)
-            elapsed = time.time() - t0
-            if cors_total:
-                emit('progress', text=f'    ✓ CORS 检测完成: {cors_total} 个缺陷 ({elapsed:.1f}s)')
-            else:
-                emit('progress', text=f'    ✓ CORS 检测完成: 无发现 ({elapsed:.1f}s)')
-        except Exception as e:
-            emit('progress', text=f'  CORS 检测失败（不影响主流程）: {e}')
-
-        # ── SSL/TLS 深度检测（弱协议/弱加密/证书问题）──
-        try:
-            from .ssl_check import check_ssl_for_hosts
-            emit('progress', text='  · SSL/TLS 深度检测 ...')
-            t0 = time.time()
-            ssl_total = check_ssl_for_hosts(all_hosts)
-            elapsed = time.time() - t0
-            if ssl_total:
-                emit('progress', text=f'    ✓ SSL/TLS 检测完成: {ssl_total} 个缺陷 ({elapsed:.1f}s)')
-            else:
-                emit('progress', text=f'    ✓ SSL/TLS 检测完成: 无发现 ({elapsed:.1f}s)')
-        except Exception as e:
-            emit('progress', text=f'  SSL/TLS 检测失败（不影响主流程）: {e}')
-
-        # ── 未授权接口枚举（Swagger/actuator/phpinfo/.env/druid 等）──
-        try:
-            from .unauth_scan import scan_unauth_for_hosts
-            emit('progress', text='  · 未授权接口枚举 (Swagger/actuator/.env/druid ...) ...')
-            t0 = time.time()
-            unauth_total = scan_unauth_for_hosts(all_hosts)
-            elapsed = time.time() - t0
-            if unauth_total:
-                emit('progress', text=f'    ✓ 未授权接口枚举完成: {unauth_total} 个暴露 ({elapsed:.1f}s)')
-            else:
-                emit('progress', text=f'    ✓ 未授权接口枚举完成: 无发现 ({elapsed:.1f}s)')
-        except Exception as e:
-            emit('progress', text=f'  未授权接口枚举失败（不影响主流程）: {e}')
-
-        # ── 端口弱口令爆破（SSH/MySQL/Redis/FTP/PostgreSQL，复用 vuln 开关）──
-        try:
-            from .brute_force import brute_force_for_hosts
-            emit('progress', text='  · 端口弱口令爆破 (SSH/MySQL/Redis/FTP/PG) ...')
-            t0 = time.time()
-            brute_force_for_hosts(all_hosts, options)
-            brute_total = sum(len(h.get('_brute_findings', [])) for h in all_hosts)
-            elapsed = time.time() - t0
-            if brute_total:
-                sev_counts = {'high': 0, 'medium': 0}
-                for h in all_hosts:
-                    for v in h.get('vulnerabilities', []):
-                        if v.get('type') == 'weak_password':
-                            sev_counts[v.get('severity', 'high')] = \
-                                sev_counts.get(v.get('severity', 'high'), 0) + 1
-                emit('progress', text=f'    ✓ 弱口令爆破完成: {brute_total} 个命中 '
-                      f'(high:{sev_counts.get("high", 0)} medium:{sev_counts.get("medium", 0)}) '
-                      f'({elapsed:.1f}s)')
-            else:
-                emit('progress', text=f'    ✓ 弱口令爆破完成: 无发现 ({elapsed:.1f}s)')
-        except Exception as e:
-            emit('progress', text=f'  弱口令爆破失败（不影响主流程）: {e}')
+            emit('progress', text=f'  深度安全检测失败（不影响主流程）: {e}')
 
     # ── Banner 抓取 ──
     if _stage_enabled(options, 'banner'):
@@ -1139,21 +1040,14 @@ def scan_target(target: str, options: dict, emit) -> list[dict]:
     else:
         emit('progress', text=f'  ✓ DNS 记录收集完成: 无结果 ({elapsed:.1f}s)')
 
-    # ── 邮件安全基线检测（SPF/DKIM/DMARC/MTA-STS）──
+    # ── 插件系统：执行 web 阶段插件（邮件安全等）──
     try:
-        from .mail_security import check_mail_security_for_hosts
-        emit('progress', text='  · 邮件安全基线检测 (SPF/DKIM/DMARC/MTA-STS) ...')
-        t0 = time.time()
-        mail_total = check_mail_security_for_hosts(all_hosts)
-        elapsed = time.time() - t0
-        if mail_total:
-            emit('progress', text=f'    ✓ 邮件安全检测完成: {mail_total} 个缺陷 ({elapsed:.1f}s)')
-        else:
-            emit('progress', text=f'    ✓ 邮件安全检测完成: 无发现 ({elapsed:.1f}s)')
+        from .plugins.registry import run_plugins_for_stage
+        run_plugins_for_stage('web', all_hosts, options, emit)
     except Exception as e:
-        emit('progress', text=f'  邮件安全检测失败（不影响主流程）: {e}')
+        emit('progress', text=f'  插件系统(web阶段)失败（不影响主流程）: {e}')
 
-    # ── CDN 真实 IP 发现（WHOIS/DNS 阶段后，复用 vuln 开关）──
+    # ── CDN 真实 IP 发现（由 vuln 阶段的 origin_ip 插件覆盖，这里保留旧逻辑兼容）──
     if _stage_enabled(options, 'vuln'):
         emit('progress', text=ph('CDN 真实 IP 发现 ...'))
         t0 = time.time()

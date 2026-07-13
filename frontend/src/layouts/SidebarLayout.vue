@@ -130,6 +130,7 @@ const navItems = [
   { path: '/alerts', icon: 'Bell', labelKey: 'nav.alerts' },
   { path: '/asm', icon: 'Aim', labelKey: 'nav.asm' },
   { path: '/users', icon: 'UserFilled', labelKey: 'nav.users', adminOnly: true },
+  { path: '/plugins', icon: 'Box', labelKey: 'nav.plugins' },
   { path: '/settings', icon: 'Setting', labelKey: 'nav.settings' },
 ]
 

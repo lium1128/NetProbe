@@ -1,0 +1,32 @@
+"""插件管理 API — 列出/启用/禁用检测插件。"""
+
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+
+router = APIRouter(tags=["plugins"])
+
+
+@router.get("/plugins")
+def list_plugins():
+    """列出所有已注册的插件。"""
+    from ...netprobe.plugins.registry import list_plugins_info
+    plugins = list_plugins_info()
+    return {"items": plugins, "total": len(plugins)}
+
+
+class PluginToggle(BaseModel):
+    enabled: bool
+
+
+@router.patch("/plugins/{name}/toggle")
+def toggle_plugin(name: str, toggle: PluginToggle):
+    """启用/禁用插件。"""
+    from ...netprobe.plugins.registry import get_plugin, set_enabled
+    plugin = get_plugin(name)
+    if not plugin:
+        raise HTTPException(404, f"插件 '{name}' 不存在")
+    if not plugin.is_available():
+        raise HTTPException(400, f"插件 '{name}' 依赖未满足，无法启用")
+
+    set_enabled(name, toggle.enabled)
+    return {"ok": True, "name": name, "enabled": toggle.enabled}

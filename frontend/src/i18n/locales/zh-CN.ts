@@ -15,6 +15,7 @@ export default {
     assets: '资产清单',
     settings: '系统设置',
     users: '用户管理',
+    plugins: '插件管理',
   },
   breadcrumb: {
     dashboard: '仪表盘',

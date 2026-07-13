@@ -81,6 +81,12 @@ const router = createRouter({
       component: () => import('../views/Settings.vue'),
       meta: { title: 'Settings', icon: 'Setting' },
     },
+    {
+      path: '/plugins',
+      name: 'plugins',
+      component: () => import('../views/Plugins.vue'),
+      meta: { title: 'Plugins', icon: 'Box' },
+    },
     // Redirects from old /history routes
     {
       path: '/asm',

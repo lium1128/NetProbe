@@ -15,6 +15,7 @@ export default {
     assets: 'Asset Inventory',
     settings: 'Settings',
     users: 'User Management',
+    plugins: 'Plugins',
   },
   breadcrumb: {
     dashboard: 'Dashboard',
