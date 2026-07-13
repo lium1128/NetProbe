@@ -134,9 +134,23 @@ const navItems = [
   { path: '/settings', icon: 'Setting', labelKey: 'nav.settings' },
 ]
 
-/** 菜单过滤：非管理员不显示 adminOnly 项 */
+/** 菜单权限映射：item.path → 所需权限 */
+const NAV_PERMISSIONS: Record<string, string> = {
+  '/tasks': 'scan',
+  '/schedules': 'scan',
+  '/users': 'manage_users',
+  '/plugins': 'manage_plugins',
+  '/settings': 'manage_system',
+}
+
+/** 菜单过滤：adminOnly 项需管理员，其余按权限过滤 */
 const visibleNavItems = computed(() =>
-  navItems.filter(item => !item.adminOnly || authStore.user?.is_admin)
+  navItems.filter(item => {
+    if (item.adminOnly && !authStore.isAdmin) return false
+    const perm = NAV_PERMISSIONS[item.path]
+    if (perm && !authStore.can(perm)) return false
+    return true
+  })
 )
 
 const sidebarWidth = computed(() => collapsed.value ? 'var(--np-sidebar-collapsed)' : 'var(--np-sidebar-width)')

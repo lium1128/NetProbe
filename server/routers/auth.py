@@ -30,11 +30,13 @@ class CreateUserRequest(BaseModel):
     username: str
     password: str
     is_admin: bool = False
+    role: str = ""
 
 
 class UpdateUserRequest(BaseModel):
     password: str | None = None
     is_admin: bool | None = None
+    role: str | None = None
 
 
 # ── 辅助：要求管理员 ─────────────────────────────────────
@@ -63,7 +65,21 @@ def get_me(credentials: HTTPAuthorizationCredentials = Depends(security)):
     if not credentials:
         raise HTTPException(status_code=401, detail="未登录")
     user = get_current_user(credentials.credentials)
-    return {"id": user.id, "username": user.username, "is_admin": user.is_admin}
+    return {
+        "id": user.id, "username": user.username,
+        "is_admin": user.is_admin,
+        "role": user.role or ("admin" if user.is_admin else "viewer"),
+    }
+
+
+@router.get("/auth/roles")
+def get_roles(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """返回可用角色列表（前端下拉用）。"""
+    from ..models.user import ROLES, ROLE_PERMISSIONS
+    return [
+        {"value": k, "label": v, "permissions": sorted(ROLE_PERMISSIONS.get(k, set()))}
+        for k, v in ROLES.items()
+    ]
 
 
 @router.post("/auth/change-password")
@@ -93,8 +109,8 @@ def post_user(req: CreateUserRequest, credentials: HTTPAuthorizationCredentials 
     _require_admin(credentials)
     if len(req.password) < 6:
         raise HTTPException(status_code=400, detail="密码至少 6 位")
-    user = create_user(req.username, req.password, req.is_admin)
-    return {"id": user.id, "username": user.username, "is_admin": user.is_admin}
+    user = create_user(req.username, req.password, req.is_admin, req.role)
+    return {"id": user.id, "username": user.username, "is_admin": user.is_admin, "role": user.role}
 
 
 @router.put("/auth/users/{user_id}")
@@ -103,7 +119,7 @@ def put_user(user_id: int, req: UpdateUserRequest, credentials: HTTPAuthorizatio
     _require_admin(credentials)
     if req.password is not None and len(req.password) < 6:
         raise HTTPException(status_code=400, detail="密码至少 6 位")
-    ok = update_user(user_id, req.password, req.is_admin)
+    ok = update_user(user_id, req.password, req.is_admin, req.role)
     if not ok:
         raise HTTPException(status_code=404, detail="用户不存在")
     return {"success": True}

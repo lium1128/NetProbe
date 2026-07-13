@@ -100,7 +100,7 @@
 - [x] **多用户支持** — JWT 认证 + 管理员/普通用户两档权限 + 用户管理 CRUD
 - [x] **攻击面管理 (ASM)** — ASM 总览仪表盘 + CT 证书监控 + DNS 变更监控 + 巡航模式
 - [x] **JS/SPA 深度分析** — 从 JS bundle 提取 API 端点（8类正则）+ 密钥泄露检测（18类，含 AWS/Google/Slack/Stripe/Azure 等）+ linkfinder 端点提取
-- [ ] **插件系统** — 模块化架构，支持社区贡献的扫描模块和情报源
+- [x] **插件系统** — 可热插拔检测模块（13内置插件 + data/plugins/ 外部插件自动发现 + 前端管理页）
 - [x] **Docker 部署** — 多阶段 Dockerfile（前端构建 + Python 运行时）+ docker-compose 一键启动，含 nmap/masscan/nuclei/subfinder + Playwright
 - [x] **API 资产发现** — 从 JS/页面链接提取 REST 端点 + OpenAPI/Swagger 文档解析 + GraphQL 内省 + 目录爆破（114 词表）
 - [x] **多渠道通知** — Webhook/钉钉/企业微信/飞书/Telegram/邮件 6 渠道（补齐 v2.6 唯一短板）

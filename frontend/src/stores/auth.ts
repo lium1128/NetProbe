@@ -7,6 +7,19 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref(JSON.parse(localStorage.getItem('netprobe_user') || 'null'))
 
   const isLoggedIn = computed(() => !!token.value)
+  const role = computed(() => user.value?.role || (user.value?.is_admin ? 'admin' : 'viewer'))
+  const isAdmin = computed(() => role.value === 'admin')
+
+  // 权限判断
+  function can(permission: string): boolean {
+    const PERMISSIONS: Record<string, string[]> = {
+      admin: ['scan', 'view', 'edit', 'delete', 'manage_users', 'manage_system', 'manage_plugins', 'download_report', 'manage_vulns'],
+      scanner: ['scan', 'view', 'edit', 'download_report', 'manage_vulns'],
+      auditor: ['view', 'download_report', 'manage_vulns'],
+      viewer: ['view'],
+    }
+    return (PERMISSIONS[role.value] || []).includes(permission)
+  }
 
   async function login(username: string, password: string) {
     const res: any = await api.post('/auth/login', { username, password })
@@ -28,5 +41,5 @@ export const useAuthStore = defineStore('auth', () => {
     return await api.post('/auth/change-password', { old_password: oldPwd, new_password: newPwd })
   }
 
-  return { token, user, isLoggedIn, login, logout, changePassword }
+  return { token, user, isLoggedIn, role, isAdmin, can, login, logout, changePassword }
 })

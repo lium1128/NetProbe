@@ -32,9 +32,32 @@ def create_token(user: User) -> str:
         "sub": str(user.id),
         "username": user.username,
         "is_admin": user.is_admin,
+        "role": user.role or ("admin" if user.is_admin else "viewer"),
         "exp": datetime.utcnow() + timedelta(days=JWT_EXPIRE_DAYS),
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+
+def has_permission(user: User, permission: str) -> bool:
+    """检查用户是否有指定权限。
+
+    权限: scan / view / edit / delete / manage_users / manage_system /
+          manage_plugins / download_report / manage_vulns
+    """
+    from ..models.user import ROLE_PERMISSIONS
+    # admin 兼容（旧版只有 is_admin 布尔）
+    if user.is_admin and not user.role:
+        return True
+    role = user.role or ("admin" if user.is_admin else "viewer")
+    perms = ROLE_PERMISSIONS.get(role, set())
+    return permission in perms
+
+
+def require_permission(user: User, permission: str):
+    """检查权限，不通过则抛 403。"""
+    from fastapi import HTTPException
+    if not has_permission(user, permission):
+        raise HTTPException(403, f"权限不足，需要 '{permission}' 权限")
 
 
 def get_current_user(token: str) -> User:
@@ -75,7 +98,11 @@ def login(username: str, password: str) -> dict:
         token = create_token(user)
         return {
             "token": token,
-            "user": {"id": user.id, "username": user.username, "is_admin": user.is_admin},
+            "user": {
+                "id": user.id, "username": user.username,
+                "is_admin": user.is_admin,
+                "role": user.role or ("admin" if user.is_admin else "viewer"),
+            },
         }
     finally:
         db.close()
@@ -95,14 +122,23 @@ def change_password(user_id: int, old_password: str, new_password: str) -> bool:
         db.close()
 
 
-def create_user(username: str, password: str, is_admin: bool = False) -> User:
+def create_user(username: str, password: str, is_admin: bool = False, role: str = "") -> User:
     """创建新用户。用户名已存在则抛 400。"""
+    from ..models.user import ROLES
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.username == username).first()
         if existing:
             raise HTTPException(status_code=400, detail="用户名已存在")
-        user = User(username=username, password_hash=hash_password(password), is_admin=is_admin)
+        # role 优先于 is_admin
+        if not role:
+            role = "admin" if is_admin else "viewer"
+        if role not in ROLES:
+            raise HTTPException(status_code=400, detail=f"无效角色，可选: {', '.join(ROLES.keys())}")
+        user = User(
+            username=username, password_hash=hash_password(password),
+            is_admin=(role == "admin"), role=role,
+        )
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -118,6 +154,7 @@ def list_users() -> list[dict]:
         users = db.query(User).order_by(User.id).all()
         return [{
             "id": u.id, "username": u.username, "is_admin": u.is_admin,
+            "role": u.role or ("admin" if u.is_admin else "viewer"),
             "created_at": u.created_at.isoformat() + "Z" if u.created_at else None,
             "last_login": u.last_login.isoformat() + "Z" if u.last_login else None,
         } for u in users]
@@ -125,8 +162,10 @@ def list_users() -> list[dict]:
         db.close()
 
 
-def update_user(user_id: int, password: str | None = None, is_admin: bool | None = None) -> bool:
+def update_user(user_id: int, password: str | None = None, is_admin: bool | None = None,
+                role: str | None = None) -> bool:
     """更新用户（改密码/角色）。用户不存在返回 False。"""
+    from ..models.user import ROLES
     db = SessionLocal()
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -134,8 +173,15 @@ def update_user(user_id: int, password: str | None = None, is_admin: bool | None
             return False
         if password:
             user.password_hash = hash_password(password)
-        if is_admin is not None:
+        if role is not None:
+            if role not in ROLES:
+                raise HTTPException(status_code=400, detail=f"无效角色: {role}")
+            user.role = role
+            user.is_admin = (role == "admin")
+        elif is_admin is not None:
             user.is_admin = is_admin
+            if is_admin and not user.role:
+                user.role = "admin"
         db.commit()
         return True
     finally:
@@ -167,15 +213,23 @@ def init_admin():
     """首次启动时自动创建默认管理员（admin/admin）。
 
     在 app startup 调用，如果 users 表为空则创建。
+    同时迁移旧用户：is_admin=True 但 role 为空的设为 admin。
     """
     db = SessionLocal()
     try:
+        # 迁移旧用户：给 is_admin=True 的补 role=admin，其余补 role=viewer
+        for u in db.query(User).all():
+            if not u.role:
+                u.role = "admin" if u.is_admin else "viewer"
+        db.commit()
+
         count = db.query(User).count()
         if count == 0:
             admin = User(
                 username="admin",
                 password_hash=hash_password("admin"),
                 is_admin=True,
+                role="admin",
             )
             db.add(admin)
             db.commit()

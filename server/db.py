@@ -86,3 +86,5 @@ def ensure_schema():
     _add_column("vulnerabilities", "status", "VARCHAR(16)", "'open'")
     _add_column("vulnerabilities", "note", "TEXT", "''")
     _add_column("vulnerabilities", "updated_at", "TIMESTAMP", "CURRENT_TIMESTAMP")
+    # v3.8: users RBAC 角色字段
+    _add_column("users", "role", "VARCHAR(32)", "'viewer'")
