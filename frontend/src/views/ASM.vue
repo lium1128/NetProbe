@@ -40,6 +40,24 @@
         </div>
       </div>
 
+      <!-- 漏洞状态概览 -->
+      <el-card class="asm-section" v-if="vulnStats">
+        <template #header>漏洞生命周期</template>
+        <div class="vuln-stat-grid">
+          <div class="vuln-stat-item" v-for="s in vulnStatusList" :key="s.value">
+            <span class="vuln-stat-num" :style="{ color: s.color }">{{ s.count }}</span>
+            <span class="vuln-stat-label">{{ s.label }}</span>
+          </div>
+        </div>
+        <div class="vuln-severity-bar" v-if="vulnStats.by_severity">
+          <span class="sev-tag critical">严重 {{ vulnStats.by_severity.critical || 0 }}</span>
+          <span class="sev-tag high">高危 {{ vulnStats.by_severity.high || 0 }}</span>
+          <span class="sev-tag medium">中危 {{ vulnStats.by_severity.medium || 0 }}</span>
+          <span class="sev-tag low">低危 {{ vulnStats.by_severity.low || 0 }}</span>
+          <span class="sev-tag info">信息 {{ vulnStats.by_severity.info || 0 }}</span>
+        </div>
+      </el-card>
+
       <!-- 监控能力状态 -->
       <el-card class="asm-section">
         <template #header>持续监控状态</template>
@@ -128,6 +146,19 @@ use([CanvasRenderer, LineChart, PieChart, TooltipComponent, GridComponent, Legen
 
 const loading = ref(true)
 const data = ref<any>(null)
+const vulnStats = ref<any>(null)
+
+const vulnStatusList = computed(() => {
+  if (!vulnStats.value) return []
+  const by = vulnStats.value.by_status || {}
+  return [
+    { value: 'open', label: '待处理', count: by.open || 0, color: '#dc2626' },
+    { value: 'confirmed', label: '已确认', count: by.confirmed || 0, color: '#d97706' },
+    { value: 'fixing', label: '修复中', count: by.fixing || 0, color: '#2563eb' },
+    { value: 'fixed', label: '已修复', count: (by.fixed || 0) + (by.verified || 0) + (by.closed || 0), color: '#10b981' },
+    { value: 'false_positive', label: '误报', count: by.false_positive || 0, color: '#94a3b8' },
+  ]
+})
 
 const tagChartReady = computed(() => {
   const stats = data.value?.tag_stats || {}
@@ -172,8 +203,12 @@ function formatTime(iso: string) {
 async function loadData() {
   loading.value = true
   try {
-    const res: any = await api.get('/asm/overview')
-    data.value = res
+    const [asmRes, vulnRes] = await Promise.all([
+      api.get('/asm/overview'),
+      api.get('/vulnerabilities/stats').catch(() => null),
+    ])
+    data.value = asmRes
+    vulnStats.value = vulnRes
   } finally {
     loading.value = false
   }
@@ -184,6 +219,17 @@ onMounted(loadData)
 
 <style scoped>
 .asm-section { margin-top: 14px; }
+.vuln-stat-grid { display: flex; gap: 24px; flex-wrap: wrap; }
+.vuln-stat-item { text-align: center; min-width: 80px; }
+.vuln-stat-num { display: block; font-size: 24px; font-weight: 700; }
+.vuln-stat-label { font-size: 12px; color: var(--np-text-muted); }
+.vuln-severity-bar { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.sev-tag { font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 12px; }
+.sev-tag.critical { background: rgba(220,38,38,0.1); color: #dc2626; }
+.sev-tag.high { background: rgba(234,88,12,0.1); color: #ea580c; }
+.sev-tag.medium { background: rgba(217,119,6,0.1); color: #d97706; }
+.sev-tag.low { background: rgba(37,99,235,0.1); color: #2563eb; }
+.sev-tag.info { background: rgba(100,116,139,0.1); color: #64748b; }
 .monitor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .monitor-item { display: flex; flex-direction: column; gap: 4px; padding: 14px; background: var(--np-bg-elevated); border-radius: var(--np-radius-md); }
 .monitor-name { font-size: 14px; font-weight: 600; color: var(--np-text-primary); }
