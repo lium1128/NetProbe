@@ -212,13 +212,7 @@
                       class="vuln-status-select"
                       @change="(val: string) => updateVulnStatus(v, val)"
                     >
-                      <el-option label="待处理" value="open" />
-                      <el-option label="已确认" value="confirmed" />
-                      <el-option label="修复中" value="fixing" />
-                      <el-option label="已修复" value="fixed" />
-                      <el-option label="已验证" value="verified" />
-                      <el-option label="已关闭" value="closed" />
-                      <el-option label="误报" value="false_positive" />
+                      <el-option v-for="s in vulnStatuses" :key="s.value" :label="s.label" :value="s.value" />
                     </el-select>
                   </div>
                 </div>
@@ -753,6 +747,24 @@ const pagedItems = computed(() => {
 /** 抽屉态 */
 const drawerVisible = ref(false)
 const detailTab = ref('vulns')
+const vulnStatuses = ref<{value: string; label: string}[]>([
+  { value: 'open', label: '待处理' },
+  { value: 'confirmed', label: '已确认' },
+  { value: 'fixing', label: '修复中' },
+  { value: 'fixed', label: '已修复' },
+  { value: 'verified', label: '已验证' },
+  { value: 'closed', label: '已关闭' },
+  { value: 'false_positive', label: '误报' },
+])
+
+async function loadVulnStatuses() {
+  try {
+    const res: any = await api.get('/vulnerabilities/statuses')
+    if (res && Array.isArray(res) && res.length) {
+      vulnStatuses.value = res.map((s: any) => ({ value: s.value, label: s.label }))
+    }
+  } catch { /* 使用默认值 */ }
+}
 const detailLoading = ref(false)
 const detail = ref<any>(null)
 const detailError = ref<string>('')
@@ -1225,6 +1237,7 @@ const filteredItems = computed(() => {
 })
 
 onMounted(async () => {
+  loadVulnStatuses()
   await loadData()
   await loadAllTags()
 })

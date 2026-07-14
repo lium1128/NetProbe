@@ -13,8 +13,6 @@ from ..services.scan_service import (
     list_active_tasks,
 )
 from ..services.history_service import delete_scan, _infer_scan_mode
-from ..db import SessionLocal
-from ..models import Scan
 from ..utils import to_iso_z
 
 router = APIRouter(tags=["tasks"])

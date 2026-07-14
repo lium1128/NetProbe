@@ -112,9 +112,10 @@ router.beforeEach((to, _from, next) => {
     if (to.path === '/login' && token) {
       next('/')
     } else if (to.meta.requiresAdmin) {
-      // 检查是否管理员
+      // 检查是否管理员（兼容 role 和 is_admin）
       const user = JSON.parse(localStorage.getItem('netprobe_user') || '{}')
-      if (user.is_admin) {
+      const isAdmin = user.role === 'admin' || user.is_admin === true
+      if (isAdmin) {
         next()
       } else {
         next('/')
