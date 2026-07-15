@@ -9,7 +9,12 @@ router = APIRouter(tags=["plugins"])
 @router.get("/plugins")
 def list_plugins():
     """列出所有已注册的插件。"""
-    from ...netprobe.plugins.registry import list_plugins_info
+    import sys, os
+    # 确保 netprobe 包在 sys.path 上（uvicorn 运行时可能不在）
+    _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+    from netprobe.plugins.registry import list_plugins_info
     plugins = list_plugins_info()
     return {"items": plugins, "total": len(plugins)}
 
@@ -21,7 +26,11 @@ class PluginToggle(BaseModel):
 @router.patch("/plugins/{name}/toggle")
 def toggle_plugin(name: str, toggle: PluginToggle):
     """启用/禁用插件。"""
-    from ...netprobe.plugins.registry import get_plugin, set_enabled
+    import sys, os
+    _root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if _root not in sys.path:
+        sys.path.insert(0, _root)
+    from netprobe.plugins.registry import get_plugin, set_enabled
     plugin = get_plugin(name)
     if not plugin:
         raise HTTPException(404, f"插件 '{name}' 不存在")
