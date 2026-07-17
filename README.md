@@ -29,6 +29,22 @@
     <td><img src="readme_resource/scan_1.png" alt="Dashboard"/></td>
     <td><img src="readme_resource/scan_2.png" alt="Assets"/></td>
   </tr>
+  <tr>
+    <td align="center"><b>ASM 攻击面管理 · 漏洞生命周期</b></td>
+    <td align="center"><b>插件管理 · 13 个检测插件</b></td>
+  </tr>
+  <tr>
+    <td><img src="readme_resource/asm.png" alt="ASM"/></td>
+    <td><img src="readme_resource/plugins.png" alt="Plugins"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>任务管理 · 扫描引擎选择</b></td>
+    <td align="center"><b>统计图表 · 资产趋势</b></td>
+  </tr>
+  <tr>
+    <td><img src="readme_resource/tasks.png" alt="Tasks"/></td>
+    <td><img src="readme_resource/stats.png" alt="Stats"/></td>
+  </tr>
 </table>
 
 ---
